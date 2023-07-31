@@ -315,7 +315,7 @@ void tronco(int* pipe_fd, int y,int id) {
 		pipeData.y=y;
 		pipeData.type='T';
 		pipeData.id=id;
-				
+		
 		int lunghezza_tronco= 9;
 		
 		int direzione;

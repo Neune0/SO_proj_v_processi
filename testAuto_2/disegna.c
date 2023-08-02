@@ -61,7 +61,8 @@ void drawProcess(int* pipe_fd) {
 		struct ScreenCell staticScreenMatrix[HEIGHT][WIDTH];
 		inizializzaMatriceSchermo(staticScreenMatrix);
 		
-		stampaMatriceStatica(staticScreenMatrix);
+		// prima stampa statica dell'area di gioco
+		stampaMatriceStatica(staticScreenMatrix); 
 		
     while (1) {
         // Leggi le coordinate inviate dalla pipe
@@ -119,7 +120,8 @@ void drawProcess(int* pipe_fd) {
         
         //---------continua drawProcess------------
         	//clear(); // Pulisci la finestra di gioco 
-					stampaMatrice(screenMatrix); // stampa a video l'intera matrice
+        	// stampa a video solo celle della matrice dinamica marcate 
+					stampaMatrice(screenMatrix); 
         	refresh(); // Aggiorna la finestra
         }
     
@@ -440,13 +442,8 @@ void stampaMatrice(struct ScreenCell (*screenMatrix)[WIDTH]){
 				attron(COLOR_PAIR(screenMatrix[i][j].color));
 				mvaddch(i, j, screenMatrix[i][j].ch);
 				attron(COLOR_PAIR(screenMatrix[i][j].color));
-				screenMatrix[i][j].is_changed = false;
+				screenMatrix[i][j].is_changed = false; // una volta stampato, il flag viene resettato per la prossima modifica
 			}
-			/*
-			attron(COLOR_PAIR(screenMatrix[i][j].color));
-			mvaddch(i, j, screenMatrix[i][j].ch);
-			attron(COLOR_PAIR(screenMatrix[i][j].color));
-			/**/
 		}
 	}
 	return;
@@ -460,7 +457,7 @@ void stampaMatriceStatica(struct ScreenCell (*staticScreenMatrix)[WIDTH]){
 			attron(COLOR_PAIR(staticScreenMatrix[i][j].color));
 			mvaddch(i, j, staticScreenMatrix[i][j].ch);
 			attron(COLOR_PAIR(staticScreenMatrix[i][j].color));
-			/**/
+			
 		}
 	}
 	return;

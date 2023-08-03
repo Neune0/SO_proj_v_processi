@@ -15,7 +15,8 @@ void drawProcess(int* pipe_fd) {
     struct PipeData pipeData;
     
     // array di strutture che contiene dati oggetti al passo precedente
-    struct PipeData old_pos [4];
+    // rana, tronchi x3, auto x4, ...
+    struct PipeData old_pos [8]; 
     // rana
     old_pos[0].x=-1;
     old_pos[0].y=-1;
@@ -52,6 +53,18 @@ void drawProcess(int* pipe_fd) {
     old_pos[5].type=' ';
     old_pos[5].id=5;
     
+    // auto 3
+    old_pos[6].x=-1;
+    old_pos[6].y=-1;
+    old_pos[6].type=' ';
+    old_pos[6].id=6;
+    
+    // auto 4
+    old_pos[7].x=-1;
+    old_pos[7].y=-1;
+    old_pos[7].type=' ';
+    old_pos[7].id=7;
+    
     
     // inizializzazione matrice che rappresenta lo schermo
 		struct ScreenCell screenMatrix[HEIGHT][WIDTH];
@@ -62,7 +75,7 @@ void drawProcess(int* pipe_fd) {
 		inizializzaMatriceSchermo(staticScreenMatrix);
 		
 		// prima stampa statica dell'area di gioco
-		stampaMatriceStatica(staticScreenMatrix); 
+		//stampaMatriceStatica(staticScreenMatrix); 
 		
     while (1) {
         // Leggi le coordinate inviate dalla pipe
@@ -112,6 +125,13 @@ void drawProcess(int* pipe_fd) {
       			case 5:
       				aggiornaPosizioneAuto(&pipeData, &old_pos[5], screenMatrix, staticScreenMatrix);
       				break;
+    				case 6:
+        			/*------	aggiorna posizione auto	---------*/
+	        	 	aggiornaPosizioneAuto(&pipeData, &old_pos[6], screenMatrix, staticScreenMatrix);
+        			break;
+      			case 7:
+      				aggiornaPosizioneAuto(&pipeData, &old_pos[7], screenMatrix, staticScreenMatrix);
+      				break;
     				default:
     					break;
         	}//end switch
@@ -121,18 +141,18 @@ void drawProcess(int* pipe_fd) {
         //---------continua drawProcess------------
         	//clear(); // Pulisci la finestra di gioco 
         	// stampa a video solo celle della matrice dinamica marcate 
-					stampaMatrice(screenMatrix); 
+					stampaMatrice(screenMatrix);
         	refresh(); // Aggiorna la finestra
         }
     
-    		endwin(); // Termina ncurses
+    		//endwin(); // Termina ncurses
 }
 
 void inizializzaMatriceSchermo(struct ScreenCell (*screenMatrix)[WIDTH]){
 	// inizializza valori flag
 	for(int row=0; row < HEIGHT; row++){
 		for(int cols=0; cols < WIDTH; cols++){
-			screenMatrix[row][cols].is_changed = false;
+			screenMatrix[row][cols].is_changed = true;
 		}
 	} 
 	
@@ -412,8 +432,11 @@ void stampaAutoInMatrice(int row,int col, struct ScreenCell (*screenMatrix)[WIDT
   int sprite_y=0;
   int sprite_x=0;
   
-  SpriteAuto a = {{"xxxx",
-									 "oooo"}};	// 2 righe x 4 char
+  //SpriteAuto a = {{"xxxx","oooo"}};	// 2 righe x 4 char
+
+
+	SpriteAuto a = {{{'x','x','x','x'}, {'o','o','o','o'}}};	// 2 righe x 4 char
+/**/
   
   for(int i=row;i<row+max_row;i++){
   	for(int j=col;j<col+max_col;j++){
@@ -422,11 +445,13 @@ void stampaAutoInMatrice(int row,int col, struct ScreenCell (*screenMatrix)[WIDT
   		screenMatrix[i][j].ch = a.sprite[sprite_y][sprite_x]; //copia char sprite nella matrice
     	screenMatrix[i][j].color=STRADA;
     	screenMatrix[i][j].is_changed=true;
+    	
   		sprite_x= (sprite_x+1)%max_col; // verifica che l'indice per la sprite non ecceda la dimensione della sprite
-  		
     }
     sprite_y++;
   }
+  //fflush(stdin);
+  //fflush(stdout);
   return;
 }//end stampaAutoInMatrice
 

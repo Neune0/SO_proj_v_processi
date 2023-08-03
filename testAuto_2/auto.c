@@ -24,22 +24,23 @@ void macchina(int* pipe_fd, int y, int direzione_x, int id){
     	
     	if(direzione==1){
     		if(pipeData.x + lunghezza_auto + 1 < WIDTH){
-      		pipeData.x++;
+      		//pipeData.x++;
       	}
       	else{	// se l'auto esce dallo schermo a destra, ricompare a sinistra 
       		//direzione*=-1;
-      		pipeData.x= lunghezza_auto;
+      		//pipeData.x= lunghezza_auto;
+      		pipeData.x= 1;
       	}
     	}else{
     		if(pipeData.x - 1 > 0){
-    			pipeData.x--;
+    			//pipeData.x--;
     		}
     		else{
     			//direzione*=-1;
     			pipeData.x= WIDTH - lunghezza_auto;
     		}
     	}
-    	//pipeData.x+=direzione;
+    	pipeData.x+=direzione;
       // Invia le coordinate attraverso la pipe
       write(pipe_fd[1], &pipeData, sizeof(struct PipeData));
 

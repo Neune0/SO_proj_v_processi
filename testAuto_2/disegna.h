@@ -19,7 +19,7 @@ typedef struct {
 } SpriteTronco;
 
 typedef struct {
-		char sprite[2][5]; // 2righe - 4 char + terminatore
+		char sprite[2][4]; // 2righe - 4 char
 }SpriteAuto;
 
 typedef struct {

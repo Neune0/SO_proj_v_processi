@@ -19,6 +19,8 @@ void moveProcess(int* pipe_fd) {
 		pipeData.type='X';
 		
     while (1) {
+    		pipeData.type='X'; // resetta il normale carattere della rana
+    
         // Leggi il carattere dall'input
         int ch = getch();
         if (ch != ERR) {
@@ -36,6 +38,9 @@ void moveProcess(int* pipe_fd) {
                   break;
                 case KEY_RIGHT:
                 	if(pipeData.x<WIDTH-3){pipeData.x++;}
+                  break;
+                case KEY_BACKSPACE:
+                	pipeData.type='S'; //cambia carattere per dire a processoDisegna che  rana sta sparando
                   break;
             }
 

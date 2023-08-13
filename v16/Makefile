@@ -49,3 +49,10 @@ utilities.o: utilities.c utilities.h
 # Pulizia dei file oggetto e dell'eseguibile
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
+
+openAll:
+	gedit *.c *.h &
+
+
+
+

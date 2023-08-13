@@ -1,5 +1,5 @@
 #include "inizializza.h"
-void inizializzaMatriceSchermo(ScreenCell (*screenMatrix)[WIDTH]){
+void inizializzaMatriceSchermo(ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH]){
 	inizializzaFlagMatrice(screenMatrix); // inizializza a true i flag di modifica della matrice
 	inizializzaHUD(screenMatrix); // inizializza le prime 4 righe
 	inizializzaTane(screenMatrix); // inizializza la parte dello schermo dedicata alle tane
@@ -7,6 +7,7 @@ void inizializzaMatriceSchermo(ScreenCell (*screenMatrix)[WIDTH]){
 	inizializzaPrato(screenMatrix); // inizializza la parte dello schermo dedicata al prato
 	inizializzaStrada(screenMatrix); // inizializza la parte dello schermo dedicata alla strada
 	inizializzaMarciapiede(screenMatrix); // inizializza la parte dello schermo dedicata al marciapiede
+	copiaMatrice(screenMatrix, staticScreenMatrix ); //copia la matrice dinamica in quella statica
 	return;
 }
 void inizializzaOldPos(PipeData *old_pos,int length){
@@ -155,4 +156,12 @@ void inizializzaFlagMatrice(ScreenCell (*screenMatrix)[WIDTH]){
 		}
 	} 
 	return;
+}
+//------------------------------------------------------------------------------------------------
+void copiaMatrice(ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH]){
+	for (int row=0; row<HEIGHT; row++){
+		for (int col=0; col<WIDTH; col++){
+			staticScreenMatrix[row][col] = screenMatrix[row][col];
+		}
+	}
 }

@@ -38,16 +38,21 @@ void drawProcess(int* pipe_fd) {
 	
 	// inizializza vettore per registrare posizione dei proiettili
 	
-	pid_t pidBullet[max_bullets]; //vettore dei pid dei processiProiettile
+	
 	int active_bullets=0;
 	int max_bullets = 10;
+	
+	//pid_t pidBullet[max_bullets]; //vettore dei pid dei processiProiettile
+	//pid_t pidBullet; 
+	
+	
 	PipeData old_bullet[10];
 	for(int i=0; i< max_bullets; i++){
 		old_bullet[i].x = old_bullet[i].y = -1;
 		old_bullet[i].type= ' ';
 		old_bullet[i].id=i;
 		
-		pidBullet[i]=-1; //inizializza tutti i pid a valori non validi
+		//pidBullet[i]=-1; //inizializza tutti i pid a valori non validi
 	}
 	
 	
@@ -70,12 +75,18 @@ void drawProcess(int* pipe_fd) {
       case 'S':
       	//proiettile sparato da utente
       	// fa partire il processo proiettile se il numero di proiettili in gioco è minore di 10
-      	if(active_bullets < max_bullets+1){
-      		pidBullet[/*proiettile corrente*/] = creaProiettile(pipe_fd, &pipeData]); 
-      	}
+      	if(active_bullets < max_bullets){
+      		avviaProiettile(pipe_fd);
+      		active_bullets++;
+      		beep();
+      	}//end if(troppi proiettili)
       	break;
-      case 'P':
-      	// nuove coordinate proiettile
+      case 'P':				//PROBLEMA: non legge il type=='P' da pipe se mandato da proiettile.???
+      	//aggiorna posizione dei proiettili
+      	// fai il check delle coordinate ed eventualmente fai un flash se il proiettile esce dall'area di gioco
+      	if(pipeData.y == 0){
+      		flash();
+      	}
       	break;
       default:
         break;

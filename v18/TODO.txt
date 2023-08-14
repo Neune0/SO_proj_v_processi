@@ -1,0 +1,18 @@
+
+menu iniziale
+
+box intorno a opzioni deve essere blu nessun segno
+
+> davanti al sottolineato, il sottolineato deve essere giallo e bold
+
+inserire opzioni reali e centrarle
+le opzioni sono: 
+								continua
+								carica
+								scegli livello
+								impostazioni
+								esci
+
+funzione generica per le box stampaBox(int start_row,int start_col,int color,char up_down_char,char sides_char)
+funzione per il logo e stampa box generica vanno in file a parte, adattare il makefile
+stampa box e logo vengono utilizzate da logo e menuIniziale

@@ -24,9 +24,13 @@ void drawProcess(int* pipe_fd) {
 	char *sprite_rana[RANA_ROWS] = {"\\./","/-\\"};
 	char *sprite_tronco[TRONCO_ROWS] = {"~ ~ ~ ~ ~", " ~ ~ ~ ~ "};
 	char *sprite_auto[AUTO_ROWS] = {"xxxx", "oooo"};
+	char *sprite_camion[CAMION_ROWS] = {"xxxxxxx", "ooooooo"};
+	
 	Sprite ranaSprite = {RANA_ROWS, RANA_COLS, sprite_rana, RANA};
   Sprite troncoSprite = {TRONCO_ROWS, TRONCO_COLS, sprite_tronco, TRONCHI};
   Sprite autoSprite = {AUTO_ROWS, AUTO_COLS, sprite_auto, AUTO};
+  Sprite camionSprite = {CAMION_ROWS, CAMION_COLS, sprite_camion, AUTO};
+  
 	
   // TODO forse è meglio fare una funzione sola che inizializzi entrambe le matrici
   ScreenCell screenMatrix[HEIGHT][WIDTH]; // matrice che rappresenta lo schermo
@@ -48,6 +52,11 @@ void drawProcess(int* pipe_fd) {
       case 'A':
       	aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &autoSprite);
         break;
+        
+     case 'C':
+      	aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &camionSprite);
+        break;
+        
       case 'S':
       	//proiettile sparato da utente
       	// fa partire il processo proiettile se il numero di proiettili in gioco è minore di 10

@@ -44,13 +44,28 @@ void avviaMacchina(int* pipe_fd,int row_y,int *dir_auto,int id){
 		if (macchina_pid == 0) {
 			// figlio-macchina 1
 			int direzione_x = dir_auto[id-4];
+			int _rand;
+			// "brucia" un numero di tiri pari all'id in modo che ogni figlo abbia un random diverso
+			for(int i=0; i<id; i++){ 
+				_rand = rand()%2;
+			}
+			
 			close(pipe_fd[0]); // Chiudi l'estremità di lettura della pipe
-			macchina(pipe_fd, row_y, direzione_x, id);
+			
+			if(_rand){
+				macchina(pipe_fd, row_y, direzione_x, id);
+			}else{
+				camion(pipe_fd, row_y, direzione_x, id);
+			}
+			
+			//macchina(pipe_fd, row_y, direzione_x, id);
 			exit(0);
 		}
 	}
 	return;
 }
+
+
 void macchina(int* pipe_fd, int y, int direzione_x, int id){
 	   	// determina random la coordinata_X  di spawn della macchina 
    	int i=0;
@@ -75,20 +90,12 @@ void macchina(int* pipe_fd, int y, int direzione_x, int id){
     while (1) {
     	
     	if(direzione==1){
-    		if(pipeData.x + lunghezza_auto + 1 < WIDTH){
-      		//pipeData.x++;
+    		if(pipeData.x + lunghezza_auto + 1 > WIDTH){ // se l'auto esce dallo schermo a destra, ricompare a sinistra
+    			pipeData.x= 0;
       	}
-      	else{	// se l'auto esce dallo schermo a destra, ricompare a sinistra 
-      		//direzione*=-1;
-      		//pipeData.x= lunghezza_auto;
-      		pipeData.x= 1;
-      	}
-    	}else{
-    		if(pipeData.x - 1 > 0){
-    			//pipeData.x--;
-    		}
-    		else{
-    			//direzione*=-1;
+      	
+    	}else{   // con direzione -1
+    		if(pipeData.x - 1 < 0){ // esce a sinistra, ricompare a destra
     			pipeData.x= WIDTH - lunghezza_auto;
     		}
     	}
@@ -100,3 +107,52 @@ void macchina(int* pipe_fd, int y, int direzione_x, int id){
       usleep(100000);
     }
 }//end macchina
+
+
+
+void camion(int* pipe_fd, int y, int direzione_x, int id){
+	   	// determina random la coordinata_X  di spawn della macchina 
+   
+   	int lunghezza_camion= 7;
+   	
+		PipeData pipeData;
+		
+		if(direzione_x == 1){  // se va a destra
+			pipeData.x=0;				// compari a sinistra
+		}else{
+			pipeData.x=WIDTH - lunghezza_camion; //se va a sinistra, compare a destra
+		}
+		
+		//pipeData.x=spawn_rand;
+		pipeData.y=y;
+		pipeData.type='C';
+		pipeData.id=id;
+		
+		int direzione = direzione_x;
+		
+    while (1) {
+    	
+    	if(direzione==1){
+    		if(pipeData.x + lunghezza_camion + 1 > WIDTH){ // se l'auto esce dallo schermo a destra, ricompare a sinistra
+    			pipeData.x= 0;
+      	}
+      	
+    	}else{   // con direzione -1
+    		if(pipeData.x - 1 < 0){ // esce a sinistra, ricompare a destra
+    			pipeData.x= WIDTH - lunghezza_camion;
+    		}
+    	}
+    	pipeData.x+=direzione;
+      // Invia le coordinate attraverso la pipe
+      write(pipe_fd[1], &pipeData, sizeof(PipeData));
+
+      // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
+      usleep(100000);
+    }
+}//end camion
+
+
+
+
+
+

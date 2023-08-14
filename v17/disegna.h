@@ -11,6 +11,9 @@
 #define RANA_SPRITE {{'\\', '.', '/'}, {'/', '-', '\\'}}
 #define TRONCO_SPRITE {{"~ ~ ~ ~ ~"}, {" ~ ~ ~ ~ "}}
 #define AUTO_SPRITE {{'x', 'x', 'x', 'x'}, {'o', 'o', 'o', 'o'}}
+#define CAMION_SPRITE {{'x', 'x', 'x', 'x', 'x', 'x', 'x'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o'}}
+
+
 
 #define RANA_ROWS 2
 #define RANA_COLS 3
@@ -18,6 +21,10 @@
 #define TRONCO_COLS 9
 #define AUTO_ROWS 2
 #define AUTO_COLS 4
+#define CAMION_ROWS 2
+#define CAMION_COLS 7
+
+
 
 typedef struct{
 	int max_row;

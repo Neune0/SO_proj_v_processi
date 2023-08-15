@@ -32,12 +32,8 @@ void drawProcess(int* pipe_fd) {
   Sprite camionSprite = {CAMION_ROWS, CAMION_COLS, sprite_camion, AUTO};
   
 	
-  // TODO forse è meglio fare una funzione sola che inizializzi entrambe le matrici
   ScreenCell screenMatrix[HEIGHT][WIDTH]; // matrice che rappresenta lo schermo
-	//inizializzaMatriceSchermo(screenMatrix); // inizializzazione matrice che rappresenta lo schermo
 	ScreenCell staticScreenMatrix[HEIGHT][WIDTH]; // matrice degli elementi statici dello schermo
-	//inizializzaMatriceSchermo(staticScreenMatrix); // inizializzazione matrice degli elementi statici che rappresenta lo schermo
-	
 	inizializzaMatriceSchermo(screenMatrix, staticScreenMatrix); // inizializza entrambe le matrici
 	
 	
@@ -58,7 +54,9 @@ void drawProcess(int* pipe_fd) {
      case 'C':  // legge il camion da pipe e aggiorna posizione
       	aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &camionSprite);
         break;
-        
+      case 'c':
+      	// NON disegnare il camion per un certo tempo, quando esce dallo schermo
+     		break;
       case 'S':
       	//proiettile sparato da utente
       	// avvia il proiettile con posizione iniziale della rana (o dell oggetto che ha sparato)

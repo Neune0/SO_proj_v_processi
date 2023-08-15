@@ -7,7 +7,7 @@
 #include "menuIniziale.h"
 #include "inizializza.h"
 #include "proiettile.h"
-#define OLDPOSDIM 8
+#define OLDPOSDIM 12
 
 #define RANA_SPRITE {{'\\', '.', '/'}, {'/', '-', '\\'}}
 #define TRONCO_SPRITE {{"~ ~ ~ ~ ~"}, {" ~ ~ ~ ~ "}}

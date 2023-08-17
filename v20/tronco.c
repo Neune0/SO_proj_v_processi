@@ -90,6 +90,6 @@ void tronco(int* pipe_fd, int y, int direzione_x, int id) {
       write(pipe_fd[1], &pipeData, sizeof(PipeData));
 
       // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
-      usleep(100000);
+      usleep(SLEEP_TRONCO);
     }
 }

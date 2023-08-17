@@ -5,6 +5,8 @@
 #define YTRONCOUNO 10
 #define YTRONCODUE 13
 #define YTRONCOTRE 16
+#define SLEEP_TRONCO 100000 // default 100000
+
 void tronco(int* pipe_fd, int y, int direzione_x, int id);
 void avviaTronco(int* pipe_fd,int x_spawn,int *dir_tronco,int id);
 void avviaGestoreTronchi(int* pipe_fd);

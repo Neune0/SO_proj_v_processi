@@ -27,76 +27,66 @@ void drawProcess(int* pipe_fd) {
 	char *sprite_camion[CAMION_ROWS] = {"xxxxxxx", "ooooooo"};
 	
 	Sprite ranaSprite = {RANA_ROWS, RANA_COLS, sprite_rana, RANA};
-  	Sprite troncoSprite = {TRONCO_ROWS, TRONCO_COLS, sprite_tronco, TRONCHI};
+	Sprite troncoSprite = {TRONCO_ROWS, TRONCO_COLS, sprite_tronco, TRONCHI};
 	Sprite autoSprite = {AUTO_ROWS, AUTO_COLS, sprite_auto, AUTO};
-  	Sprite camionSprite = {CAMION_ROWS, CAMION_COLS, sprite_camion, AUTO};
+	Sprite camionSprite = {CAMION_ROWS, CAMION_COLS, sprite_camion, AUTO};
+  
+  // vettore di sprite degli oggetti di gioco, usato per rilevazione delle collisioni
+  Sprite spriteOggetto[4];
+  spriteOggetto[RANA_SPRITE] = ranaSprite;
+  spriteOggetto[TRONCO_SPRITE] = troncoSprite;
+  spriteOggetto[AUTO_SPRITE] = autoSprite;
+  spriteOggetto[CAMION_SPRITE] = camionSprite;
   	
-  	ScreenCell screenMatrix[HEIGHT][WIDTH]; // matrice che rappresenta lo schermo
+	ScreenCell screenMatrix[HEIGHT][WIDTH]; // matrice che rappresenta lo schermo
 	ScreenCell staticScreenMatrix[HEIGHT][WIDTH]; // matrice degli elementi statici dello schermo
 	inizializzaMatriceSchermo(screenMatrix, staticScreenMatrix); // inizializza entrambe le matrici
 	
 	
  	while (1) {
-  		read(pipe_fd[0], &pipeData, sizeof(PipeData)); // Leggi le coordinate inviate dalla pipe
+		read(pipe_fd[0], &pipeData, sizeof(PipeData)); // Leggi le coordinate inviate dalla pipe
         
 		switch(pipeData.type){
 			case 'X':
 				aggiornaPosizioneOggetto(&pipeData, &old_pos[0], screenMatrix, staticScreenMatrix, &ranaSprite);
 				
-		    	break;
+	    	break;
 			case 'T':
-		    	aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix,staticScreenMatrix, &troncoSprite);
-		    	break;
-	  		case 'A':
-		  		aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &autoSprite);
-		    	break;
-		    
+	    	aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix,staticScreenMatrix, &troncoSprite);
+	    	break;
+  		case 'A':
+	  		aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &autoSprite);
+	    	break;
 		 	case 'C':  // legge il camion da pipe e aggiorna posizione
-		  		aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &camionSprite);
-		    	break;
-		  	case 'c':
-		  	// NON disegnare il camion per un certo tempo, quando esce dallo schermo
+	  		aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &camionSprite);
+	    	break;
+	  	case 'c':
+		  	// aggiorna la posizione ma NON disegna il camion per un certo tempo, quando esce dallo schermo
+		  	aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &camionSprite);
+		  	pulisciSpriteInMatrice(old_pos[pipeData.id].y, old_pos[pipeData.id].x, &camionSprite, screenMatrix, staticScreenMatrix);
 		 		break;
-		  	case 'S':
-		  	//proiettile sparato da utente
-		  	// avvia il proiettile con posizione iniziale della rana (o dell oggetto che ha sparato)
-		  		avviaProiettile(pipe_fd, &pipeData); 
-		  		beep();
+	  	case 'S':
 		  	// fa partire il processo proiettile se il numero di proiettili in gioco è minore di 10
 		  	break;
-		  	case 'P':
+	  	case 'P':
 		  	// nuove coordinate proiettile
-		  		break;
-		  	default:
-	    		break;
+	  		break;
+	  	default:
+  			break;
 		}//end switch-case
     
+    //----collisioni rana------
 		bool frogCollision = false;
-		//----collisioni rana------
-	  	for(int i=1; i<OLDPOSDIM; i++){
-			//check_1 = checkCollisione(&old_pos[i], &old_pos[0], &ranaSprite);
-	 		if(i<4){
-	 			frogCollision =checkCollisione(&old_pos[0], &old_pos[i], &ranaSprite, &troncoSprite);
-		 	}
-		 	if(i>=4){							// check su auto/camion
-		 		if(old_pos[i].type=='A')
-		 		{
-	 				frogCollision = checkCollisione(&old_pos[0], &old_pos[i], &ranaSprite, &autoSprite);
-				}else if (old_pos[i].type=='C')
-				{
-					frogCollision = checkCollisione(&old_pos[0], &old_pos[i], &ranaSprite, &camionSprite);
-		 		}
-		 	}
-			 // se collisione, fai beep
-			 if(frogCollision){beep(); }
-		}
 		
+		frogCollision = collisioneRana(old_pos, spriteOggetto);
+		
+		if(frogCollision){beep(); }	
     		
     
     
     
 		stampaMatrice(screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
-    	refresh(); // Aggiorna la finestra
+  	refresh(); // Aggiorna la finestra
 	}//end while
   return;  
 }
@@ -163,7 +153,7 @@ void pulisciSpriteInMatrice(int row, int col, Sprite* sprite, ScreenCell (*scree
         }
     }
 }
-//--------------------------------------------------------------------
+//----------------------------------------COLLISIONI----------------------------
 // Ritorna TRUE se oggetto_1 entra nel perimetro di oggetto_2 
 bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, Sprite* sprite_2)
 {
@@ -189,12 +179,31 @@ bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, S
 	
 	return false;
 }
-
-bool collisione()
+//-----------------------------------------------------------------------------
+// Controlla se la Rana collide con uno degli oggetti in gioco (Rana == old_pos[0])
+bool collisioneRana( PipeData *old_pos, Sprite *array_sprite)
 {
-	/* chiama checkCollisione (obj1,obj2) 
-	   e 			checkCollisione (obj2,obj1) */
-	   return false;
+	PipeData *rana = &old_pos[0];
+	
+  bool collision=false;
+   
+	for(int i=1; i<OLDPOSDIM; i++){ // per ogni oggetto di gioco
+ 		if(i<4) // check collisione con Tronchi
+ 		{ 
+ 			collision = checkCollisione(rana, &old_pos[i], &array_sprite[RANA_SPRITE], &array_sprite[TRONCO_SPRITE]);
+	 	}
+	 	if(i>=4){							// check collisione con auto/camion
+	 		if(old_pos[i].type=='A')
+	 		{
+ 				collision = checkCollisione(rana, &old_pos[i], &array_sprite[RANA_SPRITE], &array_sprite[AUTO_SPRITE]);
+			}else if (old_pos[i].type=='C')
+			{
+				collision = checkCollisione(rana, &old_pos[i], &array_sprite[RANA_SPRITE], &array_sprite[CAMION_SPRITE]);
+	 		}
+	 	}
+	 	if(collision) break; //se rileva collisione ferma il ciclo e ed esce
+	}
+ 	return collision;
 }
 
 //------------------------------------------------

@@ -116,7 +116,7 @@ void macchina(int* pipe_fd, int y, int direzione_x, int id){
       write(pipe_fd[1], &pipeData, sizeof(PipeData));
 
       // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
-      usleep(100000);
+      usleep(SLEEP_AUTO);
     }
 }//end macchina
 
@@ -163,13 +163,13 @@ void camion(int* pipe_fd, int y, int direzione_x, int id){
       // Invia le coordinate attraverso la pipe
       write(pipe_fd[1], &pipeData, sizeof(PipeData));
 			if(respawn){
-				usleep(300000);
+				usleep(SLEEP_AUTO*3 +SLEEP_AUTO/2);
 				respawn = false;
 				pipeData.type='C';
 			}
 			
       // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
-      usleep(100000);
+      usleep(SLEEP_AUTO);
     }
 }//end camion
 

@@ -172,12 +172,21 @@ void drawProcess(int* pipe_fd) {
       	}
       default:
         break;
-    }
+    }//end switch-case su type
+    
+    
+    
+    
+    
+    
+    
 		stampaMatrice(screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
     refresh(); // Aggiorna la finestra
-	}
+	}//end while
   return;  
-}
+}//end drawProcess
+
+//-----------------------------------------------------------
 int id_disponibile(pid_t *array_pid, int lunghezza){
 	for(int i=0;i<lunghezza;i++){
 		if(array_pid[i]==0)return i;

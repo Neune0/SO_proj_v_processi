@@ -144,6 +144,7 @@ void drawProcess(int* pipe_fd) {
       		mvprintw(13+pipeData.id,110,"                                    ");
     			mvprintw(13+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
       		kill(array_pid_proiettili[pipeData.id], SIGKILL);
+      		waitpid(array_pid_proiettili[pipeData.id],NULL,0);
       		array_pid_proiettili[pipeData.id]=0;
       		contatore_proiettili_in_gioco--;
       		pulisciSpriteInMatrice(old_pos_proiettili[pipeData.id].y, old_pos_proiettili[pipeData.id].x, &proiettileSprite, screenMatrix, staticScreenMatrix);
@@ -161,6 +162,7 @@ void drawProcess(int* pipe_fd) {
       		mvprintw(25+pipeData.id,110,"                                    ");
     			mvprintw(25+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
       		kill(array_pid_proiettili_nemici[pipeData.id], SIGKILL);
+      		waitpid(array_pid_proiettili_nemici[pipeData.id],NULL,0);
       		array_pid_proiettili_nemici[pipeData.id]=0;
       		contatore_proiettili_nemici_in_gioco--;
       		pulisciSpriteInMatrice(old_pos_proiettili_nemici[pipeData.id].y, old_pos_proiettili_nemici[pipeData.id].x, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix);

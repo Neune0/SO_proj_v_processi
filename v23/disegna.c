@@ -45,6 +45,7 @@ void drawProcess(int* pipe_fd) {
 	char *sprite_proiettile_nemico[PROIETTILE_ROWS]={"|","v"};
 	char *sprite_nemico[2]={" ^ ","/ \\"};
 	
+	
 	Sprite ranaSprite = {RANA_ROWS, RANA_COLS, sprite_rana, RANA};
   Sprite troncoSprite = {TRONCO_ROWS, TRONCO_COLS, sprite_tronco, TRONCHI};
   Sprite autoSprite = {AUTO_ROWS, AUTO_COLS, sprite_auto, AUTO};
@@ -52,6 +53,16 @@ void drawProcess(int* pipe_fd) {
   Sprite proiettileSprite = {PROIETTILE_ROWS, PROIETTILE_COLS, sprite_proiettile, PROIETTILE};
   Sprite proiettileNemicoSprite = {PROIETTILE_ROWS,PROIETTILE_COLS,sprite_proiettile_nemico,PROIETTILE};
   Sprite nemicoSprite = {2,3,sprite_nemico,RANA};
+	
+	// vettore di sprite degli oggetti di gioco, usato per rilevazione delle collisioni
+	Sprite spriteOggetto[7];
+  spriteOggetto[RANA_SPRITE] = ranaSprite;
+  spriteOggetto[TRONCO_SPRITE] = troncoSprite;
+  spriteOggetto[AUTO_SPRITE] = autoSprite;
+  spriteOggetto[CAMION_SPRITE] = camionSprite;
+	spriteOggetto[PROIETTILE_SPRITE] = proiettileSprite;
+  spriteOggetto[PROIETTILE_NEMICO_SPRITE] = proiettileNemicoSprite;
+  spriteOggetto[NEMICO_SPRITE] = nemicoSprite;
 	
   ScreenCell screenMatrix[HEIGHT][WIDTH]; // matrice che rappresenta lo schermo
 	ScreenCell staticScreenMatrix[HEIGHT][WIDTH]; // matrice degli elementi statici dello schermo
@@ -144,6 +155,7 @@ void drawProcess(int* pipe_fd) {
       		mvprintw(13+pipeData.id,110,"                                    ");
     			mvprintw(13+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
       		kill(array_pid_proiettili[pipeData.id], SIGKILL);
+      		waitpid(array_pid_proiettili[pipeData.id],NULL,0);
       		array_pid_proiettili[pipeData.id]=0;
       		contatore_proiettili_in_gioco--;
       		pulisciSpriteInMatrice(old_pos_proiettili[pipeData.id].y, old_pos_proiettili[pipeData.id].x, &proiettileSprite, screenMatrix, staticScreenMatrix);
@@ -161,6 +173,7 @@ void drawProcess(int* pipe_fd) {
       		mvprintw(25+pipeData.id,110,"                                    ");
     			mvprintw(25+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
       		kill(array_pid_proiettili_nemici[pipeData.id], SIGKILL);
+      		waitpid(array_pid_proiettili_nemici[pipeData.id],NULL,0);
       		array_pid_proiettili_nemici[pipeData.id]=0;
       		contatore_proiettili_nemici_in_gioco--;
       		pulisciSpriteInMatrice(old_pos_proiettili_nemici[pipeData.id].y, old_pos_proiettili_nemici[pipeData.id].x, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix);
@@ -170,12 +183,21 @@ void drawProcess(int* pipe_fd) {
       	}
       default:
         break;
-    }
+    }//end switch-case su type
+    
+    //----collisioni rana------
+		bool frogCollision = false;
+		frogCollision = collisioneRana(old_pos, spriteOggetto);
+		//frogCollision = collisioneRana(old_pos_proiettili_nemici, spriteOggetto);
+		if(frogCollision){beep(); }	
+    
 		stampaMatrice(screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
     refresh(); // Aggiorna la finestra
-	}
+	}//end while
   return;  
-}
+}//end drawProcess
+
+//-----------------------------------------------------------
 int id_disponibile(pid_t *array_pid, int lunghezza){
 	for(int i=0;i<lunghezza;i++){
 		if(array_pid[i]==0)return i;
@@ -202,6 +224,7 @@ void stampaMatrice( ScreenCell (*screenMatrix)[WIDTH]){
 void aggiornaOldPos(PipeData *old_pos,PipeData *pipeData){
     old_pos->x=pipeData->x;
     old_pos->y=pipeData->y;
+    old_pos->type=pipeData->type;
     return;
 }
 //--------------------------------------------AGGIORNAMENTO OGGETTI IN MATRICE--------------------------------
@@ -244,3 +267,69 @@ void pulisciSpriteInMatrice(int row, int col, Sprite* sprite, ScreenCell (*scree
         }
     }
 }
+
+
+//----------------------------------------COLLISIONI----------------------------
+// Ritorna TRUE se oggetto_1 entra nel perimetro di oggetto_2 
+bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, Sprite* sprite_2)
+{
+	// stabilisce coordinate massime per entrambi gli oggetti 
+	int obj1_maxX, obj1_maxY, obj2_maxX, obj2_maxY; 
+	obj1_maxX = (object_1->x) + (sprite_1->max_col);
+	obj1_maxY = (object_1->y) +1;
+	obj2_maxX = (object_2->x) + (sprite_2->max_col);
+	obj2_maxY = (object_2->y) +1;									//assumendo che tutti gli oggetti siano alti 2row
+	
+	bool checkUP, checkDOWN, checkLEFT,checkRIGHT;
+	checkUP = checkDOWN = checkLEFT = checkRIGHT = false;
+	// controlla se i lati di object_1 sono dentro object_2, controllo lato per lato
+	checkUP = isBetween(object_1->y, object_2->y, obj2_maxY); 
+	checkDOWN =  isBetween(obj1_maxY, object_2->y, obj2_maxY);
+	checkLEFT = isBetween(object_1->x, object_2->x, obj2_maxX);
+	checkRIGHT = isBetween(obj1_maxX, object_2->x, obj2_maxX);
+	
+	if((checkUP || checkDOWN)&&(checkLEFT || checkRIGHT))
+	{
+		return true;
+	}
+	
+	return false;
+}
+//-----------------------------------------------------------------------------
+// Controlla se la Rana collide con uno degli oggetti in gioco (Rana == old_pos[0])
+bool collisioneRana( PipeData *old_pos, Sprite *array_sprite)
+{
+	PipeData *rana = &old_pos[0];
+	
+  bool collision=false;
+   
+	for(int i=1; i<OLDPOSDIM; i++){ // per ogni oggetto di gioco
+ 		if(i<4) // check collisione con Tronchi
+ 		{ 
+ 			collision = checkCollisione(rana, &old_pos[i], &array_sprite[RANA_SPRITE], &array_sprite[TRONCO_SPRITE]);
+	 	}
+	 	if(i>=4){							// check collisione con auto/camion
+	 		if(old_pos[i].type=='A')
+	 		{
+ 				collision = checkCollisione(rana, &old_pos[i], &array_sprite[RANA_SPRITE], &array_sprite[AUTO_SPRITE]);
+			}else if (old_pos[i].type=='C')
+			{
+				collision = checkCollisione(rana, &old_pos[i], &array_sprite[RANA_SPRITE], &array_sprite[CAMION_SPRITE]);
+	 		}
+	 	}
+	 	if(collision) break; //se rileva collisione ferma il ciclo e ed esce
+	}
+ 	return collision;
+}
+
+//------------------------------------------------
+//controlla se value è compreso tra valori min e max
+bool isBetween (int value, int min_value, int max_value){
+	
+	if((value >= min_value) && (value <= max_value)){
+		return true;
+	}
+	return false;
+}
+
+

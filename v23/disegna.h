@@ -15,12 +15,10 @@
 #define MAXNNEMICI 3
 #define MAXNPROIETTILINEMICI 10
 
-#define RANA_SPRITE {{'\\', '.', '/'}, {'/', '-', '\\'}}
-#define TRONCO_SPRITE {{"~ ~ ~ ~ ~"}, {" ~ ~ ~ ~ "}}
-#define AUTO_SPRITE {{'x', 'x', 'x', 'x'}, {'o', 'o', 'o', 'o'}}
-#define CAMION_SPRITE {{'x', 'x', 'x', 'x', 'x', 'x', 'x'}, {'o', 'o', 'o', 'o', 'o', 'o', 'o'}}
-
-
+typedef enum 
+{
+	RANA_SPRITE, TRONCO_SPRITE, AUTO_SPRITE, CAMION_SPRITE, PROIETTILE_SPRITE, PROIETTILE_NEMICO_SPRITE, NEMICO_SPRITE
+}TipoSprite;
 
 #define RANA_ROWS 2
 #define RANA_COLS 3
@@ -54,4 +52,9 @@ void aggiornaOldPos(PipeData *old_pos,PipeData *pipeData);
 void aggiornaPosizioneOggetto(PipeData *pipeData, PipeData *old_pos, ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH], Sprite *sprite);
 void stampaSpriteInMatrice(int startRow, int startCol, Sprite* sprite, ScreenCell (*screenMatrix)[WIDTH]);
 void pulisciSpriteInMatrice(int row, int col, Sprite* sprite, ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH]);
+
+bool collisioneRana( PipeData *old_pos, Sprite *array_sprite);
+bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, Sprite* sprite_2);
+bool isBetween (int value, int min_value, int max_value);
+
 #endif

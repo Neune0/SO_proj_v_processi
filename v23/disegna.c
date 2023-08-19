@@ -177,6 +177,8 @@ void drawProcess(int* pipe_fd) {
       		array_pid_proiettili_nemici[pipeData.id]=0;
       		contatore_proiettili_nemici_in_gioco--;
       		pulisciSpriteInMatrice(old_pos_proiettili_nemici[pipeData.id].y, old_pos_proiettili_nemici[pipeData.id].x, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix);
+      		old_pos_proiettili_nemici[pipeData.id].type = 'P';
+      		
       	}
       	else{
       		aggiornaPosizioneOggetto(&pipeData, &old_pos_proiettili_nemici[pipeData.id], screenMatrix, staticScreenMatrix, &proiettileNemicoSprite);
@@ -185,11 +187,15 @@ void drawProcess(int* pipe_fd) {
         break;
     }//end switch-case su type
     
-    //----collisioni rana------
+    //-------------------------collisioni rana------
 		bool frogCollision = false;
+		bool autoCollision = false;
+		bool enemyBulletCollision = false;
+		
 		frogCollision = collisioneRana(old_pos, spriteOggetto);
-		//frogCollision = collisioneRana(old_pos_proiettili_nemici, spriteOggetto);
-		if(frogCollision){beep(); }	
+		autoCollision = collisioneAuto(old_pos, spriteOggetto);
+		enemyBulletCollision= collisioneProiettiliNemici(old_pos, old_pos_proiettili_nemici, spriteOggetto);
+		if((frogCollision && autoCollision) || (enemyBulletCollision) ){ beep(); }	
     
 		stampaMatrice(screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
     refresh(); // Aggiorna la finestra
@@ -270,7 +276,9 @@ void pulisciSpriteInMatrice(int row, int col, Sprite* sprite, ScreenCell (*scree
 
 
 //----------------------------------------COLLISIONI----------------------------
-// Ritorna TRUE se oggetto_1 entra nel perimetro di oggetto_2 
+/**	Prende due oggetti di gioco con rispettive sprite e verifica se gli oggetti si incontrano 
+		Ritorna TRUE se oggetto_1 entra nel perimetro di oggetto_2
+*/ 
 bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, Sprite* sprite_2)
 {
 	// stabilisce coordinate massime per entrambi gli oggetti 
@@ -321,6 +329,43 @@ bool collisioneRana( PipeData *old_pos, Sprite *array_sprite)
 	}
  	return collision;
 }
+//----------------------------------------collisioni auto/camion-----------------------
+bool collisioneAuto( PipeData *old_pos, Sprite *array_sprite)
+{
+	PipeData *rana = &old_pos[0];
+	
+  bool collision=false;
+   
+	for(int i=4; i<OLDPOSDIM; i++){ // per ogni auto/camion in gioco (old_pos[4-11])
+ 		if(old_pos[i].type=='A')
+ 		{
+			collision = checkCollisione(&old_pos[i], rana, &array_sprite[AUTO_SPRITE], &array_sprite[RANA_SPRITE]);
+		}else if (old_pos[i].type=='C')
+		{
+			collision = checkCollisione(&old_pos[i], rana, &array_sprite[CAMION_SPRITE], &array_sprite[RANA_SPRITE]);
+ 		}
+	 	if(collision) break; //se rileva collisione ferma il ciclo e ed esce
+	}
+ 	return collision;
+}
+//------------------------------------collisioni proiettili nemici-------------------------------
+
+bool collisioneProiettiliNemici( PipeData *old_pos, PipeData *old_pos_proiettiliNemici ,Sprite *array_sprite)
+{
+	PipeData *rana = &old_pos[0];
+	
+  bool collision=false;
+   
+	for(int i=0; i<MAXNPROIETTILINEMICI; i++){ 							// per ogni proiettile nemico di gioco
+ 		if(old_pos_proiettiliNemici[i].type != 'P'){					// se il proiettile è attivo
+ 			collision = checkCollisione(&old_pos_proiettiliNemici[i], rana, 
+																	&array_sprite[PROIETTILE_NEMICO_SPRITE], &array_sprite[RANA_SPRITE]);
+ 		}
+	 	if(collision) break; //se rileva collisione ferma il ciclo e ed esce
+	}
+ 	return collision;
+}
+
 
 //------------------------------------------------
 //controlla se value è compreso tra valori min e max

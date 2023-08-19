@@ -68,7 +68,7 @@ void inizializzaHUD(ScreenCell (*screenMatrix)[WIDTH]){
 void inizializzaTane(ScreenCell (*screenMatrix)[WIDTH]){
 	int freqTane = WIDTH/5 ; // ogni quanti char c'è una tana (larghezza/num_tane)
 	int colsTana = 9; // MAGIC NUMBER
-	bool tana=true;
+	bool tana=false;
 	
 	for(int i=4;i<9;i++){
 		for(int j=0;j<WIDTH;j++){

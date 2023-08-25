@@ -1,6 +1,0 @@
-
-menu iniziale
-
-funzione generica per le box stampaBox(int start_row,int start_col,int color,char up_down_char,char sides_char)
-funzione per il logo e stampa box generica vanno in file a parte, adattare il makefile
-stampa box e logo vengono utilizzate da logo e menuIniziale

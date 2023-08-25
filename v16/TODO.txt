@@ -1,3 +1,0 @@
-logo intero + risoluzione bug logo
-
-menu iniziale

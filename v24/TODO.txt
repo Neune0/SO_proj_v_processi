@@ -1,18 +1,26 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> menu iniziale:
 
-menu iniziale:
+		funzione generica per le box stampaBox(int start_row,int start_col,int color,char up_down_char,char sides_char)
+		funzione per il logo e stampa box generica vanno in file a parte, adattare il makefile
+		stampa box e logo vengono utilizzate da logo e menuIniziale
 
-funzione generica per le box stampaBox(int start_row,int start_col,int color,char up_down_char,char sides_char)
-funzione per il logo e stampa box generica vanno in file a parte, adattare il makefile
-stampa box e logo vengono utilizzate da logo e menuIniziale
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> per il proiettile: 
 
+		capire perchè ogni tanto la matrice si corrompe
 
-per il proiettile: 
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> nemico/nemici:
 
-capire perchè ogni tanto la matrice si corrompe
+		stama del nemico
 
+		punto partenza proiettile= posizione nemico = posizione tronco sincronia, come?
 
-nemico/nemici:
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> collisioni:
+		
+		. serve conservare il pid della rana per poterla uccidere
+		. occorre spostare tutti gli avvi di processi oggetti all'interno di disegna
+		. all'interno di disegna serve conservare i pid di tutti gli oggetti
 
-stama del nemico
-
-punto partenza proiettile= posizione nemico = posizione tronco sincronia, come?

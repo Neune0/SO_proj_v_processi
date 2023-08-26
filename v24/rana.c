@@ -36,9 +36,11 @@ void moveProcess(int* pipe_fd) {
 		noecho();
     while (1) {
     		pipeData.type='X'; // resetta il normale carattere della rana
-        
+       	
         // Leggi il carattere dall'input
         int ch = getch();
+        fflush(stdin);
+       
         if (ch != ERR) {
             
             // Muovi il personaggio in base all'input dell'utente
@@ -67,9 +69,27 @@ void moveProcess(int* pipe_fd) {
             // Invia le coordinate attraverso la pipe
             write(pipe_fd[1], &pipeData, sizeof(PipeData));
         }
+        // vuota buffer input
+      	do{
+      		getch();
+      	}while(getch()!= ERR);
 
         // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
         usleep(100000);
     }
     return;
+}//end moveProcess 
+
+
+pid_t resetRana(int* pipe_fd, pid_t pid_processo_rana){
+		pid_t newPid;
+		kill(pid_processo_rana, SIGKILL);
+		waitpid(pid_processo_rana, NULL,0);
+		newPid = avviaRana(pipe_fd);
+		return newPid;
 }
+
+
+
+
+

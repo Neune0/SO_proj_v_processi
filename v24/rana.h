@@ -3,4 +3,7 @@
 #include "pausa.h"
 pid_t avviaRana(int* pipe_fd);
 void moveProcess(int* pipe_fd);
+pid_t resetRana( int* pipe_fd, pid_t pid_processo_rana);
+
 #endif
+

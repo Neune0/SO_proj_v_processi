@@ -77,10 +77,10 @@ bool collisioneAuto( PipeData *old_pos, Sprite *array_sprite)
 }
 //------------------------------------collisioni proiettili nemici-------------------------------
 
-bool collisioneProiettiliNemici( PipeData *old_pos, PipeData *old_pos_proiettiliNemici ,Sprite *array_sprite)
+int collisioneProiettiliNemici( PipeData *old_pos, PipeData *old_pos_proiettiliNemici ,Sprite *array_sprite)
 {
 	PipeData *rana = &old_pos[0];
-	
+	int bullet_id = -1; //valore non valido, usa bullet_id per sapere l'inidice del proiettile 
   bool collision=false;
    
 	for(int i=0; i<MAXNPROIETTILINEMICI; i++){ 							// per ogni proiettile nemico di gioco
@@ -88,9 +88,12 @@ bool collisioneProiettiliNemici( PipeData *old_pos, PipeData *old_pos_proiettili
  			collision = checkCollisione(&old_pos_proiettiliNemici[i], rana, 
 																	&array_sprite[PROIETTILE_NEMICO_SPRITE], &array_sprite[RANA_SPRITE]);
  		}
-	 	if(collision) break; //se rileva collisione ferma il ciclo e ed esce
+	 	if(collision) {
+	 		bullet_id = i;
+	 		break;
+	 	} //se rileva collisione ferma il ciclo e ed esce
 	}
- 	return collision;
+ 	return bullet_id;
 }
 //----------------------------collisione TANE-------------------
 bool collisioneTaneAperte( PipeData *old_pos, Tana *array_tane, Sprite *array_sprite, Sprite *arr_tana_sprite)

@@ -11,4 +11,4 @@ void handle_continue(int signum);
 
 int pausa();
 
-#endif PAUSA_H
+#endif

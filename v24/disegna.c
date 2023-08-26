@@ -227,7 +227,7 @@ void drawProcess(int* pipe_fd) {
     //-------------------------collisioni rana------
 		bool frogCollision = false;
 		bool autoCollision = false;
-		bool enemyBulletCollision = false;
+		int  enemyBulletCollision = -1;
 		bool taneAperteCollision = false;
 		bool taneChiuseCollision = false;
 		bool autoProiettiliNemiciCollision = false;
@@ -258,7 +258,25 @@ void drawProcess(int* pipe_fd) {
 	 	
 	 	if(autoProiettiliNemiciCollision){ beep();}
 	 	
-		if((frogCollision && autoCollision) || (enemyBulletCollision) ){ beep(); }	
+		if((frogCollision && autoCollision) )
+		{ 
+			beep();
+			pidRana = resetRana(pipe_fd, pidRana); 
+		}
+		
+		
+		if(enemyBulletCollision != -1){
+			beep();
+			pidRana = resetRana(pipe_fd, pidRana); 
+			// da mettere dentro funzione apposita 
+			kill(array_pid_proiettili_nemici[enemyBulletCollision], SIGKILL);
+  		waitpid(array_pid_proiettili_nemici[enemyBulletCollision],NULL,0);
+  		array_pid_proiettili_nemici[enemyBulletCollision]=0;
+  		contatore_proiettili_nemici_in_gioco--;
+  		pulisciSpriteInMatrice(old_pos_proiettili_nemici[enemyBulletCollision].y, old_pos_proiettili_nemici[enemyBulletCollision].x, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix);
+  		old_pos_proiettili_nemici[enemyBulletCollision].type = ' ';
+  		/**/
+		}	
     
 		stampaMatrice(screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
     refresh(); // Aggiorna la finestra

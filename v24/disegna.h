@@ -11,17 +11,6 @@
 #include "proiettileNemico.h"
 #include "collisioni.h"
 
-/*
-#define OLDPOSDIM 12
-#define MAXNPROIETTILI 3
-#define MAXNNEMICI 3
-#define MAXNPROIETTILINEMICI MAXNPROIETTILI
-
-typedef enum 
-{
-	RANA_SPRITE, TRONCO_SPRITE, AUTO_SPRITE, CAMION_SPRITE, PROIETTILE_SPRITE, PROIETTILE_NEMICO_SPRITE, NEMICO_SPRITE
-}TipoSprite;
-/**/
 
 #define RANA_ROWS 2
 #define RANA_COLS 3

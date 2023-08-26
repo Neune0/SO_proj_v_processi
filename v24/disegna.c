@@ -15,6 +15,10 @@ void avviaDrawProcess(int pipe_fd[2]) {
 
 // processo che si occupa di disegnare lo schermo
 void drawProcess(int* pipe_fd) {
+	pid_t pidRana;
+	pidRana = avviaRana(pipe_fd); // avvia il processo che gestisce il movimento della rana
+	
+	
 		
 	PipeData pipeData; // struttura per leggere la pipe
 	
@@ -115,7 +119,6 @@ void drawProcess(int* pipe_fd) {
     // fine test zona
     switch(pipeData.type){
     	case 'X':
-    		// matrice dinamica aggiornata, e nuova posizione della rana possibile in pipe
     		aggiornaPosizioneOggetto(&pipeData, &old_pos[0], screenMatrix, staticScreenMatrix, &ranaSprite);
     		mvprintw(0,110,"                                    ");
     		mvprintw(0,110,"RANA tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
@@ -203,6 +206,10 @@ void drawProcess(int* pipe_fd) {
       	else{
       		aggiornaPosizioneOggetto(&pipeData, &old_pos_proiettili_nemici[pipeData.id], screenMatrix, staticScreenMatrix, &proiettileNemicoSprite);
       	}
+      	break;
+      	case 'Z':
+      		beep();
+      		break;
       default:
         break;
     }//end switch-case su type
@@ -221,7 +228,7 @@ void drawProcess(int* pipe_fd) {
 		autoCollision = collisioneAuto(old_pos, spriteOggetto);
 		enemyBulletCollision= collisioneProiettiliNemici(old_pos, old_pos_proiettili_nemici, spriteOggetto);
 		autoProiettiliNemiciCollision = collisioneAutoProiettili(old_pos, old_pos_proiettili_nemici, spriteOggetto);
-		
+		;
 		//if(autoProiettiliNemiciCollision){ beep();}
 		
 		taneChiuseCollision = collisioneTaneChiuse(old_pos, tane, spriteOggetto, taneSprite);

@@ -1,5 +1,5 @@
 #include "rana.h"
-void avviaRana(int* pipe_fd){
+pid_t avviaRana(int* pipe_fd){
 	pid_t move_pid = fork();
     
   if (move_pid < 0) {
@@ -11,6 +11,7 @@ void avviaRana(int* pipe_fd){
       moveProcess(pipe_fd);
       exit(0);
   }
+	return move_pid;
 }
 void moveProcess(int* pipe_fd) {
 		// limiti dell' area di gioco per la rana
@@ -27,7 +28,7 @@ void moveProcess(int* pipe_fd) {
 		 // Invia le coordinate iniziali attraverso la pipe
     write(pipe_fd[1], &pipeData, sizeof(PipeData));
 		
-		
+		noecho();
     while (1) {
     		pipeData.type='X'; // resetta il normale carattere della rana
         
@@ -49,9 +50,13 @@ void moveProcess(int* pipe_fd) {
                 case KEY_RIGHT:
                 	if(pipeData.x<maxAreaGiocoX){pipeData.x++;}
                   break;
-                case 32: // KEY_SPACE non funziona e non so perchè
+                case 32: // KEY_SPACE 
                 	pipeData.type='S'; //cambia carattere per dire a processoDisegna che  rana sta sparando
                   break;
+                case 'p': // tasto z  PAUSA
+                case 'P':
+                	pipeData.type = 'Z'; 
+                	break;
             }
 
             // Invia le coordinate attraverso la pipe

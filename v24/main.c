@@ -11,7 +11,7 @@ int main() {
 		
     avviaDrawProcess(pipe_fd); // avvia il processo che gestisce la stampa a schermo
 		
-    avviaRana(pipe_fd); // avvia il processo che gestisce il movimento della rana
+    //avviaRana(pipe_fd); // avvia il processo che gestisce il movimento della rana
     
     avviaGestoreTronchi(pipe_fd); // avvia il processo che gestisce i tronchi
     

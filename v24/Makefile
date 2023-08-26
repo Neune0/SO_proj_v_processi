@@ -2,7 +2,7 @@
 EXECUTABLE := frog
 
 # Elenco dei file oggetto
-OBJECTS := main.o utilities.o disegna.o auto.o tronco.o rana.o logo.o menuIniziale.o inizializza.o proiettile.o nemico.o collisioni.o proiettileNemico.o
+OBJECTS := main.o utilities.o disegna.o auto.o tronco.o rana.o logo.o menuIniziale.o inizializza.o proiettile.o nemico.o collisioni.o pausa.o proiettileNemico.o
 
 # Compilatore C
 CC := gcc
@@ -31,7 +31,7 @@ auto.o: auto.c utilities.h
 tronco.o: tronco.c utilities.h
 	$(CC) $(CFLAGS) -c tronco.c
 	
-rana.o: rana.c utilities.h
+rana.o: rana.c pausa.h
 	$(CC) $(CFLAGS) -c rana.c
 
 proiettile.o: proiettile.c utilities.h
@@ -55,6 +55,9 @@ proiettileNemico.o: proiettileNemico.c utilities.h
 	
 collisioni.o: collisioni.c utilities.h
 	$(CC) $(CFLAGS) -c collisioni.c 
+
+pausa.o: pausa.c utilities.h
+	$(CC) $(CFLAGS) -c pausa.c
 
 utilities.o: utilities.c utilities.h
 	$(CC) $(CFLAGS) -c utilities.c

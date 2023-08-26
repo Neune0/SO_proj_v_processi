@@ -209,6 +209,16 @@ void drawProcess(int* pipe_fd) {
       	break;
       	case 'Z':
       		beep();
+      		// funzione che mette in pausa
+      		// funzione che visualizza menu
+      		// exit del menu -> intero con scelta
+      		// gli vanno passati tutti i pid che deve mettere in pausa
+      		int scelta = pausa(pidRana);
+      		// se preme continua allora stampare tutta la matrice dinamica
+      		// se preme esci termire tutti i processi
+      		
+      		
+      		// switch su scelta
       		break;
       default:
         break;

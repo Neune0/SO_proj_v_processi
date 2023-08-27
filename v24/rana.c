@@ -1,6 +1,6 @@
 #include "rana.h"
 pid_t avviaRana(int* pipe_fd){
-	pid_t move_pid = fork();
+	pid_t move_pid = fork(); // pid che contiente il pid della rana
     
   if (move_pid < 0) {
   	perror("Fork failed");

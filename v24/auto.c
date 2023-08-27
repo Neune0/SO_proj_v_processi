@@ -1,37 +1,41 @@
 #include "auto.h"
-void avviaGestoreMacchine(int* pipe_fd){
+pid_t avviaGestoreMacchine(int* pipe_fd){
 	pid_t gestore_auto_pid = fork();
+	pid_t* pid_veicoli[8];
   if (gestore_auto_pid < 0) {
 		perror("Fork failed");
 		exit(1);
 	} 
 	else{
 		if (gestore_auto_pid == 0) { 
+			// sono nel figlio
 			gestoreMacchine(pipe_fd);
 		}
 	}
-	return;
+	// in questa parte sono ancora nel processo disegna
+	
+	return gestore_auto_pid ;
 }
 
 void gestoreMacchine(int* pipe_fd){
 	// determina direzione delle corsie 
 	int dir_auto[ NUMAUTO ];
 	dir_auto[0] = (rand() % 2 == 1) ? 1 : -1;
-				
+	pid_t* pid_veicoli[8];
 	for (int i = 1; i < NUMAUTO; i++) {
   	dir_auto[i] = -1 * dir_auto[i - 1];
 	}
 				
-	avviaMacchina(pipe_fd,22,dir_auto,4); // macchina 1
-	avviaMacchina(pipe_fd,24,dir_auto,5); // macchina 2
-	avviaMacchina(pipe_fd,27,dir_auto,6); // macchina 3
-	avviaMacchina(pipe_fd,29,dir_auto,7); // macchina 4
+	pid_veicoli[0]= avviaMacchina(pipe_fd,22,dir_auto,4); // macchina 1
+	pid_veicoli[1]= avviaMacchina(pipe_fd,24,dir_auto,5); // macchina 2
+	pid_veicoli[2]= avviaMacchina(pipe_fd,27,dir_auto,6); // macchina 3
+	pid_veicoli[3]= avviaMacchina(pipe_fd,29,dir_auto,7); // macchina 4
 	sleep(4);
-	avviaMacchina(pipe_fd,22,dir_auto,8); // macchina 1
-	avviaMacchina(pipe_fd,24,dir_auto,9); // macchina 2
-	avviaMacchina(pipe_fd,27,dir_auto,10); // macchina 3
-	avviaMacchina(pipe_fd,29,dir_auto,11); // macchina 4
-				
+	pid_veicoli[4]= avviaMacchina(pipe_fd,22,dir_auto,8); // macchina 1
+	pid_veicoli[5]= avviaMacchina(pipe_fd,24,dir_auto,9); // macchina 2
+	pid_veicoli[6]= avviaMacchina(pipe_fd,27,dir_auto,10); // macchina 3
+	pid_veicoli[7]= avviaMacchina(pipe_fd,29,dir_auto,11); // macchina 4
+	
 	wait(NULL); //aspetta fine di macchina1
 	wait(NULL); //aspetta fine di macchina2
 	wait(NULL); //aspetta fine di macchina3
@@ -45,7 +49,7 @@ void gestoreMacchine(int* pipe_fd){
 	exit(0);
 }
 
-void avviaMacchina(int* pipe_fd,int row_y,int *dir_auto,int id){
+pid_t avviaMacchina(int* pipe_fd,int row_y,int *dir_auto,int id){
 	pid_t macchina_pid = fork();		// crea processo per macchina1
 	if (macchina_pid < 0) {
 		perror("Fork failed");
@@ -75,7 +79,7 @@ void avviaMacchina(int* pipe_fd,int row_y,int *dir_auto,int id){
 			exit(0);
 		}
 	}
-	return;
+	return macchina_pid;
 }
 
 
@@ -172,9 +176,4 @@ void camion(int* pipe_fd, int y, int direzione_x, int id){
       usleep(100000);
     }
 }//end camion
-
-
-
-
-
 

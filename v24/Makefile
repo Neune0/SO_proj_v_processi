@@ -67,7 +67,7 @@ clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
 
 openAll:
-	gedit *.c *.h &
+	gedit *.c *.h TODO.txt MakeFile&
 
 
 

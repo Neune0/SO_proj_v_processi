@@ -43,6 +43,17 @@
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 -> menu pausa:
 		se premo esc la rana manda in pipe il carattere esc, disegna lo legge e stoppa tutti i processi
+		per stoppare tutti i processi, disegna deve essere padre di tutti i processi e deve conservare i pid
+		per conservare i pid si deve usare la memoria condivisa
+		per non usare la memoria condivisa il processo gestore auto deve conservare i pid dei figli e nella sua funione di handle stop deve mandare 
+		i segnali ai figli, cosi facendo disegna manda lo stop al gestore e basta e si può ottenere il pid del gestore come abbiamo fatto per 
+		quello della rana
+		prossime cose da fare:
+			1. stampare il a video il pid del gestore delle auto
+			2. inserire gli stop nel gestore auto e nei processi auto
+			3. inserire i continua nel gestore e nei processi auto
+			4. nello stop del gestore mandare gli stop ai processi auto
+			5. nel continua del gestore mandare i continua ai processi auto
 		visualizzare menu con continua impostazioni ed esci e salva
 		
 ---------------------------------------------------------------------------------------------------------------------------------------------------

@@ -10,12 +10,8 @@ int main() {
     //int scelta = avviaMenuIniziale(); // fa partire il processo per il menu iniziale, aspetta che termini e poi prosegue
 		
     avviaDrawProcess(pipe_fd); // avvia il processo che gestisce la stampa a schermo
-		
-    //avviaRana(pipe_fd); // avvia il processo che gestisce il movimento della rana
     
-    avviaGestoreTronchi(pipe_fd); // avvia il processo che gestisce i tronchi
-    
-    avviaGestoreMacchine(pipe_fd); // avvia il processo che gestisce le macchine
+    //avviaGestoreTronchi(pipe_fd); // avvia il processo che gestisce i tronchi
     
     // Chiudi le estremità della pipe nel processo padre
     close(pipe_fd[0]);

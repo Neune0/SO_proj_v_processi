@@ -31,7 +31,7 @@ bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, S
 	return false;
 }
 //-----------------------------------------------------------------------------
-// Controlla se la Rana collide con uno degli oggetti in gioco (Rana == old_pos[0])
+// Controlla se la Rana collide con uno degli oggetti in gioco Tronco o veicolo (Rana == old_pos[0])
 bool collisioneRana( PipeData *old_pos, Sprite *array_sprite)
 {
 	PipeData *rana = &old_pos[0];
@@ -56,7 +56,7 @@ bool collisioneRana( PipeData *old_pos, Sprite *array_sprite)
 	}
  	return collision;
 }
-//----------------------------------------collisioni auto/camion-----------------------
+//----------------------------------------collisioni rana-auto/camion-----------------------
 bool collisioneAuto( PipeData *old_pos, Sprite *array_sprite)
 {
 	PipeData *rana = &old_pos[0];
@@ -76,7 +76,7 @@ bool collisioneAuto( PipeData *old_pos, Sprite *array_sprite)
  	return collision;
 }
 //------------------------------------collisioni proiettili nemici-------------------------------
-
+// rileva collisione Rana-ProiettileNemico
 int collisioneProiettiliNemici( PipeData *old_pos, PipeData *old_pos_proiettiliNemici ,Sprite *array_sprite)
 {
 	PipeData *rana = &old_pos[0];
@@ -132,23 +132,34 @@ bool collisioneTaneChiuse( PipeData *old_pos, Tana *array_tane, Sprite *array_sp
  	return collision;
 }
 //-----------------------------------------collisione auto-proiettili------------
-bool collisioneAutoProiettili( PipeData *old_pos, PipeData * array_proiettili, Sprite *array_sprite)
+bool collisioneAutoProiettili( PipeData *old_pos, PipeData * array_proiettili, Sprite *array_sprite, TipoSprite sprite_proiettile)
 {
 	PipeData *rana = &old_pos[0];
 	PipeData *veicolo;
 	PipeData *proiettile;
 	TipoSprite spriteVeicolo;
+	char charBullet;	//char inviato dal proiettile sulla pipe
+	switch(sprite_proiettile){					// in base al TIpoSprite, seleziona carattere usato dal proiettile,
+		case PROIETTILE_NEMICO_SPRITE:
+			charBullet = 'p';
+			break;
+		case PROIETTILE_SPRITE:
+			charBullet = 'P';
+			break;
+		default:
+			break;
+	}
 	
   bool collision=false;
   
 	for(int i=0; i<MAXNPROIETTILI; i++){ 				// per ogni proiettile nemico di gioco
 		proiettile = &array_proiettili[i];  			// prendi proiettile attuale
 		
-		if(proiettile->type == 'p'){							// se il proiettile è attivo...
+		if(proiettile->type == charBullet){							// se il proiettile è attivo...
 			for(int j=4; j<OLDPOSDIM; j++){							// per ogni veicolo  in gioco
 				veicolo =  &old_pos[j];										// prendi veicolo corrente
 				
-				switch(veicolo->type){							//controlla tipo del veicolo, scegli la sprite corretta
+				switch(veicolo->type){							//controlla carattere del veicolo, scegli la sprite corretta
 					case 'A':
 						spriteVeicolo = AUTO_SPRITE;
 						;
@@ -163,10 +174,14 @@ bool collisioneAutoProiettili( PipeData *old_pos, PipeData * array_proiettili, S
 						break;
 				}
 	 			collision = checkCollisione(proiettile, veicolo, 
-																		&array_sprite[PROIETTILE_NEMICO_SPRITE], &array_sprite[ spriteVeicolo ]);
- 				if(collision) break; //se rileva collisione ferma il ciclo e ed esce
+																		&array_sprite[sprite_proiettile], &array_sprite[ spriteVeicolo ]);
+ 				if(collision) { 
+ 					//beep(); 
+ 					//break;
+ 					return collision;
+				} //se rileva collisione ferma il ciclo e ed esce
  			}
-		 
+		 //break;
 		}//end if proiettile type
  		
 	}

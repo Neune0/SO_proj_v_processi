@@ -239,14 +239,26 @@ void drawProcess(int* pipe_fd) {
 		bool taneAperteCollision = false;
 		bool taneChiuseCollision = false;
 		bool autoProiettiliNemiciCollision = false;
+		bool autoProiettileCollision = false;
 		
 		//TanaStatus t_stat = OPEN;
 		
-		frogCollision = collisioneRana(old_pos, spriteOggetto);
-		autoCollision = collisioneAuto(old_pos, spriteOggetto);
+		frogCollision = collisioneRana(old_pos, spriteOggetto); //collisione Rana-Tronco/Auto
+		autoCollision = collisioneAuto(old_pos, spriteOggetto); //collisione Auto - Rana
+		
+		//collisione Rana-ProiettileNemico
 		enemyBulletCollision= collisioneProiettiliNemici(old_pos, old_pos_proiettili_nemici, spriteOggetto);
-		autoProiettiliNemiciCollision = collisioneAutoProiettili(old_pos, old_pos_proiettili_nemici, spriteOggetto);
+		//collisione Auto-Proiettili
+		autoProiettiliNemiciCollision = collisioneAutoProiettili(old_pos, old_pos_proiettili_nemici, spriteOggetto, PROIETTILE_NEMICO_SPRITE);
 		;
+		
+		//collisione Auto-ProiettileRana TIP: aspettare che compaiano tutti veicoli prima di sparare 
+		if(contatore_proiettili_in_gioco > 0){
+			autoProiettileCollision = collisioneAutoProiettili(old_pos, old_pos_proiettili, spriteOggetto, PROIETTILE_SPRITE);
+			if(autoProiettileCollision){ 
+				beep(); 
+			}
+		}
 		//if(autoProiettiliNemiciCollision){ beep();}
 		
 		taneChiuseCollision = collisioneTaneChiuse(old_pos, tane, spriteOggetto, taneSprite);
@@ -265,6 +277,10 @@ void drawProcess(int* pipe_fd) {
 	 	}
 	 	
 	 	if(autoProiettiliNemiciCollision){ beep();}
+	 	
+	 	
+	 	
+	 	
 	 	
 		if((frogCollision && autoCollision) )
 		{ 

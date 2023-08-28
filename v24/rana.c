@@ -60,7 +60,7 @@ void moveProcess(int* pipe_fd) {
                 case 32: // KEY_SPACE 
                 	pipeData.type='S'; //cambia carattere per dire a processoDisegna che  rana sta sparando
                   break;
-                case 'p': // tasto z  PAUSA
+                case 'p': // tasto p  PAUSA
                 case 'P':
                 	pipeData.type = 'Z'; 
                 	break;

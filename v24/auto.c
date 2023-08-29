@@ -1,27 +1,10 @@
 #include "auto.h"
-pid_t avviaGestoreMacchine(int* pipe_fd){
-	pid_t gestore_auto_pid = fork();
-	pid_t* pid_veicoli[8];
-  if (gestore_auto_pid < 0) {
-		perror("Fork failed");
-		exit(1);
-	} 
-	else{
-		if (gestore_auto_pid == 0) { 
-			// sono nel figlio
-			gestoreMacchine(pipe_fd);
-		}
-	}
-	// in questa parte sono ancora nel processo disegna
-	
-	return gestore_auto_pid ;
-}
 
-void gestoreMacchine(int* pipe_fd){
+void gestoreMacchine(int* pipe_fd, pid_t* pid_veicoli){
 	// determina direzione delle corsie 
 	int dir_auto[ NUMAUTO ];
 	dir_auto[0] = (rand() % 2 == 1) ? 1 : -1;
-	pid_t* pid_veicoli[8];
+	
 	for (int i = 1; i < NUMAUTO; i++) {
   	dir_auto[i] = -1 * dir_auto[i - 1];
 	}
@@ -35,18 +18,7 @@ void gestoreMacchine(int* pipe_fd){
 	pid_veicoli[5]= avviaMacchina(pipe_fd,24,dir_auto,9); // macchina 2
 	pid_veicoli[6]= avviaMacchina(pipe_fd,27,dir_auto,10); // macchina 3
 	pid_veicoli[7]= avviaMacchina(pipe_fd,29,dir_auto,11); // macchina 4
-	
-	wait(NULL); //aspetta fine di macchina1
-	wait(NULL); //aspetta fine di macchina2
-	wait(NULL); //aspetta fine di macchina3
-	wait(NULL); //aspetta fine di macchina4
-	
-	wait(NULL); //aspetta fine di macchina1
-	wait(NULL); //aspetta fine di macchina2
-	wait(NULL); //aspetta fine di macchina3
-	wait(NULL); //aspetta fine di macchina4
-	
-	exit(0);
+	return;
 }
 
 pid_t avviaMacchina(int* pipe_fd,int row_y,int *dir_auto,int id){

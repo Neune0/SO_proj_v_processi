@@ -1,19 +1,6 @@
 #include "tronco.h"
 
-void avviaGestoreTronchi(int* pipe_fd){
-	pid_t gestore_figli_pid = fork();
-  if(gestore_figli_pid < 0){
-  	perror("Fork failed");
-    exit(1);
-  }else{
-  	if(gestore_figli_pid == 0){
-    	gestoreTronchi(pipe_fd); // avvio gestore tronchi
-    }
-  }
-  return;
-}
-
-void gestoreTronchi(int* pipe_fd){
+void gestoreTronchi(int* pipe_fd,pid_t* pid_tronchi){
 	int num_tronchi = NTRONCHI;
   int dir_tronco[NTRONCHI];
   dir_tronco[0] = (rand() % 2 == 1) ? 1 : -1;
@@ -22,20 +9,15 @@ void gestoreTronchi(int* pipe_fd){
   	dir_tronco[i] = -1 * dir_tronco[i - 1];
 	}
 					
-  avviaTronco(pipe_fd,YTRONCOUNO,dir_tronco,1);
+  pid_tronchi[0]=avviaTronco(pipe_fd,YTRONCOUNO,dir_tronco,1);
   usleep(200000);
-  avviaTronco(pipe_fd,YTRONCODUE,dir_tronco,2);
+  pid_tronchi[1]=avviaTronco(pipe_fd,YTRONCODUE,dir_tronco,2);
   usleep(300000);
-  avviaTronco(pipe_fd,YTRONCOTRE,dir_tronco,3);
-				
-	//aspetta termine dei figli-tronchi
-	wait(NULL);
-	wait(NULL);
-	wait(NULL);
-	exit(0);
+  pid_tronchi[2]=avviaTronco(pipe_fd,YTRONCOTRE,dir_tronco,3);
+
 }
 
-void avviaTronco(int* pipe_fd,int x_spawn,int *dir_tronco,int id){
+pid_t avviaTronco(int* pipe_fd,int x_spawn,int *dir_tronco,int id){
 	pid_t tronco_pid = fork();
 	if (tronco_pid < 0) {
 		perror("Fork failed");
@@ -48,7 +30,7 @@ void avviaTronco(int* pipe_fd,int x_spawn,int *dir_tronco,int id){
 			exit(0);
 		}
 	}
-	return;
+	return tronco_pid;
 }
 
 void tronco(int* pipe_fd, int y, int direzione_x, int id) {
@@ -100,10 +82,7 @@ void tronco(int* pipe_fd, int y, int direzione_x, int id) {
       write(pipe_fd[1], &pipeData, sizeof(PipeData));
     	
     	}
-    	
-    	
-    	
-    	
+
 			numero_spostamenti= (numero_spostamenti+1)%1000;
       // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
       usleep(100000);

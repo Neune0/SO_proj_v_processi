@@ -11,7 +11,7 @@ int main() {
 		
     avviaDrawProcess(pipe_fd); // avvia il processo che gestisce la stampa a schermo
     
-    //avviaGestoreTronchi(pipe_fd); // avvia il processo che gestisce i tronchi
+    
     
     // Chiudi le estremità della pipe nel processo padre
     close(pipe_fd[0]);
@@ -19,9 +19,7 @@ int main() {
 
     // Aspetta che i processi figlio terminino
     wait(NULL);
-    wait(NULL);
-    wait(NULL);
-    wait(NULL);
+    
  
     endwin(); // Termina ncurses
     return 0;

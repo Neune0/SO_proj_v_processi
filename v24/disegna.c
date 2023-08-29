@@ -18,8 +18,11 @@ void drawProcess(int* pipe_fd) {
 	pid_t pidRana;
 	pidRana = avviaRana(pipe_fd); // avvia il processo che gestisce il movimento della rana
 	
-	pid_t pid_gestore_veicoli;
-	pid_gestore_veicoli = avviaGestoreMacchine(pipe_fd); // avvia il processo che gestisce le macchine
+	pid_t pid_veicoli[8];
+	gestoreMacchine(pipe_fd,pid_veicoli); // avvia le auto e i camion
+	
+	pid_t pid_tronchi[3];
+	gestoreTronchi(pipe_fd,pid_tronchi); // avvia i tronchi
 	
 		
 	PipeData pipeData; // struttura per leggere la pipe
@@ -115,7 +118,16 @@ void drawProcess(int* pipe_fd) {
     	mvprintw(34,15+(i*11),"pid%d: %d",i,array_pid_nemici[i]);
     }
     mvprintw(33,2,"                                                                                                                           ");
-    mvprintw(33,2,"pid gestore veicoli: %d",pid_gestore_veicoli);
+    mvprintw(33,2,"pid veicoli: ");
+    for(int i=0;i<8;i++){
+    	mvprintw(33,15+(i*11),"pid%d: %d",i,pid_veicoli[i]);
+    }
+    
+    mvprintw(38,2,"                                                                                                                           ");
+    mvprintw(38,2,"pid tronchi: ");
+    for(int i=0;i<3;i++){
+    	mvprintw(38,15+(i*11),"pid%d: %d",i,pid_tronchi[i]);
+    }
     
     mvprintw(37,110,"                        ");
     mvprintw(37,110,"proiettili in gioco: %d",contatore_proiettili_in_gioco);
@@ -291,7 +303,7 @@ void drawProcess(int* pipe_fd) {
 		
 		if(enemyBulletCollision != -1){
 			beep();
-			pidRana = resetRana(pipe_fd, pidRana); 
+			
 			// da mettere dentro funzione apposita 
 			kill(array_pid_proiettili_nemici[enemyBulletCollision], SIGKILL);
   		waitpid(array_pid_proiettili_nemici[enemyBulletCollision],NULL,0);
@@ -299,12 +311,23 @@ void drawProcess(int* pipe_fd) {
   		contatore_proiettili_nemici_in_gioco--;
   		pulisciSpriteInMatrice(old_pos_proiettili_nemici[enemyBulletCollision].y, old_pos_proiettili_nemici[enemyBulletCollision].x, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix);
   		old_pos_proiettili_nemici[enemyBulletCollision].type = ' ';
+  		pidRana = resetRana(pipe_fd, pidRana); 
   		/**/
 		}	
     
 		stampaMatrice(screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
     refresh(); // Aggiorna la finestra
 	}//end while
+	//wait(NULL);
+	//wait(NULL); //aspetta fine di macchina1
+	//wait(NULL); //aspetta fine di macchina2
+	//wait(NULL); //aspetta fine di macchina3
+	//wait(NULL); //aspetta fine di macchina4
+	
+	//wait(NULL); //aspetta fine di macchina1
+	//wait(NULL); //aspetta fine di macchina2
+	//wait(NULL); //aspetta fine di macchina3
+	//wait(NULL); //aspetta fine di macchina4
   return;  
 }//end drawProcess
 //--------------------------------------------FINE PROCESSO DISEGNA----------------------------------

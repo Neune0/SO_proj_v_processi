@@ -6,14 +6,14 @@
 /**	Prende due oggetti di gioco con rispettive sprite e verifica se gli oggetti si incontrano 
 		Ritorna TRUE se oggetto_1 entra nel perimetro di oggetto_2
 */ 
-bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, Sprite* sprite_2)
+bool checkCollisioneOggetto(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, Sprite* sprite_2)
 {
 	// stabilisce coordinate massime per entrambi gli oggetti 
 	int obj1_maxX, obj1_maxY, obj2_maxX, obj2_maxY; 
 	obj1_maxX = (object_1->x) + (sprite_1->max_col-1);
 	obj1_maxY = (object_1->y) + (sprite_1->max_row-1);
 	obj2_maxX = (object_2->x) + (sprite_2->max_col-1);
-	obj2_maxY = (object_2->y) + (sprite_2->max_row-1);									//assumendo che tutti gli oggetti siano alti 2row
+	obj2_maxY = (object_2->y) + (sprite_2->max_row-1);
 	
 	bool checkUP, checkDOWN, checkLEFT,checkRIGHT;
 	checkUP = checkDOWN = checkLEFT = checkRIGHT = false;
@@ -30,46 +30,52 @@ bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, S
 	
 	return false;
 }
+//------------------------------------
+// Controlla che entrambe gli oggetti si sovrappongano 
+bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, Sprite* sprite_2){
+	bool check_1 = false;
+	bool check_2 = false;
+	check_1 = checkCollisioneOggetto(object_1, object_2, sprite_1, sprite_2);
+	check_2 = checkCollisioneOggetto(object_2, object_1, sprite_2, sprite_1);
+	if(check_1 && check_2) return true;
+	return false;
+}
+
+
+
+
 //-----------------------------------------------------------------------------
 // Controlla se la Rana collide con uno degli oggetti in gioco Tronco o veicolo (Rana == old_pos[0])
-bool collisioneRana( PipeData *old_pos, Sprite *array_sprite)
+bool checkRanaTronco( PipeData *old_pos, Sprite *array_sprite)
 {
+	int num_tronchi = 3;
 	PipeData *rana = &old_pos[0];
-	
+	PipeData *tronco;
   bool collision=false;
    
-	for(int i=1; i<OLDPOSDIM; i++){ // per ogni oggetto di gioco
- 		if(i<4) // check collisione con Tronchi
- 		{ 
- 			collision = checkCollisione(rana, &old_pos[i], &array_sprite[RANA_SPRITE], &array_sprite[TRONCO_SPRITE]);
-	 	}
-	 	if(i>=4){							// check collisione con auto/camion
-	 		if(old_pos[i].type=='A')
-	 		{
- 				collision = checkCollisione(rana, &old_pos[i], &array_sprite[RANA_SPRITE], &array_sprite[AUTO_SPRITE]);
-			}else if (old_pos[i].type=='C')
-			{
-				collision = checkCollisione(rana, &old_pos[i], &array_sprite[RANA_SPRITE], &array_sprite[CAMION_SPRITE]);
-	 		}
-	 	}
+	for(int i=1; i <= num_tronchi; i++){ // per ogni oggetto di gioco
+		tronco = &old_pos[i];
+		collision = checkCollisione(rana, tronco, &array_sprite[RANA_SPRITE], &array_sprite[TRONCO_SPRITE]);
 	 	if(collision) break; //se rileva collisione ferma il ciclo e ed esce
 	}
  	return collision;
 }
 //----------------------------------------collisioni rana-auto/camion-----------------------
-bool collisioneAuto( PipeData *old_pos, Sprite *array_sprite)
+bool checkRanaVeicolo( PipeData *old_pos, Sprite *array_sprite)
 {
 	PipeData *rana = &old_pos[0];
+	PipeData *veicolo;
 	
   bool collision=false;
    
 	for(int i=4; i<OLDPOSDIM; i++){ // per ogni auto/camion in gioco (old_pos[4-11])
+	veicolo = &old_pos[i];
  		if(old_pos[i].type=='A')
  		{
-			collision = checkCollisione(&old_pos[i], rana, &array_sprite[AUTO_SPRITE], &array_sprite[RANA_SPRITE]);
+			collision = checkCollisione(veicolo, rana, &array_sprite[AUTO_SPRITE], &array_sprite[RANA_SPRITE]);
 		}else if (old_pos[i].type=='C')
 		{
-			collision = checkCollisione(&old_pos[i], rana, &array_sprite[CAMION_SPRITE], &array_sprite[RANA_SPRITE]);
+			collision = checkCollisione(veicolo, rana, &array_sprite[CAMION_SPRITE], &array_sprite[RANA_SPRITE]);
  		}
 	 	if(collision) break; //se rileva collisione ferma il ciclo e ed esce
 	}
@@ -96,7 +102,7 @@ int collisioneProiettiliNemici( PipeData *old_pos, PipeData *old_pos_proiettiliN
  	return bullet_id;
 }
 //----------------------------collisione TANE-------------------
-bool collisioneTaneAperte( PipeData *old_pos, Tana *array_tane, Sprite *array_sprite, Sprite *arr_tana_sprite)
+bool checkRanaTanaAperta( PipeData *old_pos, Tana *array_tane, Sprite *array_sprite, Sprite *arr_tana_sprite)
 {
 	bool collision=false;
 	PipeData *rana = &old_pos[0];
@@ -114,7 +120,7 @@ bool collisioneTaneAperte( PipeData *old_pos, Tana *array_tane, Sprite *array_sp
  	return collision;
 }
 //----------------------------------------
-bool collisioneTaneChiuse( PipeData *old_pos, Tana *array_tane, Sprite *array_sprite, Sprite *arr_tana_sprite)
+bool checkRanaTanaChiusa( PipeData *old_pos, Tana *array_tane, Sprite *array_sprite, Sprite *arr_tana_sprite)
 {
 	bool collision=false;
 	PipeData *rana = &old_pos[0];
@@ -132,7 +138,7 @@ bool collisioneTaneChiuse( PipeData *old_pos, Tana *array_tane, Sprite *array_sp
  	return collision;
 }
 //-----------------------------------------collisione auto-proiettili------------
-bool collisioneAutoProiettili( PipeData *old_pos, PipeData * array_proiettili, Sprite *array_sprite, TipoSprite sprite_proiettile)
+bool checkAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sprite *array_sprite, TipoSprite sprite_proiettile)
 {
 	PipeData *rana = &old_pos[0];
 	PipeData *veicolo;
@@ -176,20 +182,15 @@ bool collisioneAutoProiettili( PipeData *old_pos, PipeData * array_proiettili, S
 	 			collision = checkCollisione(proiettile, veicolo, 
 																		&array_sprite[sprite_proiettile], &array_sprite[ spriteVeicolo ]);
  				if(collision) { 
- 					//beep(); 
- 					//break;
  					return collision;
 				} //se rileva collisione ferma il ciclo e ed esce
  			}
-		 //break;
 		}//end if proiettile type
- 		
 	}
  	return collision;
 }
 
-
-
+//---------------------------------------
 
 
 

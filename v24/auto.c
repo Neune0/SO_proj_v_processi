@@ -13,7 +13,7 @@ void gestoreMacchine(int* pipe_fd, pid_t* pid_veicoli){
 	pid_veicoli[1]= avviaMacchina(pipe_fd,24,dir_auto,5); // macchina 2
 	pid_veicoli[2]= avviaMacchina(pipe_fd,27,dir_auto,6); // macchina 3
 	pid_veicoli[3]= avviaMacchina(pipe_fd,29,dir_auto,7); // macchina 4
-	sleep(4);
+	sleep(2);
 	pid_veicoli[4]= avviaMacchina(pipe_fd,22,dir_auto,8); // macchina 1
 	pid_veicoli[5]= avviaMacchina(pipe_fd,24,dir_auto,9); // macchina 2
 	pid_veicoli[6]= avviaMacchina(pipe_fd,27,dir_auto,10); // macchina 3
@@ -59,7 +59,7 @@ void macchina(int* pipe_fd, int y, int direzione_x, int id){
 	  int lunghezza_auto= 4;
 	  // determina random il tempo di respawn quando esce dall'area di gioco 
    	int respawn_time;
-   	respawn_time = rand() % 3; //0-4 secondi
+   	respawn_time = rand() % 5; //0-4 secondi
   	
 		PipeData pipeData;
 		
@@ -101,7 +101,7 @@ void macchina(int* pipe_fd, int y, int direzione_x, int id){
 void camion(int* pipe_fd, int y, int direzione_x, int id){
    	int lunghezza_camion= 7;
    	int respawn_time;
-   	respawn_time = rand() % 3; //0-4 secondi
+   	respawn_time = rand() % 5; //0-4 secondi
    	bool respawn = false;
    	
    	

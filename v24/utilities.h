@@ -68,8 +68,6 @@ typedef struct{
 }Sprite;
 
 
-
-
 void inizializzaNcurses();
 void creaPipe(int pipe_fd[2]);
 void inizializzaColorazione();

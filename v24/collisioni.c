@@ -37,7 +37,7 @@ bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, S
 	bool check_2 = false;
 	check_1 = checkCollisioneOggetto(object_1, object_2, sprite_1, sprite_2);
 	check_2 = checkCollisioneOggetto(object_2, object_1, sprite_2, sprite_1);
-	if(check_1 && check_2) return true;
+	if(check_1 || check_2) return true;
 	return false;
 }
 

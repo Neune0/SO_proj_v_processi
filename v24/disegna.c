@@ -315,6 +315,7 @@ void drawProcess(int* pipe_fd) {
   		contatore_proiettili_nemici_in_gioco--;
   		pulisciSpriteInMatrice(old_pos_proiettili_nemici[enemyBulletCollision].y, old_pos_proiettili_nemici[enemyBulletCollision].x, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix);
   		old_pos_proiettili_nemici[enemyBulletCollision].type = ' ';
+  		
   		pidRana = resetRana(pipe_fd, pidRana); 
   		/**/
 		}	

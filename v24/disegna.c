@@ -15,6 +15,10 @@ void avviaDrawProcess(int pipe_fd[2]) {
 
 // processo che si occupa di disegnare lo schermo
 void drawProcess(int* pipe_fd) {
+	int arrayDirTronchi[4]; // vettore per registrare la direzione di chiascun tronco
+	int pipeRana_fd [2];
+	creaPipe(pipeRana_fd);
+	
 	pid_t pidRana;
 	pidRana = avviaRana(pipe_fd); // avvia il processo che gestisce il movimento della rana
 	
@@ -144,6 +148,9 @@ void drawProcess(int* pipe_fd) {
         break;
 			case 'T':
         aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix,staticScreenMatrix, &troncoSprite);
+        
+        aggiornaDirezioneTronchi( &pipeData, &old_pos[pipeData.id], arrayDirTronchi);
+        
         mvprintw(pipeData.id,110,"                                    ");
     		mvprintw(pipeData.id,110,"TRONCO tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
         break;
@@ -292,17 +299,27 @@ void drawProcess(int* pipe_fd) {
 	 	
 	 	if(autoProiettiliNemiciCollision){ beep();}
 	 	
-	 	
-	 	
-	 	
-	 	
 		//if((frogCollision && autoCollision) )
 		if( autoCollision )
 		{ 
 			beep();
 			pidRana = resetRana(pipe_fd, pidRana); 
 		}
-		if (troncoCollision){ beep();}
+		PipeData rana_mod; //var di supporto
+		int troncoID= -1;
+		if (troncoCollision)
+		{ 
+		// modifica posizione della rana in base a quella del tronco,
+			troncoID = collisioneRanaTronco(old_pos, spriteOggetto); // identifica su quale tronco è la Rana
+			rana_mod = old_pos[0];
+			if(troncoID == 1){
+				beep();
+				rana_mod.x = rana_mod.x - arrayDirTronchi[ troncoID]; //modifica pos della rana in base alla direz. del tronco
+				// TODO: inviare nuova pos alla Rana tramite la pipeRana
+			}
+			// NOTA: per ora non mostra nessuno spostamento
+			aggiornaPosizioneOggetto(&rana_mod, &old_pos[0], screenMatrix, staticScreenMatrix, &ranaSprite);
+		}
 		
 		
 		if(enemyBulletCollision != -1){
@@ -337,7 +354,6 @@ void drawProcess(int* pipe_fd) {
 }//end drawProcess
 //--------------------------------------------FINE PROCESSO DISEGNA----------------------------------
 
-
 //-----------------------------------------------------------
 int id_disponibile(pid_t *array_pid, int lunghezza){
 	for(int i=0;i<lunghezza;i++){
@@ -345,6 +361,19 @@ int id_disponibile(pid_t *array_pid, int lunghezza){
 	}
 	return -1;
 }
+//----------------------------------
+
+void aggiornaDirezioneTronchi(PipeData *pipeData, PipeData *old_pos, int *arr_dir_tronchi ){
+		int tronco_id = pipeData->id;													//individua che tronco hai letto
+		arr_dir_tronchi[tronco_id] = pipeData->x - old_pos->x	;//controlla la direzione in base alla posizione precedente
+}
+
+
+
+
+
+
+
 //--------------------------------------------Stampa Puntuale----------------------------------------------------------------------
 void stampaMatrice( ScreenCell (*screenMatrix)[WIDTH]){
 	for(int i=0;i<HEIGHT;i++){

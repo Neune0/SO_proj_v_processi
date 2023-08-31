@@ -65,7 +65,6 @@ bool checkRanaVeicolo( PipeData *old_pos, Sprite *array_sprite)
 {
 	PipeData *rana = &old_pos[0];
 	PipeData *veicolo;
-	
   bool collision=false;
    
 	for(int i=4; i<OLDPOSDIM; i++){ // per ogni auto/camion in gioco (old_pos[4-11])
@@ -81,26 +80,7 @@ bool checkRanaVeicolo( PipeData *old_pos, Sprite *array_sprite)
 	}
  	return collision;
 }
-//------------------------------------collisioni proiettili nemici-------------------------------
-// rileva collisione Rana-ProiettileNemico
-int collisioneProiettiliNemici( PipeData *old_pos, PipeData *old_pos_proiettiliNemici ,Sprite *array_sprite)
-{
-	PipeData *rana = &old_pos[0];
-	int bullet_id = -1; //valore non valido, usa bullet_id per sapere l'inidice del proiettile 
-  bool collision=false;
-   
-	for(int i=0; i<MAXNPROIETTILINEMICI; i++){ 							// per ogni proiettile nemico di gioco
- 		if(old_pos_proiettiliNemici[i].type != ' '){					// se il proiettile è attivo
- 			collision = checkCollisione(&old_pos_proiettiliNemici[i], rana, 
-																	&array_sprite[PROIETTILE_NEMICO_SPRITE], &array_sprite[RANA_SPRITE]);
- 		}
-	 	if(collision) {
-	 		bullet_id = i;
-	 		break;
-	 	} //se rileva collisione ferma il ciclo e ed esce
-	}
- 	return bullet_id;
-}
+
 //----------------------------collisione TANE-------------------
 bool checkRanaTanaAperta( PipeData *old_pos, Tana *array_tane, Sprite *array_sprite, Sprite *arr_tana_sprite)
 {
@@ -140,11 +120,12 @@ bool checkRanaTanaChiusa( PipeData *old_pos, Tana *array_tane, Sprite *array_spr
 //-----------------------------------------collisione auto-proiettili------------
 bool checkAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sprite *array_sprite, TipoSprite sprite_proiettile)
 {
+	bool collision=false;
 	PipeData *rana = &old_pos[0];
 	PipeData *veicolo;
 	PipeData *proiettile;
 	TipoSprite spriteVeicolo;
-	char charBullet;	//char inviato dal proiettile sulla pipe
+	char charBullet;									//char inviato dal proiettile sulla pipe
 	switch(sprite_proiettile){					// in base al TIpoSprite, seleziona carattere usato dal proiettile,
 		case PROIETTILE_NEMICO_SPRITE:
 			charBullet = 'p';
@@ -155,8 +136,6 @@ bool checkAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sprite
 		default:
 			break;
 	}
-	
-  bool collision=false;
   
 	for(int i=0; i<MAXNPROIETTILI; i++){ 				// per ogni proiettile nemico di gioco
 		proiettile = &array_proiettili[i];  			// prendi proiettile attuale
@@ -189,9 +168,50 @@ bool checkAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sprite
 	}
  	return collision;
 }
-
 //---------------------------------------
 
+
+//------------------------------------collisioni proiettili nemici-------------------------------
+// rileva collisione Rana-ProiettileNemico e ritorna l'id del proiettile che ha colpito la Rana
+int collisioneProiettiliNemici( PipeData *old_pos, PipeData *old_pos_proiettiliNemici ,Sprite *array_sprite)
+{
+	PipeData *rana = &old_pos[0];
+	int bullet_id = -1; //valore non valido, usa bullet_id per sapere l'inidice del proiettile 
+  bool collision=false;
+   
+	for(int i=0; i<MAXNPROIETTILINEMICI; i++){ 							// per ogni proiettile nemico di gioco
+ 		if(old_pos_proiettiliNemici[i].type != ' '){					// se il proiettile è attivo
+ 			collision = checkCollisione(&old_pos_proiettiliNemici[i], rana, 
+																	&array_sprite[PROIETTILE_NEMICO_SPRITE], &array_sprite[RANA_SPRITE]);
+ 		}
+	 	if(collision) {
+	 		bullet_id = i;
+	 		break;
+	 	} //se rileva collisione ferma il ciclo e ed esce
+	}
+ 	return bullet_id;
+}
+//------------------------------------------------------------------
+// ritorna id del tronco con cui collide la Rana
+int collisioneRanaTronco( PipeData *old_pos, Sprite *array_sprite )
+{
+		int tronco_id = -1;
+		bool hit = false;
+		PipeData *rana = &old_pos[0];
+		PipeData *tronco;
+		// per ogni tronco, controlla se Rana e tronco collidono
+		for(int i=1; i<4; i++)
+		{
+			tronco = &old_pos[i];
+			hit = checkCollisione(rana,tronco, &array_sprite[RANA_SPRITE], &array_sprite[TRONCO_SPRITE]);
+			if(hit) {
+				tronco_id = i;
+				break; 
+			}
+		}//end for
+		return tronco_id;
+}
+//--------------------------------
 
 
 

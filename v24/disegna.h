@@ -29,29 +29,15 @@
 
 #define TANA_ROWS 3
 #define TANA_COLS 11
-/*
-typedef enum{OPEN, CLOSED } TanaStatus;
-
-typedef struct {
-	PipeData info;
-	TanaStatus status;
-}Tana;
-
-
-typedef struct{
-	int max_row;
-	int max_col;
-	char **sprite;
-	int color;
-}Sprite;
-/**/
-
 
 int id_disponibile(pid_t *array_pid_proiettili,int lunghezza);
 void avviaDrawProcess(int pipe_fd[2]);
 void drawProcess(int* pipe_fd);
 void stampaMatrice( ScreenCell (*screenMatrix)[WIDTH]);
 void aggiornaOldPos(PipeData *old_pos,PipeData *pipeData);
+
+void aggiornaDirezioneTronchi(PipeData *pipeData, PipeData *old_pos, int *arr_dir_tronchi );
+
 
 void aggiornaPosizioneOggetto(PipeData *pipeData, PipeData *old_pos, ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH], Sprite *sprite);
 void stampaSpriteInMatrice(int startRow, int startCol, Sprite* sprite, ScreenCell (*screenMatrix)[WIDTH]);

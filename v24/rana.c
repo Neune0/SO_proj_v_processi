@@ -1,5 +1,5 @@
 #include "rana.h"
-pid_t avviaRana(int* pipe_fd){
+pid_t avviaRana(int* pipe_fd, int* pipe_rana){
 	pid_t move_pid = fork(); // pid che contiente il pid della rana
     
   if (move_pid < 0) {
@@ -8,12 +8,12 @@ pid_t avviaRana(int* pipe_fd){
   } else if (move_pid == 0) {
   		// Processo "muovi"
       close(pipe_fd[0]); // Chiudi l'estremità di lettura della pipe
-      moveProcess(pipe_fd);
+      moveProcess(pipe_fd, pipe_rana);
       exit(0);
   }
 	return move_pid;
 }
-void moveProcess(int* pipe_fd) {
+void moveProcess(int* pipe_fd, int* pipe_rana) {
 		// limiti dell' area di gioco per la rana
 		int minAreaGiocoX = 0;
 		int minAreaGiocoY = 4;
@@ -32,9 +32,15 @@ void moveProcess(int* pipe_fd) {
 		
 		 // Invia le coordinate iniziali attraverso la pipe
     write(pipe_fd[1], &pipeData, sizeof(PipeData));
-		
 		noecho();
+		close(pipe_rana[1]);
     while (1) {
+    			
+    		 // legge le coordinate della rana inviate da disegna, eventualmente modificate.
+        //read(pipe_rana[0], &pipeData, sizeof(PipeData)); 
+       
+        //pipeData.x = 0;
+  			//pipeData.y =  0;
     		pipeData.type='X'; // resetta il normale carattere della rana
        	
         // Leggi il carattere dall'input
@@ -46,16 +52,28 @@ void moveProcess(int* pipe_fd) {
             // Muovi il personaggio in base all'input dell'utente
             switch (ch) {
                 case KEY_UP:
-                	if(pipeData.y>minAreaGiocoY){pipeData.y--;}
+                	if(pipeData.y>minAreaGiocoY){
+                		pipeData.y--;
+                		//pipeData.y = -1;
+              		}
                   break;
                 case KEY_DOWN:
-                	if(pipeData.y<maxAreaGiocoY){pipeData.y++;}
+                	if(pipeData.y<maxAreaGiocoY){
+                		pipeData.y++;
+                		//pipeData.y = +1;
+              		}
                   break;
                 case KEY_LEFT:
-                	if(pipeData.x>0){pipeData.x--;}  
+                	if(pipeData.x>0){
+                		pipeData.x--;
+                		//pipeData.x = -1;
+                	}  
                   break;
                 case KEY_RIGHT:
-                	if(pipeData.x<maxAreaGiocoX){pipeData.x++;}
+                	if(pipeData.x<maxAreaGiocoX){
+                		pipeData.x++;
+                		//pipeData.x = +1;
+                	}
                   break;
                 case 32: // KEY_SPACE 
                 	pipeData.type='S'; //cambia carattere per dire a processoDisegna che  rana sta sparando
@@ -76,16 +94,17 @@ void moveProcess(int* pipe_fd) {
 
         // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
         usleep(100000);
-    }
+         
+    }//end while
     return;
 }//end moveProcess 
 
 
-pid_t resetRana(int* pipe_fd, pid_t pid_processo_rana){
+pid_t resetRana(int* pipe_fd, int* pipe_rana, pid_t pid_processo_rana){
 		pid_t newPid;
 		kill(pid_processo_rana, SIGKILL);
 		waitpid(pid_processo_rana, NULL,0);
-		newPid = avviaRana(pipe_fd);
+		newPid = avviaRana(pipe_fd, pipe_rana);
 		return newPid;
 }
 

@@ -213,6 +213,23 @@ int collisioneRanaTronco( PipeData *old_pos, Sprite *array_sprite )
 }
 //--------------------------------
 
+bool checkRanaFiume( PipeData *old_pos, Sprite *array_sprite){
+	bool sink = false;
+	bool checkTronco = false;
+	bool checkTana = false;
+	int fiumeMinY = 9;
+	int fiumeMaxY = 18;
+	PipeData *rana = &old_pos[0];
+	
+	if((rana->y >= fiumeMinY) && (rana->y + 1 <= fiumeMaxY))	// la rana è nel fiume
+	{
+		checkTronco = checkRanaTronco(old_pos, array_sprite);		// controlle se la Rana è sul tronco
+		if(!checkTronco){
+			sink = true;
+		}
+	}
+	return sink;
+}
 
 
 //------------------------------------------------

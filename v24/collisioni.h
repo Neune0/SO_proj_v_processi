@@ -8,6 +8,7 @@ bool checkRanaVeicolo( PipeData *old_pos, Sprite *array_sprite);
 bool checkRanaTanaAperta( PipeData *old_pos, Tana *array_tane, Sprite *array_sprite, Sprite *arr_tana_sprite);
 bool checkRanaTanaChiusa( PipeData *old_pos, Tana *array_tane, Sprite *array_sprite, Sprite *arr_tana_sprite);
 bool checkAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sprite *array_sprite, TipoSprite sprite_proiettile);
+bool checkRanaFiume( PipeData *old_pos, Sprite *array_sprite);
 
 int collisioneProiettiliNemici( PipeData *old_pos, PipeData *old_pos_proiettiliNemici ,Sprite *array_sprite);
 int collisioneRanaTronco( PipeData *old_pos, Sprite *array_sprite );

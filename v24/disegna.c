@@ -350,9 +350,13 @@ void drawProcess(int* pipe_fd) {
 		if(enemyBulletCollision != -1){
 			//beep();
 			// da mettere dentro funzione apposita 
+			/*
 			kill(array_pid_proiettili_nemici[enemyBulletCollision], SIGKILL);
   		waitpid(array_pid_proiettili_nemici[enemyBulletCollision],NULL,0);
   		array_pid_proiettili_nemici[enemyBulletCollision]=0;
+  		/**/
+  		uccidiProiettileNemico( array_pid_proiettili_nemici, enemyBulletCollision); // uccide il processo proiettile
+  		
   		contatore_proiettili_nemici_in_gioco--;
   		pulisciSpriteInMatrice(old_pos_proiettili_nemici[enemyBulletCollision].y, old_pos_proiettili_nemici[enemyBulletCollision].x, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix);
   		old_pos_proiettili_nemici[enemyBulletCollision].type = ' ';

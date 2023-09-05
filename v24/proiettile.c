@@ -32,4 +32,13 @@ void moveProiettile(int *pipe_fd, PipeData *shooter,int id) {
     }
 }
 
+// uccide il processo proiettile corrispondente all' id passato
+void uccidiProiettile( pid_t *array_pid_proiettili, int id_proiettile){ 
+		kill(array_pid_proiettili[id_proiettile], SIGKILL);
+		waitpid(array_pid_proiettili[id_proiettile],NULL,0);
+		array_pid_proiettili[id_proiettile]=0;
+}
+
+
+
 

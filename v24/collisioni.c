@@ -191,7 +191,14 @@ int collisioneProiettiliNemici( PipeData *old_pos, PipeData *old_pos_proiettiliN
 	}
  	return bullet_id;
 }
-//------------------------------------------------------------------
+//--------------------------------------collisione tra proiettileRana e proiettileNemico----------------------------
+// ritorna id del proiettile (?) che ha colliso con l'altro 
+
+
+
+
+
+//-----------------------------------------------------------------------
 // ritorna id del tronco con cui collide la Rana
 int collisioneRanaTronco( PipeData *old_pos, Sprite *array_sprite )
 {

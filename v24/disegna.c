@@ -296,7 +296,7 @@ void drawProcess(int* pipe_fd) {
 		bool autoProiettiliNemiciCollision = false;
 		bool autoProiettileCollision = false;
 		bool fiumeCollision = false;
-		
+		bool proiettiliCollision = false;
 		
 		int  enemyBulletCollision = -1; // indice del proiettileNemico che colpisce la Rana
 		
@@ -305,20 +305,33 @@ void drawProcess(int* pipe_fd) {
 		troncoCollision = checkRanaTronco(old_pos, spriteOggetto); //collisione Rana-Tronco
 		autoCollision = checkRanaVeicolo(old_pos, spriteOggetto); //collisione Auto - Rana
 		
-		//collisione Rana-ProiettileNemico, ritorna id proiettile (0,1,2) o -1 se non c'è collisone
-		enemyBulletCollision= collisioneProiettiliNemici(old_pos, old_pos_proiettili_nemici, spriteOggetto);
 		
+		//----------------------------------COLLISIONI PROIETTILI-----------------------------
 		//collisione Auto-Proiettili
-		autoProiettiliNemiciCollision = checkAutoProiettile(old_pos, old_pos_proiettili_nemici, spriteOggetto, PROIETTILE_NEMICO_SPRITE);
-		;
+		if(contatore_proiettili_nemici_in_gioco > 0){
+			autoProiettiliNemiciCollision = checkAutoProiettile(old_pos, old_pos_proiettili_nemici, 
+																												spriteOggetto, PROIETTILE_NEMICO_SPRITE);
+					//collisione Rana-ProiettileNemico, ritorna id proiettile (0,1,2) o -1 se non c'è collisone
+			enemyBulletCollision= collisioneProiettiliNemici(old_pos, old_pos_proiettili_nemici, spriteOggetto);
+		}
 		//collisione Auto-ProiettileRana TIP: aspettare che compaiano tutti veicoli prima di sparare 
 		if(contatore_proiettili_in_gioco > 0){
 			autoProiettileCollision = checkAutoProiettile(old_pos, old_pos_proiettili, spriteOggetto, PROIETTILE_SPRITE);
 		}
+		if((contatore_proiettili_in_gioco > 0) && (contatore_proiettili_nemici_in_gioco > 0))
+		{
+				proiettiliCollision = checkProiettileNemicoProiettile( old_pos_proiettili, old_pos_proiettili_nemici, 
+																			spriteOggetto, PROIETTILE_SPRITE, PROIETTILE_NEMICO_SPRITE);
+		}
+		
+		
 		//if(autoProiettiliNemiciCollision){ beep();}
 		tanaChiusaCollision = checkRanaTanaChiusa(old_pos, tane, spriteOggetto, taneSprite);
 		tanaApertaCollision = checkRanaTanaAperta(old_pos, tane, spriteOggetto, taneSprite);
 		
+		
+		
+		if(proiettiliCollision) beep();
 		
 		
 		if(fiumeCollision) beep();
@@ -334,7 +347,9 @@ void drawProcess(int* pipe_fd) {
 			 	}
 	 	}
 	 	
-	 	if(autoProiettiliNemiciCollision){ beep();}
+	 	if(autoProiettiliNemiciCollision){ 
+	 		beep();
+ 		}
 	 	if(autoProiettileCollision){ 
 			beep(); 
 		}

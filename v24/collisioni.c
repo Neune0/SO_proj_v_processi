@@ -169,6 +169,62 @@ bool checkAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sprite
  	return collision;
 }
 //---------------------------------------
+// ritorna TRUE se proietile collide con altro proiettile
+bool checkProiettileNemicoProiettile( PipeData *array_proiettili_A, PipeData * array_proiettili_B, 
+																			Sprite *array_sprite, TipoSprite sprite_proiettile_A, TipoSprite sprite_proiettile_B)
+{
+	bool collision = false;
+	PipeData *proiettileA;
+	PipeData *proiettileB;
+	TipoSprite tipoProiettile;
+	
+	char charBullet_A;									//char inviato dal proiettile sulla pipe
+	char charBullet_B;
+	switch(sprite_proiettile_A){					// in base al TIpoSprite, seleziona carattere usato dal proiettile,
+		case PROIETTILE_NEMICO_SPRITE:
+			charBullet_A = 'p';  	// proiettile nemico
+			charBullet_B = 'P'; 	// proiettile rana
+			break;
+		case PROIETTILE_SPRITE:
+			charBullet_A = 'P';		// proiettile rana
+			charBullet_B = 'p';		// proiettile nemico
+			break;
+		default:
+			break;
+	}
+	/*
+	char charBullet_B;									//char inviato dal proiettile sulla pipe
+	switch(sprite_proiettile_B){					// in base al TIpoSprite, seleziona carattere usato dal proiettile,
+		case PROIETTILE_NEMICO_SPRITE:
+			charBullet_B = 'p';
+			break;
+		case PROIETTILE_SPRITE:
+			charBullet_B = 'P';
+			break;
+		default:
+			break;
+	}
+	/**/	
+	for(int i=0; i < MAXNPROIETTILI; i++)		// per ogni proietile 
+	{ 
+		proiettileA = &array_proiettili_A[i];
+		if(proiettileA->type == charBullet_A)		//se il proiettile è attivo
+		{
+			for(int j=0; j < MAXNPROIETTILI; j++)	// per ogni altro proietile
+			{  
+				proiettileB =  &array_proiettili_B[j];
+				if(proiettileB->type == charBullet_B)		// anche l'altro proiettile è attivo
+				{
+					collision = checkCollisione(proiettileA, proiettileB, 
+																	&array_sprite[sprite_proiettile_A], &array_sprite[sprite_proiettile_B]);
+					
+					if(collision) return true;
+				}
+			}//end for interno
+		}
+	}//end for esterno
+	return false;
+}
 
 
 //------------------------------------collisioni proiettili nemici-------------------------------

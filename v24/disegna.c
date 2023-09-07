@@ -299,6 +299,8 @@ void drawProcess(int* pipe_fd) {
 		bool proiettiliCollision = false;
 		
 		int  enemyBulletCollision = -1; // indice del proiettileNemico che colpisce la Rana
+		int  proiettileNemico_id = -1;
+		int  proiettileRana_id = -1;
 		
 		
 		fiumeCollision = checkRanaFiume(old_pos, spriteOggetto); // restituisce TRUE se la Rana cade nel fiume
@@ -308,7 +310,9 @@ void drawProcess(int* pipe_fd) {
 		
 		//----------------------------------COLLISIONI PROIETTILI-----------------------------
 		//collisione Auto-Proiettili
-		if(contatore_proiettili_nemici_in_gioco > 0){
+		if(contatore_proiettili_nemici_in_gioco > 0)	//se ci sono proiettiliNemici in gioco
+		{
+			//check collisione Auto-ProiettileNemici
 			autoProiettiliNemiciCollision = checkAutoProiettile(old_pos, old_pos_proiettili_nemici, 
 																												spriteOggetto, PROIETTILE_NEMICO_SPRITE);
 					//collisione Rana-ProiettileNemico, ritorna id proiettile (0,1,2) o -1 se non c'è collisone
@@ -318,10 +322,21 @@ void drawProcess(int* pipe_fd) {
 		if(contatore_proiettili_in_gioco > 0){
 			autoProiettileCollision = checkAutoProiettile(old_pos, old_pos_proiettili, spriteOggetto, PROIETTILE_SPRITE);
 		}
-		if((contatore_proiettili_in_gioco > 0) && (contatore_proiettili_nemici_in_gioco > 0))
+		if((contatore_proiettili_in_gioco > 0) && (contatore_proiettili_nemici_in_gioco > 0)) //se ci sono proiettili in gioco
 		{
+				// controlla se collidono
 				proiettiliCollision = checkProiettileNemicoProiettile( old_pos_proiettili, old_pos_proiettili_nemici, 
 																			spriteOggetto, PROIETTILE_SPRITE, PROIETTILE_NEMICO_SPRITE);
+				
+				if(proiettiliCollision) //se qualche proiettile a colliso con un altro
+				{
+					//identifica quali proiettili hanno colliso, ritorna indice del proiettile(0,1,2) o -1 
+					proiettileNemico_id = collisioneProiettileNemicoProiettile( old_pos_proiettili_nemici, old_pos_proiettili, 
+																			spriteOggetto, PROIETTILE_NEMICO_SPRITE, PROIETTILE_SPRITE);
+					
+					proiettileRana_id = collisioneProiettileNemicoProiettile( old_pos_proiettili, old_pos_proiettili_nemici,
+																			spriteOggetto, PROIETTILE_SPRITE, PROIETTILE_NEMICO_SPRITE);
+				}
 		}
 		
 		
@@ -331,7 +346,22 @@ void drawProcess(int* pipe_fd) {
 		
 		
 		
-		if(proiettiliCollision) beep();
+		if(proiettiliCollision) // se c'è collisione tra proiettili
+		{	
+			if((proiettileNemico_id != -1) && (proiettileRana_id != -1)) // e conosco queli proiettili hanno colliso
+			{
+				uccidiProiettileNemico( array_pid_proiettili_nemici, proiettileNemico_id); // uccide il processo proiettile
+				uccidiProiettile( array_pid_proiettili, proiettileRana_id);
+				// cancella sprite dei proiettili dalla matrice
+				cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, proiettileNemico_id);
+				cancellaOggetto(old_pos_proiettili, &proiettileSprite, screenMatrix, staticScreenMatrix, proiettileRana_id);
+				// aggiorna contatori proiettili
+				contatore_proiettili_nemici_in_gioco--;
+				contatore_proiettili_in_gioco--;
+				beep();
+			}
+			
+		}
 		
 		
 		if(fiumeCollision) beep();
@@ -373,8 +403,13 @@ void drawProcess(int* pipe_fd) {
   		uccidiProiettileNemico( array_pid_proiettili_nemici, enemyBulletCollision); // uccide il processo proiettile
   		
   		contatore_proiettili_nemici_in_gioco--;
+  		/*
   		pulisciSpriteInMatrice(old_pos_proiettili_nemici[enemyBulletCollision].y, old_pos_proiettili_nemici[enemyBulletCollision].x, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix);
   		old_pos_proiettili_nemici[enemyBulletCollision].type = ' ';
+  		/**/
+  		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, enemyBulletCollision);
+  		
+  		
   		pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
   		/**/
 		}	
@@ -520,5 +555,20 @@ void pulisciSpriteInMatrice(int row, int col, Sprite* sprite, ScreenCell (*scree
         }
     }
 }
+
+//----------------------------------------------------------------------
+// cancella la sprite dell'oggetto dalle matrici e lo 'disattiva' (type = ' ')
+void cancellaOggetto(PipeData *array_oggetti, Sprite* sprite_oggetto, ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH], int id_oggetto)
+{
+		pulisciSpriteInMatrice(array_oggetti[id_oggetto].y, array_oggetti[id_oggetto].x, sprite_oggetto, screenMatrix, staticScreenMatrix);
+		array_oggetti[id_oggetto].type = ' ';
+
+
+}
+
+
+
+
+
 
 

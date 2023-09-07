@@ -377,11 +377,37 @@ void drawProcess(int* pipe_fd) {
 			 	}
 	 	}
 	 	
-	 	if(autoProiettiliNemiciCollision){ 
-	 		beep();
+	 	if(autoProiettiliNemiciCollision)
+	 	{ 
+	 		// individua il proiettileNemico che ha colliso
+	 		proiettileNemico_id = collisioneAutoProiettile( old_pos, old_pos_proiettili_nemici, spriteOggetto, PROIETTILE_NEMICO_SPRITE);
+	 		
+	 		// cancella oggetto dalle matrici
+	 		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, proiettileNemico_id);
+	 		
+	 		// il proiettileNemico va distrutto
+	 		uccidiProiettileNemico( array_pid_proiettili_nemici, proiettileNemico_id); // uccide il processo proiettile
+	 		
+	 		// aggiorna contatore
+	 		contatore_proiettili_nemici_in_gioco--; 
+	 		
+	 		//beep();
  		}
-	 	if(autoProiettileCollision){ 
-			beep(); 
+ 		
+	 	if(autoProiettileCollision)
+	 	{
+	 		// individia il proiettile
+	 		proiettileRana_id = collisioneAutoProiettile( old_pos, old_pos_proiettili, spriteOggetto, PROIETTILE_SPRITE);
+	 		
+	 		// cancella oggetto dalle matrici
+	 		cancellaOggetto(old_pos_proiettili, &proiettileSprite, screenMatrix, staticScreenMatrix, proiettileRana_id);
+			
+			// il proiettileRana va distrutto
+	 		uccidiProiettile( array_pid_proiettili, proiettileRana_id); // uccide il processo proiettile
+	 		
+	 		// aggiorna contatore
+	 		contatore_proiettili_in_gioco--;
+			//beep(); 
 		}
 	 	
 		if( autoCollision )
@@ -394,21 +420,12 @@ void drawProcess(int* pipe_fd) {
 		
 		if(enemyBulletCollision != -1){
 			//beep();
-			// da mettere dentro funzione apposita 
-			/*
-			kill(array_pid_proiettili_nemici[enemyBulletCollision], SIGKILL);
-  		waitpid(array_pid_proiettili_nemici[enemyBulletCollision],NULL,0);
-  		array_pid_proiettili_nemici[enemyBulletCollision]=0;
-  		/**/
+			
   		uccidiProiettileNemico( array_pid_proiettili_nemici, enemyBulletCollision); // uccide il processo proiettile
   		
   		contatore_proiettili_nemici_in_gioco--;
-  		/*
-  		pulisciSpriteInMatrice(old_pos_proiettili_nemici[enemyBulletCollision].y, old_pos_proiettili_nemici[enemyBulletCollision].x, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix);
-  		old_pos_proiettili_nemici[enemyBulletCollision].type = ' ';
-  		/**/
-  		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, enemyBulletCollision);
   		
+  		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, enemyBulletCollision);
   		
   		pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
   		/**/
@@ -560,8 +577,11 @@ void pulisciSpriteInMatrice(int row, int col, Sprite* sprite, ScreenCell (*scree
 // cancella la sprite dell'oggetto dalle matrici e lo 'disattiva' (type = ' ')
 void cancellaOggetto(PipeData *array_oggetti, Sprite* sprite_oggetto, ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH], int id_oggetto)
 {
+	if(id_oggetto >= 0) // se l'id è un indice di array valido
+	{
 		pulisciSpriteInMatrice(array_oggetti[id_oggetto].y, array_oggetti[id_oggetto].x, sprite_oggetto, screenMatrix, staticScreenMatrix);
 		array_oggetti[id_oggetto].type = ' ';
+	}
 
 
 }

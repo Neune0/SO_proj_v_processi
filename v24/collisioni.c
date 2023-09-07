@@ -213,6 +213,70 @@ bool checkProiettileNemicoProiettile( PipeData *array_proiettili_A, PipeData * a
 	}//end for esterno
 	return false;
 }
+//------------------------------------collisione auto-proiettile----------------------------
+
+// ritorna indice del proiettile che collide
+int collisioneAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sprite *array_sprite, TipoSprite sprite_proiettile)
+{
+	bool collision = false;
+	int bullet_id = -1;
+	int max_num_proiettili = 0;
+	char charBullet;
+	PipeData *proiettile;
+	PipeData *veicolo;
+	TipoSprite spriteVeicolo;
+	
+	
+	switch(sprite_proiettile)
+	{																// in base al TIpoSprite, seleziona carattere usato dal proiettile,
+		case PROIETTILE_NEMICO_SPRITE:
+			charBullet = 'p';  	// proiettile nemico
+			max_num_proiettili = MAXNPROIETTILINEMICI;
+			break;
+		case PROIETTILE_SPRITE:
+			charBullet = 'P';		// proiettile rana
+			max_num_proiettili = MAXNPROIETTILI;
+			break;
+		default:
+			break;
+	}
+	for(int i=0; i < max_num_proiettili; i++)		// per ogni proietile 
+	{
+		proiettile = &array_proiettili[i];
+		if(proiettile->type == charBullet)	// il proiettile è attivo
+		{ 
+			for(int j=4; j<OLDPOSDIM; j++)			// per ogni veicolo  in gioco
+			{							
+				veicolo =  &old_pos[j];										// prendi veicolo corrente
+				
+				switch(veicolo->type){							//controlla carattere del veicolo, scegli la sprite corretta
+					case 'A':
+						spriteVeicolo = AUTO_SPRITE;
+						;
+						break;
+					case 'C':
+						spriteVeicolo = CAMION_SPRITE;
+						;
+						break;
+					default:
+						spriteVeicolo = CAMION_SPRITE;
+						;
+						break;
+				}
+				// verifica collisione tra proiettile e veicolo corrente
+	 			collision = checkCollisione(proiettile, veicolo, 
+																		&array_sprite[sprite_proiettile], &array_sprite[ spriteVeicolo ]);
+ 				if(collision) //se rileva collisione ritorna indice del proiettile 
+ 				{ 
+ 					bullet_id = i;
+ 					return bullet_id;
+				} 
+ 			}// end for interno
+		}
+	}//end for esterno
+	return bullet_id;
+}
+
 
 
 //------------------------------------collisioni proiettili nemici-------------------------------
@@ -287,7 +351,7 @@ int collisioneProiettileNemicoProiettile( PipeData *array_proiettili_A, PipeData
 	}//end for esterno
 	return id_proiettile_A;
 }
-
+//----------------------------------------------------------
 
 
 

@@ -15,6 +15,9 @@ void avviaDrawProcess(int pipe_fd[2]) {
 
 // processo che si occupa di disegnare lo schermo
 void drawProcess(int* pipe_fd) {
+	
+	GameHUD gameHud;	
+	
 	int arrayDirTronchi[4]; // vettore per registrare la direzione di chiascun tronco
 	int pipeRana_fd [2];
 	creaPipe(pipeRana_fd);
@@ -97,7 +100,7 @@ void drawProcess(int* pipe_fd) {
 	
   ScreenCell screenMatrix[HEIGHT][WIDTH]; // matrice che rappresenta lo schermo
 	ScreenCell staticScreenMatrix[HEIGHT][WIDTH]; // matrice degli elementi statici dello schermo
-	inizializzaMatriceSchermo(screenMatrix, staticScreenMatrix); // inizializza entrambe le matrici
+	inizializzaMatriceSchermo(&gameHud, screenMatrix, staticScreenMatrix); // inizializza entrambe le matrici
 	
 	
 	PipeData rana_mod; //var di supporto
@@ -170,6 +173,9 @@ void drawProcess(int* pipe_fd) {
     PipeData rana_new;
     PipeData rana_old;
     
+    
+    int next_enemy_bullet_id = 0;
+    
     switch(pipeData.type){
     	case 'X':
     		if(troncoCollision)
@@ -228,8 +234,15 @@ void drawProcess(int* pipe_fd) {
       	// proiettile nemico sparato
       	if(contatore_proiettili_nemici_in_gioco<MAXNPROIETTILINEMICI){ // se non si è raggiunto il numero massimo di nemici
       		// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
-      		array_pid_proiettili_nemici[id_disponibile(array_pid_proiettili_nemici,MAXNPROIETTILINEMICI)]=avviaProiettileNemico(pipe_fd, &pipeData,id_disponibile(array_pid_proiettili_nemici,MAXNPROIETTILINEMICI));
-      		contatore_proiettili_nemici_in_gioco++;
+      		next_enemy_bullet_id = id_disponibile(array_pid_proiettili_nemici,MAXNPROIETTILINEMICI);
+      		if( next_enemy_bullet_id != -1)
+      		{ 
+      		//array_pid_proiettili_nemici[id_disponibile(array_pid_proiettili_nemici,MAXNPROIETTILINEMICI)]=
+      			array_pid_proiettili_nemici[next_enemy_bullet_id]=
+      				avviaProiettileNemico(pipe_fd, &pipeData, next_enemy_bullet_id);
+      			//avviaProiettileNemico(pipe_fd, &pipeData,id_disponibile(array_pid_proiettili_nemici,MAXNPROIETTILINEMICI));
+      			contatore_proiettili_nemici_in_gioco++;
+    			}
       	}
       	break;
       case 'P':
@@ -377,7 +390,7 @@ void drawProcess(int* pipe_fd) {
 			 	}
 	 	}
 	 	
-	 	if(autoProiettiliNemiciCollision)
+	 	if(autoProiettiliNemiciCollision)		// c'è collisione tra proiettileNemico e veicolo
 	 	{ 
 	 		// individua il proiettileNemico che ha colliso
 	 		proiettileNemico_id = collisioneAutoProiettile( old_pos, old_pos_proiettili_nemici, spriteOggetto, PROIETTILE_NEMICO_SPRITE);
@@ -394,7 +407,7 @@ void drawProcess(int* pipe_fd) {
 	 		//beep();
  		}
  		
-	 	if(autoProiettileCollision)
+	 	if(autoProiettileCollision) 	// c'è collisione tra proiettileRana e veicolo
 	 	{
 	 		// individia il proiettile
 	 		proiettileRana_id = collisioneAutoProiettile( old_pos, old_pos_proiettili, spriteOggetto, PROIETTILE_SPRITE);
@@ -575,7 +588,8 @@ void pulisciSpriteInMatrice(int row, int col, Sprite* sprite, ScreenCell (*scree
 
 //----------------------------------------------------------------------
 // cancella la sprite dell'oggetto dalle matrici e lo 'disattiva' (type = ' ')
-void cancellaOggetto(PipeData *array_oggetti, Sprite* sprite_oggetto, ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH], int id_oggetto)
+void cancellaOggetto(PipeData *array_oggetti, Sprite* sprite_oggetto, 
+											ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH], int id_oggetto)
 {
 	if(id_oggetto >= 0) // se l'id è un indice di array valido
 	{

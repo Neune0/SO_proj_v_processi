@@ -1,7 +1,7 @@
 #include "inizializza.h"
-void inizializzaMatriceSchermo(ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH]){
+void inizializzaMatriceSchermo(GameHUD *gameHud, ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH]){
 	inizializzaFlagMatrice(screenMatrix); // inizializza a true i flag di modifica della matrice
-	inizializzaHUD(screenMatrix); // inizializza le prime 4 righe
+	inizializzaHUD(gameHud, screenMatrix); // inizializza le prime 4 righe
 	inizializzaTane(screenMatrix); // inizializza la parte dello schermo dedicata alle tane
 	inizializzaFiume(screenMatrix); // inizializza la parte dello schermo dedicata al fiume
 	inizializzaPrato(screenMatrix); // inizializza la parte dello schermo dedicata al prato
@@ -30,7 +30,37 @@ void inizializzaOldPosProiettili(PipeData *old_pos,int length){
    }
    return;
 }
-void inizializzaHUD(ScreenCell (*screenMatrix)[WIDTH]){
+//-----------------------------------------------------------------------
+void inizializzaGameInfo(GameInfo *gameInfo)
+{
+	gameInfo->tempo=60;
+	gameInfo->vite=3;
+	gameInfo->punteggio=0; 
+	gameInfo->livello= 1;
+}
+//------------------------------------------------------
+void inizializzaGameHUD(GameHUD *gameHud)
+{
+	
+	inizializzaGameInfo(&gameHud->gameInfo);
+	
+	//mette nel vettore di char, la stringa formattata
+	sprintf(gameHud->score_hud, "Livello: %2d \t SCORE: %3d" , gameHud->gameInfo.livello, gameHud->gameInfo.punteggio); 
+	
+	int score_hud_len = strlen(gameHud->score_hud);
+	gameHud->start_x_hud = WIDTH/10;						// dove inizia e finisce la Hud
+	gameHud->end_x_hud = WIDTH/10 + score_hud_len +1;
+	gameHud->score_hud_y = 1;
+	gameHud->life_hud_y = 33;
+	gameHud->time_hud_y = 33;
+	
+	//int score_hud_index = 0;
+}
+
+
+//----------------------------------------------------------
+void inizializzaHUD(GameHUD *gameHud, ScreenCell (*screenMatrix)[WIDTH]){
+	/*
 	int score=rand()%100; 
 	int livello= rand()%10;
 	
@@ -40,13 +70,22 @@ void inizializzaHUD(ScreenCell (*screenMatrix)[WIDTH]){
 	int score_hud_len = strlen(score_hud);
 	int start_x_hud = WIDTH/10;						// dove inizia e finisce la Hud
 	int end_x_hud = WIDTH/10 + score_hud_len +1;
+	/**/
+	
+	inizializzaGameHUD(gameHud);
+	int startX	=		gameHud->start_x_hud;
+	int endX 		=		gameHud->end_x_hud;
+	int startY	=		gameHud->score_hud_y;
+	
+	int score_hud_len = strlen(gameHud->score_hud);
 	int score_hud_index = 0;
 	
 	for(int i=0;i<4;i++){
 		for(int j=0;j<WIDTH;j++){
-			if (i==1 && (j>start_x_hud && j< end_x_hud) ){  // posizione della scritta riga#1 
-				
-				screenMatrix[i][j].ch = score_hud[score_hud_index];  //stampa i caratteri della scritta
+			//if (i==1 && (j>start_x_hud && j< end_x_hud) ){  // posizione della scritta riga#1 
+			if (i==1 && (j>startX && j< endX) )
+			{
+				screenMatrix[i][j].ch = gameHud->score_hud[score_hud_index];  //stampa i caratteri della scritta
 				score_hud_index = (score_hud_index+1)%score_hud_len; // aggiorna indice per la stringa
 			}else{
 				screenMatrix[i][j].ch = ' ';

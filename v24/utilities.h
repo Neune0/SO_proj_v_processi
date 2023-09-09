@@ -67,6 +67,25 @@ typedef struct{
 	int color;
 }Sprite;
 
+typedef struct {
+	int tempo;
+	int vite;
+	int punteggio;
+	int livello;
+} GameInfo;		// struttura per le info di gioco
+
+typedef struct {
+	GameInfo gameInfo;
+	char score_hud[WIDTH] ;		// stringa con livello e punteggio
+	int start_x_hud ;					// dove inizia e finisce la Hud
+	int end_x_hud ;
+	int score_hud_y;					// righe per le info di gioco
+	int life_hud_y;
+	int time_hud_y;
+	
+} GameHUD;			// struttura con le posizioni della HUD.
+
+
 
 void inizializzaNcurses();
 void creaPipe(int pipe_fd[2]);

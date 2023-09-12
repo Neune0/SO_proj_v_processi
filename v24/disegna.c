@@ -16,7 +16,7 @@ void avviaDrawProcess(int pipe_fd[2]) {
 // processo che si occupa di disegnare lo schermo
 void drawProcess(int* pipe_fd) {
 	
-	GameHUD gameHud;	
+	GameHUD gameHud;	// viene inizializzato nalla fuunz. inizializzaMatriceSchermo()
 	
 	int arrayDirTronchi[4]; // vettore per registrare la direzione di chiascun tronco
 	int pipeRana_fd [2];
@@ -371,6 +371,9 @@ void drawProcess(int* pipe_fd) {
 				// aggiorna contatori proiettili
 				contatore_proiettili_nemici_in_gioco--;
 				contatore_proiettili_in_gioco--;
+				
+				gameHud.gameInfo.punteggio++;
+				
 				beep();
 			}
 			
@@ -433,6 +436,7 @@ void drawProcess(int* pipe_fd) {
 		
 		if(enemyBulletCollision != -1){
 			//beep();
+			gameHud.gameInfo.punteggio = 0;
 			
   		uccidiProiettileNemico( array_pid_proiettili_nemici, enemyBulletCollision); // uccide il processo proiettile
   		
@@ -465,14 +469,16 @@ void drawProcess(int* pipe_fd) {
 		}
     /**/
     
-    
-    
-    
     //write(pipeRana_fd[1], &rana_mod, sizeof(PipeData));
+    
+    aggiornaHudInMatrice(&gameHud, screenMatrix);
     
 		stampaMatrice(screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
     refresh(); // Aggiorna la finestra
 	}//end while
+	
+	
+	
 	//wait(NULL);
 	//wait(NULL); //aspetta fine di macchina1
 	//wait(NULL); //aspetta fine di macchina2
@@ -500,11 +506,6 @@ void aggiornaDirezioneTronchi(PipeData *pipeData, PipeData *old_pos, int *arr_di
 		int tronco_id = pipeData->id;													//individua che tronco hai letto
 		arr_dir_tronchi[tronco_id] = pipeData->x - old_pos->x	;//controlla la direzione in base alla posizione precedente
 }
-
-
-
-
-
 
 
 //--------------------------------------------Stampa Puntuale----------------------------------------------------------------------
@@ -596,10 +597,54 @@ void cancellaOggetto(PipeData *array_oggetti, Sprite* sprite_oggetto,
 		pulisciSpriteInMatrice(array_oggetti[id_oggetto].y, array_oggetti[id_oggetto].x, sprite_oggetto, screenMatrix, staticScreenMatrix);
 		array_oggetti[id_oggetto].type = ' ';
 	}
-
-
+}
+//-----------------------------------------------------------------
+// aggiorna la stringa con le info di gioco
+void aggiornaHud(GameHUD *gameHud)
+{
+		sprintf(gameHud->score_hud, "Livello: %2d \t SCORE: %3d" , gameHud->gameInfo.livello, gameHud->gameInfo.punteggio);
 }
 
+
+//----------------------------------------------
+void aggiornaHudInMatrice(GameHUD *gameHud, ScreenCell (*screenMatrix)[WIDTH])
+{
+	int startX	=		gameHud->start_x_hud;
+	int endX 		=		gameHud->end_x_hud;
+	int startY	=		gameHud->score_hud_y;
+	
+	//sprintf(gameHud->score_hud, "Livello: %2d \t SCORE: %3d" , gameHud->gameInfo.livello, gameHud->gameInfo.punteggio); 
+	aggiornaHud(gameHud);
+	int score_hud_len = strlen(gameHud->score_hud);
+	int score_hud_index = 0;
+	
+	for(int i=0;i<4;i++){
+		for(int j=0;j<WIDTH;j++){
+			//if (i==1 && (j>start_x_hud && j< end_x_hud) ){  // posizione della scritta riga#1 
+			if (i==1 && (j>startX && j< endX) )
+			{
+				screenMatrix[i][j].ch = gameHud->score_hud[score_hud_index];  //stampa i caratteri della scritta sulla matrice
+				score_hud_index = (score_hud_index+1)%score_hud_len; // aggiorna indice per la stringa
+			}else{
+				screenMatrix[i][j].ch = ' ';
+			}
+			screenMatrix[i][j].color = SFONDO;
+			screenMatrix[i][j].is_changed = true;
+		}
+	}
+	
+	// aggiorna sezione bottom?
+	/*
+	for(int i=33;i<37;i++){
+		for(int j=0;j<WIDTH;j++){
+			screenMatrix[i][j].ch = ' ';
+			screenMatrix[i][j].color = SFONDO; 
+			screenMatrix[i][j].is_changed = true;
+		}
+	}
+	/**/
+	return;
+}
 
 
 

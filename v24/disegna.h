@@ -51,5 +51,6 @@ void cancellaOggetto(PipeData *array_oggetti, Sprite* sprite_oggetto, ScreenCell
 
 void stampaRefreshMatrice( ScreenCell (*screenMatrix)[WIDTH]);
 
+void aggiornaGameInfo(GameHUD *gameHud, int tempo, int vite, int punteggio, int livello);
 
 #endif

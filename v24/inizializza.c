@@ -34,7 +34,7 @@ void inizializzaOldPosProiettili(PipeData *old_pos,int length){
 void inizializzaGameInfo(GameInfo *gameInfo)
 {
 	gameInfo->tempo=60;
-	gameInfo->vite=3;
+	gameInfo->vite=4;
 	gameInfo->punteggio=0; 
 	gameInfo->livello= 1;
 }
@@ -51,8 +51,15 @@ void inizializzaGameHUD(GameHUD *gameHud)
 	gameHud->start_x_hud = WIDTH/10;						// dove inizia e finisce la Hud
 	gameHud->end_x_hud = WIDTH/10 + score_hud_len +1;
 	gameHud->score_hud_y = 1;
-	gameHud->life_hud_y = 33;
-	gameHud->time_hud_y = 33;
+	
+	sprintf(gameHud->life_hud, "tempo: %3d \t vite: %2d", gameHud->gameInfo.tempo, gameHud->gameInfo.vite);
+	int life_hud_len = strlen(gameHud->life_hud);
+	gameHud->life_hud_y = 2;
+	gameHud->start_x_life_hud =  WIDTH/10;
+	gameHud->end_x_life_hud =  WIDTH/10 + life_hud_len +1;
+	
+	gameHud->time_hud_y = 2;
+	
 	
 	//int score_hud_index = 0;
 }
@@ -60,37 +67,61 @@ void inizializzaGameHUD(GameHUD *gameHud)
 
 //----------------------------------------------------------
 void inizializzaHUD(GameHUD *gameHud, ScreenCell (*screenMatrix)[WIDTH]){
-	/*
-	int score=rand()%100; 
-	int livello= rand()%10;
-	
-	char score_hud[WIDTH]; // stringa per le info di gioco
-	sprintf(score_hud, "Livello: %2d \t SCORE: %3d" , livello, score); //mette nel vettore di char, la stringa formattata
-	
-	int score_hud_len = strlen(score_hud);
-	int start_x_hud = WIDTH/10;						// dove inizia e finisce la Hud
-	int end_x_hud = WIDTH/10 + score_hud_len +1;
-	/**/
 	
 	inizializzaGameHUD(gameHud);
 	int startX	=		gameHud->start_x_hud;
 	int endX 		=		gameHud->end_x_hud;
 	int startY	=		gameHud->score_hud_y;
+	int endXLifeHud = gameHud->end_x_life_hud;
+	
 	
 	int score_hud_len = strlen(gameHud->score_hud);
+	int life_hud_len = strlen(gameHud->life_hud);
 	int score_hud_index = 0;
+	int life_hud_index = 0;
 	
 	for(int i=0;i<4;i++){
 		for(int j=0;j<WIDTH;j++){
 			//if (i==1 && (j>start_x_hud && j< end_x_hud) ){  // posizione della scritta riga#1 
+			screenMatrix[i][j].color = SFONDO;
+			switch(i)
+			{
+				case 1:																// riga y=1
+					if ((j>startX && j< endX) )
+					{
+						screenMatrix[i][j].ch = gameHud->score_hud[score_hud_index];  //stampa i caratteri della scritta
+						score_hud_index = (score_hud_index+1)%score_hud_len; // aggiorna indice per la stringa
+						
+					}
+					break;
+					
+				case 2:																// riga y=2
+					if((j>startX && j< endXLifeHud))
+					{
+						screenMatrix[i][j].ch = gameHud->life_hud[life_hud_index];
+						life_hud_index = (life_hud_index +1)%life_hud_len;
+				 	}
+					break;
+				default:
+					screenMatrix[i][j].ch = ' ';
+					break;
+			}
+			/*
 			if (i==1 && (j>startX && j< endX) )
 			{
 				screenMatrix[i][j].ch = gameHud->score_hud[score_hud_index];  //stampa i caratteri della scritta
 				score_hud_index = (score_hud_index+1)%score_hud_len; // aggiorna indice per la stringa
+				
+			}else if(i==2 && (j>startX && j< endXLifeHud))
+			{
+				screenMatrix[i][j].ch = gameHud->life_hud[life_hud_index];
+				life_hud_index = (life_hud_index +1)%life_hud_len;
+				
 			}else{
 				screenMatrix[i][j].ch = ' ';
 			}
 			screenMatrix[i][j].color = SFONDO;
+			/**/
 		}
 	}
 	// inizializzazione sezione bottom

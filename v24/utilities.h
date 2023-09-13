@@ -80,6 +80,9 @@ typedef struct {
 	int start_x_hud ;					// dove inizia e finisce la Hud
 	int end_x_hud ;
 	int score_hud_y;					// righe per le info di gioco
+	char life_hud[WIDTH]; 		//stringa per vite e tempo
+	int start_x_life_hud;
+	int end_x_life_hud; 			// posizione di fine della stringa, dipenderà dalla lunghezza di life_hud
 	int life_hud_y;
 	int time_hud_y;
 	

@@ -1,4 +1,7 @@
 #include "disegna.h"
+
+//#define DEBUG 
+
 // per far partire il processo che si occupa di disegnare
 void avviaDrawProcess(int pipe_fd[2]) {
     pid_t draw_pid = fork();
@@ -16,7 +19,13 @@ void avviaDrawProcess(int pipe_fd[2]) {
 // processo che si occupa di disegnare lo schermo
 void drawProcess(int* pipe_fd) {
 	
+	int tempo = 60;
+	int vite = 4;
+	int punteggio = 0;
+	int livello = 1;
+	
 	GameHUD gameHud;	// viene inizializzato nalla fuunz. inizializzaMatriceSchermo()
+	//inizializzaGameHUD(&gameHud);
 	
 	int arrayDirTronchi[4]; // vettore per registrare la direzione di chiascun tronco
 	int pipeRana_fd [2];
@@ -108,6 +117,8 @@ void drawProcess(int* pipe_fd) {
 	
   while (1) {
   	read(pipe_fd[0], &pipeData, sizeof(PipeData)); // Leggi le coordinate inviate dalla pipe
+    
+  #ifdef DEBUG 
     // test zona
     mvprintw(37,2,"                                                       ");
     mvprintw(37,2,"pid rana: %d",pidRana);
@@ -145,7 +156,7 @@ void drawProcess(int* pipe_fd) {
     mvprintw(39,110,"                                  ");
     mvprintw(39,110,"proiettili nemici in gioco: %d",contatore_proiettili_nemici_in_gioco);
     // fine test zona
-    
+  #endif
     
     
 		
@@ -185,28 +196,35 @@ void drawProcess(int* pipe_fd) {
     			aggiornaPosizioneOggetto(&pipeData, &old_pos[0], screenMatrix, staticScreenMatrix, &ranaSprite);
     			//aggiornaPosizioneOggetto(&rana_new, &old_pos[0], screenMatrix, staticScreenMatrix, &ranaSprite);
     		}
+    		#ifdef DEBUG
     		mvprintw(0,110,"                                    ");
     		//mvprintw(0,110,"RANA tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
     		mvprintw(0,110,"RANA tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type, old_pos[0].x,old_pos[0].y, pipeData.id);
+        #endif
         break;
 			case 'T':
         aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix,staticScreenMatrix, &troncoSprite);
         
         aggiornaDirezioneTronchi( &pipeData, &old_pos[pipeData.id], arrayDirTronchi);
-        
+        #ifdef DEBUG
         mvprintw(pipeData.id,110,"                                    ");
     		mvprintw(pipeData.id,110,"TRONCO tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+        #endif
         break;
       case 'A':
       	aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &autoSprite);
+      	#ifdef DEBUG
       	mvprintw(pipeData.id,110,"                                    ");
     		mvprintw(pipeData.id,110,"AUTO tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+        #endif
         break;
         
      case 'C':  // legge il camion da pipe e aggiorna posizione
       	aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &camionSprite);
+    	  #ifdef DEBUG
       	mvprintw(pipeData.id,110,"                                    ");
     		mvprintw(pipeData.id,110,"CAMION tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+        #endif
         break;
       case 'c':
       	// NON disegnare il camion per un certo tempo, quando esce dallo schermo
@@ -248,11 +266,15 @@ void drawProcess(int* pipe_fd) {
       case 'P':
       	// nuove coordinate proiettile
       	// se il proiettile ha sforato devo uccidere il processo e decrementare il contatore
+      	#ifdef DEBUG
       	mvprintw(13+pipeData.id,110,"                                       ");
     		mvprintw(13+pipeData.id,110,"PROIETTILE tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+    		#endif
       	if(pipeData.y<0){
+      		#ifdef DEBUG
       		mvprintw(13+pipeData.id,110,"                                    ");
     			mvprintw(13+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
+      		#endif
       		kill(array_pid_proiettili[pipeData.id], SIGKILL);
       		waitpid(array_pid_proiettili[pipeData.id],NULL,0);
       		array_pid_proiettili[pipeData.id]=0;
@@ -266,11 +288,15 @@ void drawProcess(int* pipe_fd) {
       case 'p':
       	// nuove coordinate proiettile nemico
       	// se il proiettile ha sforato devo uccidere il processo e decrementare il contatore
+      	#ifdef DEBUG
       	mvprintw(25+pipeData.id,110,"                                       ");
     		mvprintw(25+pipeData.id,110,"PROIETTILEN tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+    		#endif
       	if(pipeData.y>30){
+      		#ifdef DEBUG
       		mvprintw(25+pipeData.id,110,"                                    ");
     			mvprintw(25+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
+      		#endif
       		kill(array_pid_proiettili_nemici[pipeData.id], SIGKILL);
       		waitpid(array_pid_proiettili_nemici[pipeData.id],NULL,0);
       		array_pid_proiettili_nemici[pipeData.id]=0;
@@ -372,7 +398,7 @@ void drawProcess(int* pipe_fd) {
 				contatore_proiettili_nemici_in_gioco--;
 				contatore_proiettili_in_gioco--;
 				
-				gameHud.gameInfo.punteggio++;
+				punteggio++;
 				
 				beep();
 			}
@@ -428,15 +454,17 @@ void drawProcess(int* pipe_fd) {
 	 	
 		if( autoCollision )
 		{ 
-			beep();
+			cancellaOggetto(old_pos, &ranaSprite, screenMatrix, staticScreenMatrix, 0);
+			old_pos[0].x = old_pos[0].y = 0; //modifico vecchia pos della rana 
 			pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
+			vite--;
+			
+			//beep();
 		}
-		
-		//close(pipeRana_fd[0]);
 		
 		if(enemyBulletCollision != -1){
 			//beep();
-			gameHud.gameInfo.punteggio = 0;
+			punteggio = 0;
 			
   		uccidiProiettileNemico( array_pid_proiettili_nemici, enemyBulletCollision); // uccide il processo proiettile
   		
@@ -470,7 +498,7 @@ void drawProcess(int* pipe_fd) {
     /**/
     
     //write(pipeRana_fd[1], &rana_mod, sizeof(PipeData));
-    
+    aggiornaGameInfo(&gameHud, tempo, vite, punteggio, livello);
     aggiornaHudInMatrice(&gameHud, screenMatrix);
     
 		stampaMatrice(screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
@@ -599,25 +627,98 @@ void cancellaOggetto(PipeData *array_oggetti, Sprite* sprite_oggetto,
 	}
 }
 //-----------------------------------------------------------------
+
+void aggiornaGameInfo(GameHUD *gameHud, int tempo, int vite, int punteggio, int livello) //usata in disegna
+{
+	gameHud->gameInfo.tempo = tempo;
+	gameHud->gameInfo.vite = vite;
+	gameHud->gameInfo.punteggio = punteggio;
+	gameHud->gameInfo.livello = livello;
+}
+
+
 // aggiorna la stringa con le info di gioco
 void aggiornaHud(GameHUD *gameHud)
 {
+		// aggiorna la visualizzazione grafica delle vite, per ogni vita rimasta stampa un *
+		int vite_restanti = gameHud->gameInfo.vite;
+		char string_lifes[4] = "    ";
+		for(int i=0; i<vite_restanti; i++)
+		{
+			string_lifes[i]='*';
+		}
+		//aggiorna le stringhe con le info
 		sprintf(gameHud->score_hud, "Livello: %2d \t SCORE: %3d" , gameHud->gameInfo.livello, gameHud->gameInfo.punteggio);
+		sprintf(gameHud->life_hud, "tempo: %3d \t vite: %s \t :%d", gameHud->gameInfo.tempo, string_lifes, vite_restanti);
+		
+		//calcola lunghezza delle nuove stringhe
+		int score_hud_len = strlen(gameHud->score_hud);
+		int life_hud_len = strlen(gameHud->life_hud);
+		int startX	=		gameHud->start_x_hud;
+		
+		// aggiorna pos dell'ultimo carattere delle stringhe
+		gameHud->end_x_hud = startX + score_hud_len +1;
+		gameHud->end_x_life_hud = startX + life_hud_len +1; 
 }
 
 
 //----------------------------------------------
 void aggiornaHudInMatrice(GameHUD *gameHud, ScreenCell (*screenMatrix)[WIDTH])
 {
+	aggiornaHud(gameHud);
+	
+	int score_hud_len = strlen(gameHud->score_hud);
+	int life_hud_len = strlen(gameHud->life_hud);
+	
 	int startX	=		gameHud->start_x_hud;
 	int endX 		=		gameHud->end_x_hud;
 	int startY	=		gameHud->score_hud_y;
+	int endXLifeHud = gameHud->end_x_life_hud;
 	
 	//sprintf(gameHud->score_hud, "Livello: %2d \t SCORE: %3d" , gameHud->gameInfo.livello, gameHud->gameInfo.punteggio); 
-	aggiornaHud(gameHud);
-	int score_hud_len = strlen(gameHud->score_hud);
-	int score_hud_index = 0;
+	//aggiornaHud(gameHud);
 	
+	//int score_hud_len = strlen(gameHud->score_hud);
+	//int life_hud_len = strlen(gameHud->life_hud);
+	int score_hud_index = 0;
+	int life_hud_index = 0;
+	
+	for(int i=0;i<4;i++)
+	{
+		for(int j=0;j<WIDTH;j++)
+		{
+			screenMatrix[i][j].color = SFONDO;
+			switch(i)
+			{
+				case 1:																// riga y=1
+					if ((j>startX && j< endX) )
+					{
+						screenMatrix[i][j].ch = gameHud->score_hud[score_hud_index];  //stampa i caratteri della scritta
+						score_hud_index = (score_hud_index+1)%score_hud_len; // aggiorna indice per la stringa
+						
+					}else{
+						screenMatrix[i][j].ch = ' ';
+					}
+					break;
+					
+				case 2:																// riga y=2
+					if((j>startX && j< endXLifeHud))
+					{
+						screenMatrix[i][j].ch = gameHud->life_hud[life_hud_index];
+						life_hud_index = (life_hud_index +1)%life_hud_len;
+				 	}else{
+						screenMatrix[i][j].ch = ' ';
+					}
+					break;
+				default:
+					screenMatrix[i][j].ch = ' ';
+					break;
+			}
+			screenMatrix[i][j].is_changed = true;
+		}
+	}
+	
+	/*
 	for(int i=0;i<4;i++){
 		for(int j=0;j<WIDTH;j++){
 			//if (i==1 && (j>start_x_hud && j< end_x_hud) ){  // posizione della scritta riga#1 
@@ -632,6 +733,7 @@ void aggiornaHudInMatrice(GameHUD *gameHud, ScreenCell (*screenMatrix)[WIDTH])
 			screenMatrix[i][j].is_changed = true;
 		}
 	}
+	/**/
 	
 	// aggiorna sezione bottom?
 	/*

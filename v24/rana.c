@@ -26,9 +26,9 @@ void moveProcess(int* pipe_fd, int* pipe_rana) {
 		pipeData.type='X';
 		
 		// Installa il gestore di segnale per SIGSTOP
-    signal(SIGSTOP, handle_stop);
+    //signal(SIGSTOP, handle_stop);
     // Installa il gestore di segnale per SIGCONT
-    signal(SIGCONT, handle_continue);
+    //signal(SIGCONT, handle_continue);
 		
 		 // Invia le coordinate iniziali attraverso la pipe
     write(pipe_fd[1], &pipeData, sizeof(PipeData));

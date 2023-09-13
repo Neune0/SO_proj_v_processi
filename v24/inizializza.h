@@ -12,4 +12,7 @@ void inizializzaTane(ScreenCell (*screenMatrix)[WIDTH]);
 void inizializzaHUD(GameHUD *gameHud, ScreenCell (*screenMatrix)[WIDTH]);
 void copiaMatrice(ScreenCell (*screenMatrix)[WIDTH], ScreenCell (*staticScreenMatrix)[WIDTH]);
 void inizializzaOldPosProiettili(PipeData *old_pos,int length);
+
+void inizializzaGameHUD(GameHUD *gameHud);
+
 #endif

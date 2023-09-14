@@ -19,10 +19,20 @@ void avviaDrawProcess(int pipe_fd[2]) {
 // processo che si occupa di disegnare lo schermo
 void drawProcess(int* pipe_fd) {
 	
+	time_t start_time, current_time;
+	double diff_time;
+	int diff_time_sec;
+	time(&start_time);
+	time(&current_time);
+	
+	
 	int tempo = 60;
 	int vite = 4;
 	int punteggio = 0;
 	int livello = 1;
+	
+	bool morteRana = false;
+	bool vittoriaRana = false;
 	
 	GameHUD gameHud;	// viene inizializzato nalla fuunz. inizializzaMatriceSchermo()
 	//inizializzaGameHUD(&gameHud);
@@ -112,7 +122,7 @@ void drawProcess(int* pipe_fd) {
 	inizializzaMatriceSchermo(&gameHud, screenMatrix, staticScreenMatrix); // inizializza entrambe le matrici
 	
 	
-	PipeData rana_mod; //var di supporto
+	//PipeData rana_mod; //var di supporto
 	bool troncoCollision = false;
 	
   while (1) {
@@ -158,11 +168,8 @@ void drawProcess(int* pipe_fd) {
     // fine test zona
   #endif
     
-    
-		
-		int troncoID= -1;
-		
 		/*
+				int troncoID= -1;
 				rana_mod = old_pos[0];
 				rana_new.x = old_pos[0].x + pipeData.x; // se Rana invia solo 1 e -1 come coordinate
     		rana_new.y = old_pos[0].y + pipeData.y;
@@ -179,13 +186,15 @@ void drawProcess(int* pipe_fd) {
 			// NOTA: per ora non mostra nessuno spostamento
 		}
     /**/
+    /*
     int offsetX_rana = 0;
     PipeData tronco_tmp;
     PipeData rana_new;
     PipeData rana_old;
-    
-    
+    /**/
+    int next_rana_bullet_id=0;
     int next_enemy_bullet_id = 0;
+    int next_enemy_id = 0;
     
     switch(pipeData.type){
     	case 'X':
@@ -232,33 +241,37 @@ void drawProcess(int* pipe_fd) {
       case 'S':
       	//proiettile sparato da utente
       	// avvia il proiettile con posizione iniziale della rana (o dell oggetto che ha sparato)
-      	if(contatore_proiettili_in_gioco<MAXNPROIETTILI){ // se si hanno ancora munizioni
+      	if(contatore_proiettili_in_gioco<MAXNPROIETTILI)	// se si hanno ancora munizioni
+      	{ 
       		// incremento contatore e faccio partire il processo proiettile, salvo il pid del processo
-      		array_pid_proiettili[id_disponibile(array_pid_proiettili,MAXNPROIETTILI)]=avviaProiettile(pipe_fd, &pipeData,id_disponibile(array_pid_proiettili,MAXNPROIETTILI));
-      		contatore_proiettili_in_gioco++;
-      		
+      		next_rana_bullet_id = id_disponibile(array_pid_proiettili,MAXNPROIETTILI);
+      		if(next_rana_bullet_id != -1) //se c'è un id disponibile
+      		{
+      			array_pid_proiettili[next_rana_bullet_id]=avviaProiettile(pipe_fd, &pipeData, next_rana_bullet_id);
+      			contatore_proiettili_in_gioco++;
+      		}
       	}
-      	// fa partire il processo proiettile se il numero di proiettili in gioco è minore di 10
       	break;
       case 'n':
-      	if(contatore_nemici_in_gioco<MAXNNEMICI){ // se non si è raggiunto il numero massimo di nemici
+      	if(contatore_nemici_in_gioco<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
+      	{ 
       		// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
-      		array_pid_nemici[id_disponibile(array_pid_nemici,MAXNNEMICI)]=avviaNemico(pipe_fd,&pipeData,id_disponibile(array_pid_nemici,MAXNNEMICI));
-      		contatore_nemici_in_gioco++;
-      		
+      		next_enemy_id = id_disponibile(array_pid_nemici,MAXNNEMICI);
+      		if(next_enemy_id != -1){
+	      		array_pid_nemici[next_enemy_id]=avviaNemico(pipe_fd,&pipeData, next_enemy_id);
+  					contatore_nemici_in_gioco++;
+  				}    		
       	}
       	break;
       case 's':
       	// proiettile nemico sparato
-      	if(contatore_proiettili_nemici_in_gioco<MAXNPROIETTILINEMICI){ // se non si è raggiunto il numero massimo di nemici
+      	if(contatore_proiettili_nemici_in_gioco<MAXNPROIETTILINEMICI) // se non si è raggiunto il numero massimo di nemici
+      	{ 
       		// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
       		next_enemy_bullet_id = id_disponibile(array_pid_proiettili_nemici,MAXNPROIETTILINEMICI);
       		if( next_enemy_bullet_id != -1)
       		{ 
-      		//array_pid_proiettili_nemici[id_disponibile(array_pid_proiettili_nemici,MAXNPROIETTILINEMICI)]=
-      			array_pid_proiettili_nemici[next_enemy_bullet_id]=
-      				avviaProiettileNemico(pipe_fd, &pipeData, next_enemy_bullet_id);
-      			//avviaProiettileNemico(pipe_fd, &pipeData,id_disponibile(array_pid_proiettili_nemici,MAXNPROIETTILINEMICI));
+      			array_pid_proiettili_nemici[next_enemy_bullet_id]= avviaProiettileNemico(pipe_fd, &pipeData, next_enemy_bullet_id);
       			contatore_proiettili_nemici_in_gioco++;
     			}
       	}
@@ -275,11 +288,11 @@ void drawProcess(int* pipe_fd) {
       		mvprintw(13+pipeData.id,110,"                                    ");
     			mvprintw(13+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
       		#endif
-      		kill(array_pid_proiettili[pipeData.id], SIGKILL);
-      		waitpid(array_pid_proiettili[pipeData.id],NULL,0);
-      		array_pid_proiettili[pipeData.id]=0;
+      		
+      		uccidiProiettile( array_pid_proiettili, pipeData.id); // uccide il processo proiettile
+      		cancellaOggetto(old_pos_proiettili, &proiettileSprite, screenMatrix, staticScreenMatrix, pipeData.id);
       		contatore_proiettili_in_gioco--;
-      		pulisciSpriteInMatrice(old_pos_proiettili[pipeData.id].y, old_pos_proiettili[pipeData.id].x, &proiettileSprite, screenMatrix, staticScreenMatrix);
+      		
       	}
       	else{
       		aggiornaPosizioneOggetto(&pipeData, &old_pos_proiettili[pipeData.id], screenMatrix, staticScreenMatrix, &proiettileSprite);
@@ -297,12 +310,9 @@ void drawProcess(int* pipe_fd) {
       		mvprintw(25+pipeData.id,110,"                                    ");
     			mvprintw(25+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
       		#endif
-      		kill(array_pid_proiettili_nemici[pipeData.id], SIGKILL);
-      		waitpid(array_pid_proiettili_nemici[pipeData.id],NULL,0);
-      		array_pid_proiettili_nemici[pipeData.id]=0;
+      		uccidiProiettileNemico( array_pid_proiettili_nemici, pipeData.id); // uccide il processo proiettile
+      		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, pipeData.id);
       		contatore_proiettili_nemici_in_gioco--;
-      		pulisciSpriteInMatrice(old_pos_proiettili_nemici[pipeData.id].y, old_pos_proiettili_nemici[pipeData.id].x, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix);
-      		old_pos_proiettili_nemici[pipeData.id].type = ' ';
       		
       	}
       	else{
@@ -315,7 +325,8 @@ void drawProcess(int* pipe_fd) {
       		// funzione che visualizza menu
       		// exit del menu -> intero con scelta
       		// gli vanno passati tutti i pid che deve mettere in pausa
-      		int scelta = pausa(pidRana);
+      		
+      		//int scelta = pausa(pidRana);
       		stampaRefreshMatrice(screenMatrix);
       		// se preme continua allora stampare tutta la matrice dinamica
       		// se preme esci termire tutti i processi
@@ -341,11 +352,9 @@ void drawProcess(int* pipe_fd) {
 		int  proiettileNemico_id = -1;
 		int  proiettileRana_id = -1;
 		
-		
 		fiumeCollision = checkRanaFiume(old_pos, spriteOggetto); // restituisce TRUE se la Rana cade nel fiume
 		troncoCollision = checkRanaTronco(old_pos, spriteOggetto); //collisione Rana-Tronco
 		autoCollision = checkRanaVeicolo(old_pos, spriteOggetto); //collisione Auto - Rana
-		
 		
 		//----------------------------------COLLISIONI PROIETTILI-----------------------------
 		//collisione Auto-Proiettili
@@ -378,12 +387,8 @@ void drawProcess(int* pipe_fd) {
 				}
 		}
 		
-		
-		//if(autoProiettiliNemiciCollision){ beep();}
 		tanaChiusaCollision = checkRanaTanaChiusa(old_pos, tane, spriteOggetto, taneSprite);
 		tanaApertaCollision = checkRanaTanaAperta(old_pos, tane, spriteOggetto, taneSprite);
-		
-		
 		
 		if(proiettiliCollision) // se c'è collisione tra proiettili
 		{	
@@ -408,8 +413,13 @@ void drawProcess(int* pipe_fd) {
 		
 		if(fiumeCollision) beep();
 		
-		if(tanaChiusaCollision) { beep(); }
+		if(tanaChiusaCollision) 
+		{ 
+			morteRana=true;
+			beep(); 
+		}
 		if(tanaApertaCollision){
+				vittoriaRana=true;
 				beep(); 
 		 		for(int i=0; i<5; i++){
 			 		if(tane[i].status == CLOSED){
@@ -424,11 +434,11 @@ void drawProcess(int* pipe_fd) {
 	 		// individua il proiettileNemico che ha colliso
 	 		proiettileNemico_id = collisioneAutoProiettile( old_pos, old_pos_proiettili_nemici, spriteOggetto, PROIETTILE_NEMICO_SPRITE);
 	 		
-	 		// cancella oggetto dalle matrici
-	 		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, proiettileNemico_id);
-	 		
 	 		// il proiettileNemico va distrutto
 	 		uccidiProiettileNemico( array_pid_proiettili_nemici, proiettileNemico_id); // uccide il processo proiettile
+	 		
+	 		// cancella oggetto dalle matrici
+	 		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, proiettileNemico_id);
 	 		
 	 		// aggiorna contatore
 	 		contatore_proiettili_nemici_in_gioco--; 
@@ -454,50 +464,46 @@ void drawProcess(int* pipe_fd) {
 	 	
 		if( autoCollision )
 		{ 
-			cancellaOggetto(old_pos, &ranaSprite, screenMatrix, staticScreenMatrix, 0);
-			old_pos[0].x = old_pos[0].y = 0; //modifico vecchia pos della rana 
-			pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
-			vite--;
-			
-			//beep();
+			morteRana = true;
 		}
 		
 		if(enemyBulletCollision != -1){
 			//beep();
-			punteggio = 0;
 			
   		uccidiProiettileNemico( array_pid_proiettili_nemici, enemyBulletCollision); // uccide il processo proiettile
-  		
-  		contatore_proiettili_nemici_in_gioco--;
-  		
   		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, enemyBulletCollision);
-  		
-  		pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
-  		/**/
+  		contatore_proiettili_nemici_in_gioco--;
+  		morteRana = true;
 		}	
     
-    //--------------------------------------------------
-    //PipeData tronco_tmp;
-    /*
-    if (troncoCollision)
-		{
-					troncoID = collisioneRanaTronco(old_pos, spriteOggetto); 
-					tronco_tmp = old_pos[troncoID];
-					//rana_mod = old_pos[0];
-					//int offsetX_rana = (rana_mod.x - tronco_tmp.x) ;
-					rana_mod.x = offsetX_rana+tronco_tmp.x;
-					
-										// offset Rana su Tronco					+	pos_x del tronco
-    			//rana_mod.x = (pipeData.x - old_pos[troncoID].x) + old_pos[troncoID].x ;
-    			aggiornaPosizioneOggetto(&rana_mod, &old_pos[0], screenMatrix, staticScreenMatrix, &ranaSprite);
-			if(troncoID == 1){
-				beep();
-			}
-			// NOTA: per ora non mostra nessuno spostamento
-		}
-    /**/
+    if(morteRana)
+    {
+    	cancellaOggetto(old_pos, &ranaSprite, screenMatrix, staticScreenMatrix, 0);
+			//old_pos[0].x = old_pos[0].y = 0; //modifico vecchia pos della rana 
+			pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
+			vite--;
+			morteRana = false;
+    }
+    if(vittoriaRana)
+    {
+    	cancellaOggetto(old_pos, &ranaSprite, screenMatrix, staticScreenMatrix, 0);
+			//old_pos[0].x = old_pos[0].y = 0; //modifico vecchia pos della rana 
+			pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
+			punteggio+=10;
+			vittoriaRana = false;
+    }
     
+    //--------------------------------------------------
     //write(pipeRana_fd[1], &rana_mod, sizeof(PipeData));
+    /*
+    time(&current_time);
+    diff_time = difftime(current_time, start_time);
+    diff_time_sec = (int) diff_time;
+    if(diff_time_sec > 0) tempo=(60-diff_time_sec)%60;
+    if(diff_time_sec == 60) start_time = current_time;
+    /**/
+    tempo = timer(&current_time, &start_time);
+    
     aggiornaGameInfo(&gameHud, tempo, vite, punteggio, livello);
     aggiornaHudInMatrice(&gameHud, screenMatrix);
     
@@ -505,21 +511,21 @@ void drawProcess(int* pipe_fd) {
     refresh(); // Aggiorna la finestra
 	}//end while
 	
-	
-	
-	//wait(NULL);
-	//wait(NULL); //aspetta fine di macchina1
-	//wait(NULL); //aspetta fine di macchina2
-	//wait(NULL); //aspetta fine di macchina3
-	//wait(NULL); //aspetta fine di macchina4
-	
-	//wait(NULL); //aspetta fine di macchina1
-	//wait(NULL); //aspetta fine di macchina2
-	//wait(NULL); //aspetta fine di macchina3
-	//wait(NULL); //aspetta fine di macchina4
   return;  
 }//end drawProcess
 //--------------------------------------------FINE PROCESSO DISEGNA----------------------------------
+
+int timer(time_t *current_time, time_t *start_time)
+{
+		int seconds=60;
+		time(current_time);
+    double diff_time = difftime(*current_time, *start_time);
+    int diff_time_sec = (int) diff_time;
+    if(diff_time_sec > 0) seconds=(60-diff_time_sec)%61;
+    if(diff_time_sec == 60) *start_time = *current_time;	//resetta il tempo di start
+    return seconds;
+}
+
 
 //-----------------------------------------------------------
 int id_disponibile(pid_t *array_pid, int lunghezza){
@@ -624,9 +630,11 @@ void cancellaOggetto(PipeData *array_oggetti, Sprite* sprite_oggetto,
 	{
 		pulisciSpriteInMatrice(array_oggetti[id_oggetto].y, array_oggetti[id_oggetto].x, sprite_oggetto, screenMatrix, staticScreenMatrix);
 		array_oggetti[id_oggetto].type = ' ';
+		array_oggetti[id_oggetto].x = 0;
+		array_oggetti[id_oggetto].y = 0;
 	}
 }
-//-----------------------------------------------------------------
+//--------------------------------------------aggiornamento HUD ---------------------
 
 void aggiornaGameInfo(GameHUD *gameHud, int tempo, int vite, int punteggio, int livello) //usata in disegna
 {
@@ -637,8 +645,8 @@ void aggiornaGameInfo(GameHUD *gameHud, int tempo, int vite, int punteggio, int 
 }
 
 
-// aggiorna la stringa con le info di gioco
-void aggiornaHud(GameHUD *gameHud)
+// aggiorna le stringhe con le info di gioco
+void aggiornaGameHud(GameHUD *gameHud)
 {
 		// aggiorna la visualizzazione grafica delle vite, per ogni vita rimasta stampa un *
 		int vite_restanti = gameHud->gameInfo.vite;
@@ -661,26 +669,19 @@ void aggiornaHud(GameHUD *gameHud)
 		gameHud->end_x_life_hud = startX + life_hud_len +1; 
 }
 
-
 //----------------------------------------------
 void aggiornaHudInMatrice(GameHUD *gameHud, ScreenCell (*screenMatrix)[WIDTH])
 {
-	aggiornaHud(gameHud);
+	aggiornaGameHud(gameHud);
 	
-	int score_hud_len = strlen(gameHud->score_hud);
+	int score_hud_len = strlen(gameHud->score_hud);	// aggiorna dimensione delle stringhe
 	int life_hud_len = strlen(gameHud->life_hud);
 	
-	int startX	=		gameHud->start_x_hud;
+	int startX	=		gameHud->start_x_hud;					// prende coordinate della HUD
 	int endX 		=		gameHud->end_x_hud;
-	int startY	=		gameHud->score_hud_y;
 	int endXLifeHud = gameHud->end_x_life_hud;
 	
-	//sprintf(gameHud->score_hud, "Livello: %2d \t SCORE: %3d" , gameHud->gameInfo.livello, gameHud->gameInfo.punteggio); 
-	//aggiornaHud(gameHud);
-	
-	//int score_hud_len = strlen(gameHud->score_hud);
-	//int life_hud_len = strlen(gameHud->life_hud);
-	int score_hud_index = 0;
+	int score_hud_index = 0;	// indici per le stringhe
 	int life_hud_index = 0;
 	
 	for(int i=0;i<4;i++)
@@ -695,7 +696,6 @@ void aggiornaHudInMatrice(GameHUD *gameHud, ScreenCell (*screenMatrix)[WIDTH])
 					{
 						screenMatrix[i][j].ch = gameHud->score_hud[score_hud_index];  //stampa i caratteri della scritta
 						score_hud_index = (score_hud_index+1)%score_hud_len; // aggiorna indice per la stringa
-						
 					}else{
 						screenMatrix[i][j].ch = ' ';
 					}
@@ -717,34 +717,6 @@ void aggiornaHudInMatrice(GameHUD *gameHud, ScreenCell (*screenMatrix)[WIDTH])
 			screenMatrix[i][j].is_changed = true;
 		}
 	}
-	
-	/*
-	for(int i=0;i<4;i++){
-		for(int j=0;j<WIDTH;j++){
-			//if (i==1 && (j>start_x_hud && j< end_x_hud) ){  // posizione della scritta riga#1 
-			if (i==1 && (j>startX && j< endX) )
-			{
-				screenMatrix[i][j].ch = gameHud->score_hud[score_hud_index];  //stampa i caratteri della scritta sulla matrice
-				score_hud_index = (score_hud_index+1)%score_hud_len; // aggiorna indice per la stringa
-			}else{
-				screenMatrix[i][j].ch = ' ';
-			}
-			screenMatrix[i][j].color = SFONDO;
-			screenMatrix[i][j].is_changed = true;
-		}
-	}
-	/**/
-	
-	// aggiorna sezione bottom?
-	/*
-	for(int i=33;i<37;i++){
-		for(int j=0;j<WIDTH;j++){
-			screenMatrix[i][j].ch = ' ';
-			screenMatrix[i][j].color = SFONDO; 
-			screenMatrix[i][j].is_changed = true;
-		}
-	}
-	/**/
 	return;
 }
 

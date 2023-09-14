@@ -19,7 +19,7 @@ void avviaDrawProcess(int pipe_fd[2]) {
 // processo che si occupa di disegnare lo schermo
 void drawProcess(int* pipe_fd) {
 	
-	time_t start_time, current_time;
+	time_t start_time, current_time; //usate per il timer
 	double diff_time;
 	int diff_time_sec;
 	time(&start_time);
@@ -33,6 +33,7 @@ void drawProcess(int* pipe_fd) {
 	
 	bool morteRana = false;
 	bool vittoriaRana = false;
+	bool gameOver = false;
 	
 	GameHUD gameHud;	// viene inizializzato nalla fuunz. inizializzaMatriceSchermo()
 	//inizializzaGameHUD(&gameHud);
@@ -125,7 +126,7 @@ void drawProcess(int* pipe_fd) {
 	//PipeData rana_mod; //var di supporto
 	bool troncoCollision = false;
 	
-  while (1) {
+  while (!gameOver) {
   	read(pipe_fd[0], &pipeData, sizeof(PipeData)); // Leggi le coordinate inviate dalla pipe
     
   #ifdef DEBUG 
@@ -407,7 +408,6 @@ void drawProcess(int* pipe_fd) {
 				
 				beep();
 			}
-			
 		}
 		
 		
@@ -509,8 +509,36 @@ void drawProcess(int* pipe_fd) {
     
 		stampaMatrice(screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
     refresh(); // Aggiorna la finestra
+    
+    if(gameHud.gameInfo.vite == 0)	gameOver=true;
 	}//end while
 	
+	// a fine gioco chiude tutti i processi
+	uccidiProcesso(&pidRana, 0);
+	
+	for(int i=0; i< 3; i++)
+	{
+		uccidiProcesso(pid_tronchi, i);
+	}
+	for(int i=0; i< 8; i++)
+	{
+		uccidiProcesso(pid_veicoli, i);
+	}
+	for(int i=0; i< contatore_proiettili_nemici_in_gioco; i++)
+	{
+		uccidiProcesso(array_pid_proiettili_nemici, i);
+	}
+	for(int i=0; i< contatore_proiettili_in_gioco; i++)
+	{
+		uccidiProcesso(array_pid_proiettili, i);
+	}
+	
+	/*
+	for(int i=0; i< OLDPOSDIM+contatore_proiettili_nemici_in_gioco+contatore_proiettili_in_gioco; i++)
+	{
+		wait(NULL);
+	}
+	/**/
   return;  
 }//end drawProcess
 //--------------------------------------------FINE PROCESSO DISEGNA----------------------------------

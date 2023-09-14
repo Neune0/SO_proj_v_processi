@@ -32,3 +32,15 @@ void creaPipe(int pipe_fd[2]) {
         exit(1);
     }
 }
+
+
+// uccide un dato processo  dell'array di pid_t
+void uccidiProcesso( pid_t *array_pid, int id_processo){
+	if((id_processo != -1) && (array_pid[id_processo] != 0))
+	{ 
+		kill(array_pid[id_processo], SIGKILL);
+		waitpid(array_pid[id_processo],NULL,0);
+		array_pid[id_processo]=0;
+	}
+}
+

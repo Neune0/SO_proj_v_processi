@@ -22,5 +22,7 @@ int main() {
     
  
     endwin(); // Termina ncurses
+    
+    printf("\n FROGGER: CLOSED \n\n");
     return 0;
 }

@@ -93,6 +93,6 @@ typedef struct {
 void inizializzaNcurses();
 void creaPipe(int pipe_fd[2]);
 void inizializzaColorazione();
-
+void uccidiProcesso( pid_t *array_pid, int id_processo);
 #endif // UTILITIES_H
 

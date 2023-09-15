@@ -25,12 +25,13 @@ void drawProcess(int* pipe_fd) {
 	time(&start_time);
 	time(&current_time);
 	
-	
+	/*
 	int tempo = 60;
 	int vite = 4;
 	int punteggio = 0;
 	int livello = 1;
-	
+	/**/
+
 	bool morteRana = false;
 	bool vittoriaRana = false;
 	bool gameOver = false;
@@ -126,48 +127,48 @@ void drawProcess(int* pipe_fd) {
 	//PipeData rana_mod; //var di supporto
 	bool troncoCollision = false;
 	
-  while (!gameOver) {
-  	read(pipe_fd[0], &pipeData, sizeof(PipeData)); // Leggi le coordinate inviate dalla pipe
+	while (!gameOver) {
+  		read(pipe_fd[0], &pipeData, sizeof(PipeData)); // Leggi le coordinate inviate dalla pipe
     
-  #ifdef DEBUG 
-    // test zona
-    mvprintw(37,2,"                                                       ");
-    mvprintw(37,2,"pid rana: %d",pidRana);
-    mvprintw(36,2,"                                                                                                                           ");
-    mvprintw(36,2,"pid proiettili: ");
-    for(int i=0;i<MAXNPROIETTILI;i++){
-    	mvprintw(36,18+(i*11),"pid%d: %d",i,array_pid_proiettili[i]);
-    }
-    mvprintw(35,2,"                                                                                                                           ");
-    mvprintw(35,2,"pid proiettili nemici: ");
-    for(int i=0;i<MAXNPROIETTILINEMICI;i++){
-    	mvprintw(35,26+(i*11),"pid%d: %d",i,array_pid_proiettili_nemici[i]);
-    }
-    mvprintw(34,2,"                                                                                                                           ");
-    mvprintw(34,2,"pid nemici: ");
-    for(int i=0;i<MAXNNEMICI;i++){
-    	mvprintw(34,15+(i*11),"pid%d: %d",i,array_pid_nemici[i]);
-    }
-    mvprintw(33,2,"                                                                                                                           ");
-    mvprintw(33,2,"pid veicoli: ");
-    for(int i=0;i<8;i++){
-    	mvprintw(33,15+(i*11),"pid%d: %d",i,pid_veicoli[i]);
-    }
-    
-    mvprintw(38,2,"                                                                                                                           ");
-    mvprintw(38,2,"pid tronchi: ");
-    for(int i=0;i<3;i++){
-    	mvprintw(38,15+(i*11),"pid%d: %d",i,pid_tronchi[i]);
-    }
-    
-    mvprintw(37,110,"                        ");
-    mvprintw(37,110,"proiettili in gioco: %d",contatore_proiettili_in_gioco);
-    mvprintw(38,110,"                               ");
-    mvprintw(38,110,"nemici in gioco: %d",contatore_nemici_in_gioco);
-    mvprintw(39,110,"                                  ");
-    mvprintw(39,110,"proiettili nemici in gioco: %d",contatore_proiettili_nemici_in_gioco);
-    // fine test zona
-  #endif
+	#ifdef DEBUG 
+		// test zona
+		mvprintw(37,2,"                                                       ");
+		mvprintw(37,2,"pid rana: %d",pidRana);
+		mvprintw(36,2,"                                                                                                                           ");
+		mvprintw(36,2,"pid proiettili: ");
+		for(int i=0;i<MAXNPROIETTILI;i++){
+			mvprintw(36,18+(i*11),"pid%d: %d",i,array_pid_proiettili[i]);
+		}
+		mvprintw(35,2,"                                                                                                                           ");
+		mvprintw(35,2,"pid proiettili nemici: ");
+		for(int i=0;i<MAXNPROIETTILINEMICI;i++){
+			mvprintw(35,26+(i*11),"pid%d: %d",i,array_pid_proiettili_nemici[i]);
+		}
+		mvprintw(34,2,"                                                                                                                           ");
+		mvprintw(34,2,"pid nemici: ");
+		for(int i=0;i<MAXNNEMICI;i++){
+			mvprintw(34,15+(i*11),"pid%d: %d",i,array_pid_nemici[i]);
+		}
+		mvprintw(33,2,"                                                                                                                           ");
+		mvprintw(33,2,"pid veicoli: ");
+		for(int i=0;i<8;i++){
+			mvprintw(33,15+(i*11),"pid%d: %d",i,pid_veicoli[i]);
+		}
+		
+		mvprintw(38,2,"                                                                                                                           ");
+		mvprintw(38,2,"pid tronchi: ");
+		for(int i=0;i<3;i++){
+			mvprintw(38,15+(i*11),"pid%d: %d",i,pid_tronchi[i]);
+		}
+		
+		mvprintw(37,110,"                        ");
+		mvprintw(37,110,"proiettili in gioco: %d",contatore_proiettili_in_gioco);
+		mvprintw(38,110,"                               ");
+		mvprintw(38,110,"nemici in gioco: %d",contatore_nemici_in_gioco);
+		mvprintw(39,110,"                                  ");
+		mvprintw(39,110,"proiettili nemici in gioco: %d",contatore_proiettili_nemici_in_gioco);
+		// fine test zona
+	#endif
     
 		/*
 				int troncoID= -1;
@@ -193,153 +194,153 @@ void drawProcess(int* pipe_fd) {
     PipeData rana_new;
     PipeData rana_old;
     /**/
-    int next_rana_bullet_id=0;
-    int next_enemy_bullet_id = 0;
-    int next_enemy_id = 0;
-    
-    switch(pipeData.type){
-    	case 'X':
-    		if(troncoCollision)
-    		{
-    			
-    		}else{
-    			aggiornaPosizioneOggetto(&pipeData, &old_pos[0], screenMatrix, staticScreenMatrix, &ranaSprite);
-    			//aggiornaPosizioneOggetto(&rana_new, &old_pos[0], screenMatrix, staticScreenMatrix, &ranaSprite);
-    		}
-    		#ifdef DEBUG
-    		mvprintw(0,110,"                                    ");
-    		//mvprintw(0,110,"RANA tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
-    		mvprintw(0,110,"RANA tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type, old_pos[0].x,old_pos[0].y, pipeData.id);
-        #endif
-        break;
+		int next_rana_bullet_id=0;
+		int next_enemy_bullet_id = 0;
+		int next_enemy_id = 0;
+		
+		switch(pipeData.type){
+			case 'X':
+				if(troncoCollision)
+				{
+					
+				}else{
+					aggiornaPosizioneOggetto(&pipeData, &old_pos[0], screenMatrix, staticScreenMatrix, &ranaSprite);
+					//aggiornaPosizioneOggetto(&rana_new, &old_pos[0], screenMatrix, staticScreenMatrix, &ranaSprite);
+				}
+				#ifdef DEBUG
+				mvprintw(0,110,"                                    ");
+				//mvprintw(0,110,"RANA tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+				mvprintw(0,110,"RANA tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type, old_pos[0].x,old_pos[0].y, pipeData.id);
+				#endif
+				break;
 			case 'T':
-        aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix,staticScreenMatrix, &troncoSprite);
-        
-        aggiornaDirezioneTronchi( &pipeData, &old_pos[pipeData.id], arrayDirTronchi);
-        #ifdef DEBUG
-        mvprintw(pipeData.id,110,"                                    ");
-    		mvprintw(pipeData.id,110,"TRONCO tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
-        #endif
-        break;
-      case 'A':
-      	aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &autoSprite);
-      	#ifdef DEBUG
-      	mvprintw(pipeData.id,110,"                                    ");
-    		mvprintw(pipeData.id,110,"AUTO tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
-        #endif
-        break;
-        
-     case 'C':  // legge il camion da pipe e aggiorna posizione
-      	aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &camionSprite);
-    	  #ifdef DEBUG
-      	mvprintw(pipeData.id,110,"                                    ");
-    		mvprintw(pipeData.id,110,"CAMION tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
-        #endif
-        break;
-      case 'c':
-      	// NON disegnare il camion per un certo tempo, quando esce dallo schermo
-     		break;
-      case 'S':
-      	//proiettile sparato da utente
-      	// avvia il proiettile con posizione iniziale della rana (o dell oggetto che ha sparato)
-      	if(contatore_proiettili_in_gioco<MAXNPROIETTILI)	// se si hanno ancora munizioni
-      	{ 
-      		// incremento contatore e faccio partire il processo proiettile, salvo il pid del processo
-      		next_rana_bullet_id = id_disponibile(array_pid_proiettili,MAXNPROIETTILI);
-      		if(next_rana_bullet_id != -1) //se c'è un id disponibile
-      		{
-      			array_pid_proiettili[next_rana_bullet_id]=avviaProiettile(pipe_fd, &pipeData, next_rana_bullet_id);
-      			contatore_proiettili_in_gioco++;
-      		}
-      	}
-      	break;
-      case 'n':
-      	if(contatore_nemici_in_gioco<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
-      	{ 
-      		// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
-      		next_enemy_id = id_disponibile(array_pid_nemici,MAXNNEMICI);
-      		if(next_enemy_id != -1){
-	      		array_pid_nemici[next_enemy_id]=avviaNemico(pipe_fd,&pipeData, next_enemy_id);
-  					contatore_nemici_in_gioco++;
-  				}    		
-      	}
-      	break;
-      case 's':
-      	// proiettile nemico sparato
-      	if(contatore_proiettili_nemici_in_gioco<MAXNPROIETTILINEMICI) // se non si è raggiunto il numero massimo di nemici
-      	{ 
-      		// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
-      		next_enemy_bullet_id = id_disponibile(array_pid_proiettili_nemici,MAXNPROIETTILINEMICI);
-      		if( next_enemy_bullet_id != -1)
-      		{ 
-      			array_pid_proiettili_nemici[next_enemy_bullet_id]= avviaProiettileNemico(pipe_fd, &pipeData, next_enemy_bullet_id);
-      			contatore_proiettili_nemici_in_gioco++;
-    			}
-      	}
-      	break;
-      case 'P':
-      	// nuove coordinate proiettile
-      	// se il proiettile ha sforato devo uccidere il processo e decrementare il contatore
-      	#ifdef DEBUG
-      	mvprintw(13+pipeData.id,110,"                                       ");
-    		mvprintw(13+pipeData.id,110,"PROIETTILE tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
-    		#endif
-      	if(pipeData.y<0){
-      		#ifdef DEBUG
-      		mvprintw(13+pipeData.id,110,"                                    ");
-    			mvprintw(13+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
-      		#endif
-      		
-      		uccidiProiettile( array_pid_proiettili, pipeData.id); // uccide il processo proiettile
-      		cancellaOggetto(old_pos_proiettili, &proiettileSprite, screenMatrix, staticScreenMatrix, pipeData.id);
-      		contatore_proiettili_in_gioco--;
-      		
-      	}
-      	else{
-      		aggiornaPosizioneOggetto(&pipeData, &old_pos_proiettili[pipeData.id], screenMatrix, staticScreenMatrix, &proiettileSprite);
-      	}
-      	break;
-      case 'p':
-      	// nuove coordinate proiettile nemico
-      	// se il proiettile ha sforato devo uccidere il processo e decrementare il contatore
-      	#ifdef DEBUG
-      	mvprintw(25+pipeData.id,110,"                                       ");
-    		mvprintw(25+pipeData.id,110,"PROIETTILEN tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
-    		#endif
-      	if(pipeData.y>30){
-      		#ifdef DEBUG
-      		mvprintw(25+pipeData.id,110,"                                    ");
-    			mvprintw(25+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
-      		#endif
-      		uccidiProiettileNemico( array_pid_proiettili_nemici, pipeData.id); // uccide il processo proiettile
-      		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, pipeData.id);
-      		contatore_proiettili_nemici_in_gioco--;
-      		
-      	}
-      	else{
-      		aggiornaPosizioneOggetto(&pipeData, &old_pos_proiettili_nemici[pipeData.id], screenMatrix, staticScreenMatrix, &proiettileNemicoSprite);
-      	}
-      	break;
-      	case 'Z':
-      		beep();
-      		// funzione che mette in pausa
-      		// funzione che visualizza menu
-      		// exit del menu -> intero con scelta
-      		// gli vanno passati tutti i pid che deve mettere in pausa
-      		
-      		//int scelta = pausa(pidRana);
-      		stampaRefreshMatrice(screenMatrix);
-      		// se preme continua allora stampare tutta la matrice dinamica
-      		// se preme esci termire tutti i processi
-      		
-      		
-      		// switch su scelta
-      		break;
-      default:
-        break;
-    }//end switch-case su type
+				aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix,staticScreenMatrix, &troncoSprite);
+			
+				aggiornaDirezioneTronchi( &pipeData, &old_pos[pipeData.id], arrayDirTronchi);
+				#ifdef DEBUG
+				mvprintw(pipeData.id,110,"                                    ");
+				mvprintw(pipeData.id,110,"TRONCO tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+				#endif
+				break;
+			case 'A':
+				aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &autoSprite);
+				#ifdef DEBUG
+				mvprintw(pipeData.id,110,"                                    ");
+				mvprintw(pipeData.id,110,"AUTO tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+				#endif
+				break;
+			
+			case 'C':  // legge il camion da pipe e aggiorna posizione
+				aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix, staticScreenMatrix, &camionSprite);
+				#ifdef DEBUG
+				mvprintw(pipeData.id,110,"                                    ");
+				mvprintw(pipeData.id,110,"CAMION tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+				#endif
+				break;
+			case 'c':
+			// NON disegnare il camion per un certo tempo, quando esce dallo schermo
+				break;
+			case 'S':
+			//proiettile sparato da utente
+			// avvia il proiettile con posizione iniziale della rana (o dell oggetto che ha sparato)
+				if(contatore_proiettili_in_gioco<MAXNPROIETTILI)	// se si hanno ancora munizioni
+				{ 
+					// incremento contatore e faccio partire il processo proiettile, salvo il pid del processo
+					next_rana_bullet_id = id_disponibile(array_pid_proiettili,MAXNPROIETTILI);
+					if(next_rana_bullet_id != -1) //se c'è un id disponibile
+					{
+						array_pid_proiettili[next_rana_bullet_id]=avviaProiettile(pipe_fd, &pipeData, next_rana_bullet_id);
+						contatore_proiettili_in_gioco++;
+					}
+				}
+				break;
+			case 'n':
+				if(contatore_nemici_in_gioco<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
+				{ 
+					// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
+					next_enemy_id = id_disponibile(array_pid_nemici,MAXNNEMICI);
+					if(next_enemy_id != -1){
+						array_pid_nemici[next_enemy_id]=avviaNemico(pipe_fd,&pipeData, next_enemy_id);
+						contatore_nemici_in_gioco++;
+						}    		
+				}
+				break;
+			case 's':
+			// proiettile nemico sparato
+				if(contatore_proiettili_nemici_in_gioco<MAXNPROIETTILINEMICI) // se non si è raggiunto il numero massimo di nemici
+				{ 
+					// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
+					next_enemy_bullet_id = id_disponibile(array_pid_proiettili_nemici,MAXNPROIETTILINEMICI);
+					if( next_enemy_bullet_id != -1)
+					{ 
+						array_pid_proiettili_nemici[next_enemy_bullet_id]= avviaProiettileNemico(pipe_fd, &pipeData, next_enemy_bullet_id);
+						contatore_proiettili_nemici_in_gioco++;
+					}
+				}
+				break;
+			case 'P':
+			// nuove coordinate proiettile
+			// se il proiettile ha sforato devo uccidere il processo e decrementare il contatore
+				#ifdef DEBUG
+				mvprintw(13+pipeData.id,110,"                                       ");
+				mvprintw(13+pipeData.id,110,"PROIETTILE tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+				#endif
+				if(pipeData.y<0){
+					#ifdef DEBUG
+					mvprintw(13+pipeData.id,110,"                                    ");
+						mvprintw(13+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
+					#endif
+					
+					uccidiProiettile( array_pid_proiettili, pipeData.id); // uccide il processo proiettile
+					cancellaOggetto(old_pos_proiettili, &proiettileSprite, screenMatrix, staticScreenMatrix, pipeData.id);
+					contatore_proiettili_in_gioco--;
+					
+				}
+				else{
+					aggiornaPosizioneOggetto(&pipeData, &old_pos_proiettili[pipeData.id], screenMatrix, staticScreenMatrix, &proiettileSprite);
+				}
+				break;
+			case 'p':
+			// nuove coordinate proiettile nemico
+			// se il proiettile ha sforato devo uccidere il processo e decrementare il contatore
+				#ifdef DEBUG
+				mvprintw(25+pipeData.id,110,"                                       ");
+				mvprintw(25+pipeData.id,110,"PROIETTILEN tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
+				#endif
+				if(pipeData.y>30){
+					#ifdef DEBUG
+					mvprintw(25+pipeData.id,110,"                                    ");
+						mvprintw(25+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
+					#endif
+					uccidiProiettileNemico( array_pid_proiettili_nemici, pipeData.id); // uccide il processo proiettile
+					cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, pipeData.id);
+					contatore_proiettili_nemici_in_gioco--;
+				
+				}
+				else{
+					aggiornaPosizioneOggetto(&pipeData, &old_pos_proiettili_nemici[pipeData.id], screenMatrix, staticScreenMatrix, &proiettileNemicoSprite);
+				}
+				break;
+			case 'Z':
+				beep();
+				// funzione che mette in pausa
+				// funzione che visualizza menu
+				// exit del menu -> intero con scelta
+				// gli vanno passati tutti i pid che deve mettere in pausa
+				
+				//int scelta = pausa(pidRana);
+				stampaRefreshMatrice(screenMatrix);
+				// se preme continua allora stampare tutta la matrice dinamica
+				// se preme esci termire tutti i processi
+				
+				
+				// switch su scelta
+				break;
+		default:
+			break;
+		}//end switch-case su type
     
-    //-------------------------collisioni rana------
+    	//-------------------------collisioni rana------
 		
 		bool autoCollision = false;
 		bool tanaApertaCollision = false;
@@ -373,19 +374,19 @@ void drawProcess(int* pipe_fd) {
 		}
 		if((contatore_proiettili_in_gioco > 0) && (contatore_proiettili_nemici_in_gioco > 0)) //se ci sono proiettili in gioco
 		{
-				// controlla se collidono
-				proiettiliCollision = checkProiettileNemicoProiettile( old_pos_proiettili, old_pos_proiettili_nemici, 
-																			spriteOggetto, PROIETTILE_SPRITE, PROIETTILE_NEMICO_SPRITE);
+			// controlla se collidono
+			proiettiliCollision = checkProiettileNemicoProiettile( old_pos_proiettili, old_pos_proiettili_nemici, 
+																		spriteOggetto, PROIETTILE_SPRITE, PROIETTILE_NEMICO_SPRITE);
+			
+			if(proiettiliCollision) //se qualche proiettile a colliso con un altro
+			{
+				//identifica quali proiettili hanno colliso, ritorna indice del proiettile(0,1,2) o -1 
+				proiettileNemico_id = collisioneProiettileNemicoProiettile( old_pos_proiettili_nemici, old_pos_proiettili, 
+																		spriteOggetto, PROIETTILE_NEMICO_SPRITE, PROIETTILE_SPRITE);
 				
-				if(proiettiliCollision) //se qualche proiettile a colliso con un altro
-				{
-					//identifica quali proiettili hanno colliso, ritorna indice del proiettile(0,1,2) o -1 
-					proiettileNemico_id = collisioneProiettileNemicoProiettile( old_pos_proiettili_nemici, old_pos_proiettili, 
-																			spriteOggetto, PROIETTILE_NEMICO_SPRITE, PROIETTILE_SPRITE);
-					
-					proiettileRana_id = collisioneProiettileNemicoProiettile( old_pos_proiettili, old_pos_proiettili_nemici,
-																			spriteOggetto, PROIETTILE_SPRITE, PROIETTILE_NEMICO_SPRITE);
-				}
+				proiettileRana_id = collisioneProiettileNemicoProiettile( old_pos_proiettili, old_pos_proiettili_nemici,
+																		spriteOggetto, PROIETTILE_SPRITE, PROIETTILE_NEMICO_SPRITE);
+			}
 		}
 		
 		tanaChiusaCollision = checkRanaTanaChiusa(old_pos, tane, spriteOggetto, taneSprite);
@@ -404,14 +405,14 @@ void drawProcess(int* pipe_fd) {
 				contatore_proiettili_nemici_in_gioco--;
 				contatore_proiettili_in_gioco--;
 				
-				punteggio++;
+				gameHud.gameInfo.punteggio++;
 				
 				beep();
 			}
 		}
 		
 		
-		if(fiumeCollision) beep();
+		if(fiumeCollision) //beep();
 		
 		if(tanaChiusaCollision) 
 		{ 
@@ -419,14 +420,14 @@ void drawProcess(int* pipe_fd) {
 			beep(); 
 		}
 		if(tanaApertaCollision){
-				vittoriaRana=true;
-				beep(); 
-		 		for(int i=0; i<5; i++){
-			 		if(tane[i].status == CLOSED){
-			 			stampaSpriteInMatrice( tane[i].info.y, tane[i].info.x, &taneSprite[CLOSED], staticScreenMatrix);
-			 			stampaSpriteInMatrice( tane[i].info.y, tane[i].info.x, &taneSprite[CLOSED], screenMatrix);
-			 		}
-			 	}
+			vittoriaRana=true;
+			beep(); 
+			for(int i=0; i<5; i++){
+				if(tane[i].status == CLOSED){
+					stampaSpriteInMatrice( tane[i].info.y, tane[i].info.x, &taneSprite[CLOSED], staticScreenMatrix);
+					stampaSpriteInMatrice( tane[i].info.y, tane[i].info.x, &taneSprite[CLOSED], screenMatrix);
+				}
+			}
 	 	}
 	 	
 	 	if(autoProiettiliNemiciCollision)		// c'è collisione tra proiettileNemico e veicolo
@@ -469,39 +470,38 @@ void drawProcess(int* pipe_fd) {
 		
 		if(enemyBulletCollision != -1){
 			//beep();
-  		uccidiProiettileNemico( array_pid_proiettili_nemici, enemyBulletCollision); // uccide il processo proiettile
-  		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, enemyBulletCollision);
-  		contatore_proiettili_nemici_in_gioco--;
-  		morteRana = true;
+			uccidiProiettileNemico( array_pid_proiettili_nemici, enemyBulletCollision); // uccide il processo proiettile
+			cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, enemyBulletCollision);
+			contatore_proiettili_nemici_in_gioco--;
+			morteRana = true;
 		}	
-    if (tempo == 0) morteRana = true;
-    if(morteRana)
-    {
-    	cancellaOggetto(old_pos, &ranaSprite, screenMatrix, staticScreenMatrix, 0);
+    	if (gameHud.gameInfo.tempo == 0) morteRana = true;
+		if(morteRana)
+		{
+			cancellaOggetto(old_pos, &ranaSprite, screenMatrix, staticScreenMatrix, 0);
 			pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
-			vite--;
+			gameHud.gameInfo.vite--;
 			morteRana = false;
-    }
-    if(vittoriaRana)
-    {
-    	cancellaOggetto(old_pos, &ranaSprite, screenMatrix, staticScreenMatrix, 0);
+		}
+		if(vittoriaRana)
+		{
+			cancellaOggetto(old_pos, &ranaSprite, screenMatrix, staticScreenMatrix, 0);
 			pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
-			punteggio+=10;
+			gameHud.gameInfo.punteggio+=10;
+			start_time = current_time; // resetta il timer
 			vittoriaRana = false;
-    }
-    
-    //--------------------------------------------------
-   
-    /**/
-    tempo = timer(&current_time, &start_time);
-    
-    aggiornaGameInfo(&gameHud, tempo, vite, punteggio, livello);
-    aggiornaHudInMatrice(&gameHud, screenMatrix);
+		}
+		/**/
+		gameHud.gameInfo.tempo = timer(&current_time, &start_time, MAX_TIME);
+		
+		
+		//aggiornaGameInfo(&gameHud, tempo, vite, punteggio, livello);
+		aggiornaHudInMatrice(&gameHud, screenMatrix);
     
 		stampaMatrice(screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
-    refresh(); // Aggiorna la finestra
+    	refresh(); // Aggiorna la finestra
     
-    if(gameHud.gameInfo.vite == 0)	gameOver=true;
+    	if(gameHud.gameInfo.vite == 0)	gameOver=true;
 	}//end while
 	
 	// a fine gioco chiude tutti i processi
@@ -534,14 +534,14 @@ void drawProcess(int* pipe_fd) {
 }//end drawProcess
 //--------------------------------------------FINE PROCESSO DISEGNA----------------------------------
 
-int timer(time_t *current_time, time_t *start_time)
+int timer(time_t *current_time, time_t *start_time, int max_time)
 {
-		int seconds=60;
-		time(current_time);
+	int seconds=max_time;
+	time(current_time);
     double diff_time = difftime(*current_time, *start_time);
     int diff_time_sec = (int) diff_time;
-    if(diff_time_sec > 0) seconds=(60-diff_time_sec)%61;
-    if(diff_time_sec == 60) *start_time = *current_time;	//resetta il tempo di start
+    if(diff_time_sec > 0) seconds=(max_time - diff_time_sec)%max_time;
+    if(diff_time_sec == max_time) *start_time = *current_time;	//resetta il tempo di start
     return seconds;
 }
 

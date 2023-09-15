@@ -33,10 +33,10 @@ void inizializzaOldPosProiettili(PipeData *old_pos,int length){
 //-----------------------------------------------------------------------
 void inizializzaGameInfo(GameInfo *gameInfo)
 {
-	gameInfo->tempo=60;
-	gameInfo->vite=4;
+	gameInfo->tempo=MAX_TIME;
+	gameInfo->vite=MAX_LIFE;
 	gameInfo->punteggio=0; 
-	gameInfo->livello= 1;
+	gameInfo->livello=START_LEVEL;
 }
 //------------------------------------------------------
 void inizializzaGameHUD(GameHUD *gameHud)

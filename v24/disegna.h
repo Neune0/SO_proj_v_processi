@@ -31,7 +31,7 @@
 #define TANA_COLS 11
 
 
-int timer(time_t *current_time, time_t *start_time);
+int timer(time_t *current_time, time_t *start_time, int max_time);
 int id_disponibile(pid_t *array_pid_proiettili,int lunghezza);
 void avviaDrawProcess(int pipe_fd[2]);
 void drawProcess(int* pipe_fd);

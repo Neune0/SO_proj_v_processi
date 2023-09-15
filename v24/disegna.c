@@ -469,17 +469,15 @@ void drawProcess(int* pipe_fd) {
 		
 		if(enemyBulletCollision != -1){
 			//beep();
-			
   		uccidiProiettileNemico( array_pid_proiettili_nemici, enemyBulletCollision); // uccide il processo proiettile
   		cancellaOggetto(old_pos_proiettili_nemici, &proiettileNemicoSprite, screenMatrix, staticScreenMatrix, enemyBulletCollision);
   		contatore_proiettili_nemici_in_gioco--;
   		morteRana = true;
 		}	
-    
+    if (tempo == 0) morteRana = true;
     if(morteRana)
     {
     	cancellaOggetto(old_pos, &ranaSprite, screenMatrix, staticScreenMatrix, 0);
-			//old_pos[0].x = old_pos[0].y = 0; //modifico vecchia pos della rana 
 			pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
 			vite--;
 			morteRana = false;
@@ -487,20 +485,13 @@ void drawProcess(int* pipe_fd) {
     if(vittoriaRana)
     {
     	cancellaOggetto(old_pos, &ranaSprite, screenMatrix, staticScreenMatrix, 0);
-			//old_pos[0].x = old_pos[0].y = 0; //modifico vecchia pos della rana 
 			pidRana = resetRana(pipe_fd, pipeRana_fd, pidRana); 
 			punteggio+=10;
 			vittoriaRana = false;
     }
     
     //--------------------------------------------------
-    //write(pipeRana_fd[1], &rana_mod, sizeof(PipeData));
-    /*
-    time(&current_time);
-    diff_time = difftime(current_time, start_time);
-    diff_time_sec = (int) diff_time;
-    if(diff_time_sec > 0) tempo=(60-diff_time_sec)%60;
-    if(diff_time_sec == 60) start_time = current_time;
+   
     /**/
     tempo = timer(&current_time, &start_time);
     

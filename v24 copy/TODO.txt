@@ -1,0 +1,75 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> menu iniziale:
+
+		funzione generica per le box stampaBox(int start_row,int start_col,int color,char up_down_char,char sides_char)
+		funzione per il logo e stampa box generica vanno in file a parte, adattare il makefile
+		stampa box e logo vengono utilizzate da logo e menuIniziale
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> per il proiettile: 
+
+		capire perchè ogni tanto la matrice si corrompe
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> nemico/nemici:
+
+		stama del nemico
+
+		punto partenza proiettile= posizione nemico = posizione tronco sincronia, come?
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> collisioni:
+		
+		. serve conservare il pid della rana per poterla uccidere
+		. occorre spostare tutti gli avvi di processi oggetti all'interno di disegna
+		. all'interno di disegna serve conservare i pid di tutti gli oggetti
+		. usare i segnali per mettere in pausa e riprendere i processi
+		
+		-> collisioni con auto/camion:
+				uccidere il pid della rana e farlo ripartire
+				
+		-> collisioni con tane chiuse:
+				uccidere il pid della rana e farlo ripartire
+		
+		-> collisione con tronco sul quale è presente un nemico:
+				uccidere il pid della rana e farlo ripartire
+				
+		-> collisione con proiettile nemico:
+				uccidere il pid della rana e farlo ripartire
+				
+		-> collisione nemico e proiettile amico:
+				uccidere nemico tramite pid(gia salvato in array)
+				
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> menu pausa:
+		se premo esc la rana manda in pipe il carattere esc, disegna lo legge e stoppa tutti i processi
+		per stoppare tutti i processi, disegna deve essere padre di tutti i processi e deve conservare i pid
+		per conservare i pid si deve usare la memoria condivisa
+		per non usare la memoria condivisa il processo gestore auto deve conservare i pid dei figli e nella sua funione di handle stop deve mandare 
+		i segnali ai figli, cosi facendo disegna manda lo stop al gestore e basta e si può ottenere il pid del gestore come abbiamo fatto per 
+		quello della rana
+		prossime cose da fare:
+			1. stampare il a video il pid del gestore delle auto
+			2. inserire gli stop nel gestore auto e nei processi auto
+			3. inserire i continua nel gestore e nei processi auto
+			4. nello stop del gestore mandare gli stop ai processi auto
+			5. nel continua del gestore mandare i continua ai processi auto
+		visualizzare menu con continua impostazioni ed esci e salva
+		
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> salvataggio e caricamento:
+		. creare struttura dati per salvare i dati
+		. i salvataggi vanno in un file di testo chiamato salvataggi.txt
+		
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> interazione rana tronchi:
+		la rana deve spostarsi assieme al tronco
+		IDEA: pipe rana disegna dove disegna scrive, quando la rana si trova su un trono disegna si occupa di sovrascrivere le coordinate della rana
+		
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> menu caricamenti:
+		creare menu caricamenti leggendo il file salvataggi.txt
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+-> menu salvataggio:
+		viene richiesto il nome della partita, va fatto un controllo se il nome esiste gia richiedere

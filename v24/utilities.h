@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <signal.h>
+#include <assert.h>
 
 #define WIDTH 104
 #define HEIGHT 37

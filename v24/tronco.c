@@ -2,18 +2,18 @@
 
 void gestoreTronchi(int* pipe_fd,pid_t* pid_tronchi){
 	int num_tronchi = NTRONCHI;
-  int dir_tronco[NTRONCHI];
-  dir_tronco[0] = (rand() % 2 == 1) ? 1 : -1;
+	int dir_tronco[NTRONCHI];
+	dir_tronco[0] = (rand() % 2 == 1) ? 1 : -1;
     		
-  for (int i = 1; i < num_tronchi; i++) {
-  	dir_tronco[i] = -1 * dir_tronco[i - 1];
-	}
+	for (int i = 1; i < num_tronchi; i++) {
+  		dir_tronco[i] = -1 * dir_tronco[i - 1];
+	}	
 					
-  pid_tronchi[0]=avviaTronco(pipe_fd,YTRONCOUNO,dir_tronco,1);
-  usleep(200000);
-  pid_tronchi[1]=avviaTronco(pipe_fd,YTRONCODUE,dir_tronco,2);
-  usleep(300000);
-  pid_tronchi[2]=avviaTronco(pipe_fd,YTRONCOTRE,dir_tronco,3);
+	pid_tronchi[0]=avviaTronco(pipe_fd,YTRONCOUNO,dir_tronco,1);
+	usleep(200000);
+	pid_tronchi[1]=avviaTronco(pipe_fd,YTRONCODUE,dir_tronco,2);
+	usleep(300000);
+	pid_tronchi[2]=avviaTronco(pipe_fd,YTRONCOTRE,dir_tronco,3);
 
 }
 
@@ -55,36 +55,34 @@ void tronco(int* pipe_fd, int y, int direzione_x, int id) {
 		
 		int numero_spostamenti=0;
     while (1) {
-    	mvprintw(37+pipeData.id,2,"t%d numero spostamenti: %d",pipeData.id,numero_spostamenti);
+    	//mvprintw(37+pipeData.id,2,"t%d numero spostamenti: %d",pipeData.id,numero_spostamenti);
     	if(numero_spostamenti==108 && pipeData.type=='T'){
     		// il tronco si trasforma in tronco nemico
-    		pipeData.type='n';
+    		//pipeData.type='n';
+			pipeData.type='N';
     		write(pipe_fd[1], &pipeData, sizeof(PipeData));
     		pipeData.type='T';
     	}else{
     		if(direzione==1){
-    		if(pipeData.x + lunghezza_tronco + 1 < WIDTH){
-      		pipeData.x++;
-      	}
-      	else{
-      		direzione*=-1;
-      	}
-    	}else{
-    		if(pipeData.x - 1 > 0){
-    			pipeData.x--;
+    			if(pipeData.x + lunghezza_tronco + 1 < WIDTH){
+      				pipeData.x++;
+      			}else{
+      				direzione*=-1;
+      			}
+    		}else{
+				if(pipeData.x - 1 > 0){
+					pipeData.x--;
+				}else{
+					direzione*=-1;
+				}
     		}
-    		else{
-    			direzione*=-1;
-    		}
-    	}
     	
-    	// Invia le coordinate attraverso la pipe
-      write(pipe_fd[1], &pipeData, sizeof(PipeData));
-    	
+    		// Invia le coordinate attraverso la pipe
+      		write(pipe_fd[1], &pipeData, sizeof(PipeData));
     	}
 
-			numero_spostamenti= (numero_spostamenti+1)%1000;
-      // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
-      usleep(100000);
+		numero_spostamenti= (numero_spostamenti+1)%1000;
+      	// Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
+      	usleep(100000);
     }
 }

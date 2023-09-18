@@ -194,10 +194,22 @@ void drawProcess(int* pipe_fd) {
 				break;
 			case 'T':
 				aggiornaPosizioneOggetto(&pipeData, &old_pos[pipeData.id], screenMatrix,staticScreenMatrix, &troncoSprite);
-			
 				aggiornaDirezioneTronchi( &pipeData, &old_pos[pipeData.id], arrayDirTronchi);
 
-
+				if((contatore_nemici_in_gioco > 0) && (contatore_nemici_in_gioco <= MAXNNEMICI))
+				{
+					/*	se ci sono nemici, disegna nemici sui tronchi */
+					int id_tronco = pipeData.id; // id_tronco == nemico.id +1; old_pos_nemici[0,1,2] ; tronchi == old_pos[1,2,3];  
+					int indice_nemico = id_tronco-1;  // 
+					//prende la pos del tronco, crea su tronco nuovo oggetto nemico,
+					PipeData new_pos_nemico = {old_pos[id_tronco].x +2, old_pos[id_tronco].y, 'n', id_tronco };
+					
+					// pulisce vecchia posizione del nemico, aggiorna la posizione nemico, stampa posizione nemico in matrice
+					//pulisciSpriteInMatrice(old_pos_nemici[indice_nemico].y, old_pos_nemici[indice_nemico].x, &nemicoSprite, screenMatrix, staticScreenMatrix);
+					aggiornaOldPos(&old_pos_nemici[indice_nemico], &new_pos_nemico);
+					stampaSpriteInMatrice(old_pos_nemici[indice_nemico].y, old_pos_nemici[indice_nemico].x, &nemicoSprite, screenMatrix);
+				}
+				
 				#ifdef DEBUG
 				mvprintw(pipeData.id,110,"                                    ");
 				mvprintw(pipeData.id,110,"TRONCO tipo: %c, x:%d ,y:%d ,id: %d",pipeData.type,pipeData.x,pipeData.y,pipeData.id);
@@ -255,6 +267,8 @@ void drawProcess(int* pipe_fd) {
 				break;
 			case 'n':							// hai letto processoNemico 
 				//		aggiorna old_pos_nemici
+				
+				/* 	------	disegna nemico -------------
 				;
 				int id_tronco = pipeData.id +1; // id_tronco == nemico.id +1
 				
@@ -263,7 +277,8 @@ void drawProcess(int* pipe_fd) {
 				pulisciSpriteInMatrice(old_pos_nemici[pipeData.id].y, old_pos_nemici[pipeData.id].x, &nemicoSprite, screenMatrix, staticScreenMatrix);
 				aggiornaOldPos(&old_pos_nemici[pipeData.id], &new_pos_nemico);
 				stampaSpriteInMatrice(old_pos_nemici[pipeData.id].y, old_pos_nemici[pipeData.id].x, &nemicoSprite, screenMatrix);
-
+				/**/
+				//---------------------------------------------------------------
 				/*
 				if(contatore_nemici_in_gioco<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
 				{ 

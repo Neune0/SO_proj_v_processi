@@ -93,6 +93,7 @@ void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprit
     		
         pulisciSpriteInMatrice(datiVecchi, &(gameData->sprites[tipoSprite]), &(gameData->schermo));
         
+		// datiVecchi --> datiNuovi ?
         stampaSpriteInMatrice(datiVecchi, &(gameData->sprites[tipoSprite]), &(gameData->schermo));
         
         aggiornaOldPos(datiVecchi, datiNuovi);

@@ -126,7 +126,7 @@ bool checkAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sprite
 	PipeData *proiettile;
 	TipoSprite spriteVeicolo;
 	char charBullet;									//char inviato dal proiettile sulla pipe
-	switch(sprite_proiettile){					// in base al TIpoSprite, seleziona carattere usato dal proiettile,
+	switch(sprite_proiettile){					// in base al TipoSprite, seleziona carattere usato dal proiettile,
 		case PROIETTILE_NEMICO_SPRITE:
 			charBullet = 'p';
 			break;
@@ -180,7 +180,7 @@ bool checkProiettileNemicoProiettile( PipeData *array_proiettili_A, PipeData * a
 	
 	char charBullet_A;									//char inviato dal proiettile sulla pipe
 	char charBullet_B;
-	switch(sprite_proiettile_A){					// in base al TIpoSprite, seleziona carattere usato dal proiettile,
+	switch(sprite_proiettile_A){					// in base al TipoSprite, seleziona carattere usato dal proiettile,
 		case PROIETTILE_NEMICO_SPRITE:
 			charBullet_A = 'p';  	// proiettile nemico
 			charBullet_B = 'P'; 	// proiettile rana
@@ -213,6 +213,106 @@ bool checkProiettileNemicoProiettile( PipeData *array_proiettili_A, PipeData * a
 	}//end for esterno
 	return false;
 }
+//------------------------------------------
+// verifica se c'e' collisione tra proiettileRana e Nemico
+bool checkNemicoProiettile(PipeData *array_nemici, PipeData *array_proiettili, Sprite *array_sprite)
+{
+	bool collision=false;
+	PipeData *nemico;		// variabili di supporto
+	PipeData *proiettile;
+
+	for(int i=0; i < MAXNNEMICI; i++)
+	{
+		if(array_nemici[i].type == 'n')	//nemico e' attivo
+		{
+			nemico = &array_nemici[i];
+			/*	controlla per ogni proiettile se c'e' collisione	*/
+			for(int i=0; i<MAXNPROIETTILI; i++)
+			{
+				if(array_proiettili[i].type == 'P')	// se il proietile di rana e' attivo
+				{
+					proiettile = &array_proiettili[i];
+
+					collision = checkCollisione(nemico, proiettile, &array_sprite[NEMICO_SPRITE], &array_sprite[PROIETTILE_SPRITE]);
+					if(collision) return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+//--------------------------------------------------------
+// restituisce l'indice del nemico che viene colpito dai proiettili  --non testato---
+int collisioneNemicoProiettile(PipeData *array_nemici, PipeData *array_proiettili, Sprite *array_sprite)
+{
+	int indice_nemico = -1;
+	int indice_proiettile = -1;
+	bool collision=false;
+	PipeData *nemico;		// variabili di supporto
+	PipeData *proiettile;
+
+	for(int i=0; i < MAXNNEMICI; i++)
+	{
+		if(array_nemici[i].type == 'n')	//nemico e' attivo
+		{
+			nemico = &array_nemici[i];
+			/*	controlla per ogni proiettile se c'e' collisione	*/
+			for(int j=0; j<MAXNPROIETTILI; j++)
+			{
+				if(array_proiettili[j].type == 'P')	// se il proietile di rana e' attivo
+				{
+					proiettile = &array_proiettili[j];
+
+					collision = checkCollisione(nemico, proiettile, &array_sprite[NEMICO_SPRITE], &array_sprite[PROIETTILE_SPRITE]);
+					if(collision) 
+					{
+						indice_nemico = i;
+						return indice_nemico;
+					}
+				}
+			}
+		}
+	}
+}
+//------------------------------------------------------
+
+
+
+
+
+//------------------------------------------------------
+// ritorna l'indice dell oggetto dell'array_A, che collide con qualcuno degli oggetti dall'array_B
+int collisioneOggettoAOggettoB(PipeData *array_A, PipeData *array_B, Sprite *array_sprite, TipoSprite sprite_A, TipoSprite sprite_B, int dim_arr_A, int dim_arr_B)
+{	
+	int indice_A = -1;
+	//int indice_B = -1;
+	PipeData *obj_A;
+	PipeData *obj_B;
+	bool collision = false;
+
+	for(int i=0; i< dim_arr_A; i++)
+	{
+		obj_A = &array_A[i];
+		if(obj_A->type != ' ')
+		{
+			for(int j=0; j<dim_arr_B; j++)
+			{
+				obj_B = &array_B[i];
+				if(obj_B ->type != ' '){
+					collision = checkCollisione(obj_A, obj_B, &array_sprite[sprite_A], &array_sprite[sprite_B]);
+					if(collision){
+						indice_A = i;
+						return indice_A;
+					}
+				}
+				
+			}
+		}
+	}
+}
+//------------------------------------
+
+
 //------------------------------------collisione auto-proiettile----------------------------
 
 // ritorna indice del proiettile che collide
@@ -228,7 +328,7 @@ int collisioneAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sp
 	
 	
 	switch(sprite_proiettile)
-	{																// in base al TIpoSprite, seleziona carattere usato dal proiettile,
+	{																// in base al TipoSprite, seleziona carattere usato dal proiettile,
 		case PROIETTILE_NEMICO_SPRITE:
 			charBullet = 'p';  	// proiettile nemico
 			max_num_proiettili = MAXNPROIETTILINEMICI;
@@ -314,7 +414,7 @@ int collisioneProiettileNemicoProiettile( PipeData *array_proiettili_A, PipeData
 	
 	char charBullet_A;									//char inviato dal proiettile sulla pipe
 	char charBullet_B;
-	switch(sprite_proiettile_A){					// in base al TIpoSprite, seleziona carattere usato dal proiettile,
+	switch(sprite_proiettile_A){					// in base al TipoSprite, seleziona carattere usato dal proiettile,
 		case PROIETTILE_NEMICO_SPRITE:
 			charBullet_A = 'p';  	// proiettile nemico
 			charBullet_B = 'P'; 	// proiettile rana

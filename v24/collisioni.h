@@ -11,7 +11,7 @@ bool checkAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sprite
 bool checkRanaFiume( PipeData *old_pos, Sprite *array_sprite);
 bool checkProiettileNemicoProiettile( PipeData *array_proiettili_A, PipeData * array_proiettili_B, 
 																			Sprite *array_sprite, TipoSprite sprite_proiettile_A, TipoSprite sprite_proiettile_B);
-
+bool checkNemicoProiettile(PipeData *array_nemici, PipeData *array_proiettili, Sprite *array_sprite);
 
 
 
@@ -22,6 +22,7 @@ int collisioneProiettileNemicoProiettile( PipeData *array_proiettili_A, PipeData
 																			Sprite *array_sprite, TipoSprite sprite_proiettile_A, TipoSprite sprite_proiettile_B);
 int collisioneAutoProiettile( PipeData *old_pos, PipeData * array_proiettili, Sprite *array_sprite, TipoSprite sprite_proiettile);
 
+int collisioneOggettoAOggettoB(PipeData *array_A, PipeData *array_B, Sprite *array_sprite, TipoSprite sprite_A, TipoSprite sprite_B, int dim_arr_A, int dim_arr_B);
 
 
 bool checkCollisione(PipeData *object_1, PipeData *object_2, Sprite* sprite_1, Sprite* sprite_2);

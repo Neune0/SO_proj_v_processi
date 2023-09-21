@@ -412,11 +412,15 @@ void drawProcess(int* pipe_fd) {
 		bool autoProiettileCollision = false;
 		bool fiumeCollision = false;
 		bool proiettiliCollision = false;
-		
+		bool proiettileRanaCollision = false;
+
+
 		int  enemyBulletCollision = -1; // indice del proiettileNemico che colpisce la Rana
 		int  proiettileNemico_id = -1;
 		int  proiettileRana_id = -1;
-		
+		int nemico_id = -1;
+
+
 		fiumeCollision = checkRanaFiume(old_pos, spriteOggetto); // restituisce TRUE se la Rana cade nel fiume
 		troncoCollision = checkRanaTronco(old_pos, spriteOggetto); //collisione Rana-Tronco
 		autoCollision = checkRanaVeicolo(old_pos, spriteOggetto); //collisione Auto - Rana
@@ -434,6 +438,9 @@ void drawProcess(int* pipe_fd) {
 		//collisione Auto-ProiettileRana TIP: aspettare che compaiano tutti veicoli prima di sparare 
 		if(contatore_proiettili_in_gioco > 0){
 			autoProiettileCollision = checkAutoProiettile(old_pos, old_pos_proiettili, spriteOggetto, PROIETTILE_SPRITE);
+			if(contatore_nemici_in_gioco > 0){
+				proiettileRanaCollision = checkNemicoProiettile(old_pos_nemici, old_pos_proiettili, spriteOggetto);
+			}
 		}
 		if((contatore_proiettili_in_gioco > 0) && (contatore_proiettili_nemici_in_gioco > 0)) //se ci sono proiettili in gioco
 		{
@@ -474,7 +481,26 @@ void drawProcess(int* pipe_fd) {
 			}
 		}
 		
-		
+		if(proiettileRanaCollision) 
+		{
+			nemico_id = collisioneOggettoAOggettoB(old_pos_nemici, old_pos_proiettili, spriteOggetto, NEMICO_SPRITE,PROIETTILE_SPRITE, MAXNNEMICI, MAXNPROIETTILI);
+			proiettileRana_id = collisioneOggettoAOggettoB(old_pos_proiettili, old_pos_nemici, spriteOggetto, PROIETTILE_SPRITE, NEMICO_SPRITE, MAXNPROIETTILI, MAXNNEMICI);
+			if(nemico_id != -1 && proiettileRana_id != -1){
+				// cancella e uccide il proiettile
+				cancellaOggetto(old_pos_proiettili, &proiettileSprite, screenMatrix, staticScreenMatrix, proiettileRana_id);
+				uccidiProiettile(array_pid_proiettili, proiettileRana_id);
+				// cancella e uccide il nemico
+				cancellaOggetto(old_pos_nemici, &nemicoSprite, screenMatrix, staticScreenMatrix, nemico_id);
+				uccidiProcesso(array_pid_nemici, nemico_id);
+				contatore_proiettili_in_gioco--;
+				contatore_nemici_in_gioco--;
+				
+			}
+			beep();
+		}
+		if(contatore_nemici_in_gioco < 0) contatore_nemici_in_gioco = 0;
+
+
 		if(fiumeCollision) //beep();
 		
 		if(tanaChiusaCollision) 

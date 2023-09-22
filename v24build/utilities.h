@@ -187,6 +187,11 @@ typedef enum{
 	SFONDO_OBJ
 }TipoObj;
 
+typedef struct{
+	TipoCollisione tipoCollisione;
+	int id;
+}Collisione;
+
 void inizializzaNcurses();
 void creaPipe(int pipe_fd[2]);
 void inizializzaColorazione();

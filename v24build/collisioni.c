@@ -1,6 +1,10 @@
 #include "collisioni.h"
 
-TipoCollisione checkCollisioni(int startRow,int maxRows,int startCol,int maxCols,Schermo* schermo,PipeData* pipeData){
+void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCol,int maxCols,Schermo* schermo,PipeData* pipeData){
+	
+	collisione->tipoCollisione=NO_COLLISIONE;
+	collisione->id=0;
+	
 	int row=0;
 	int col=0;
 	for (int i = 0; i < maxRows; i++) {
@@ -12,24 +16,33 @@ TipoCollisione checkCollisioni(int startRow,int maxRows,int startCol,int maxCols
 				case 'X': // rana
 					switch(schermo->screenMatrix[row][col].tipo){
 						case AUTO_OBJ:
-							return RANA_AUTO;
+							collisione->tipoCollisione=RANA_AUTO;
+							collisione->id=schermo->screenMatrix[row][col].id; 
 							break;
 						case CAMION_OBJ:
-							return RANA_CAMION;
+							collisione->tipoCollisione=RANA_CAMION;
+							collisione->id=schermo->screenMatrix[row][col].id; 
+							break;
 						case FIUME_OBJ:
-							return RANA_FIUME;
+							collisione->tipoCollisione=RANA_FIUME;
+							collisione->id=schermo->screenMatrix[row][col].id; 
 						case TRONCO_OBJ:
-							return RANA_TRONCO;
+							collisione->tipoCollisione=RANA_TRONCO;
+							collisione->id=schermo->screenMatrix[row][col].id; 
 						case N_OBJ:
-							return RANA_NEMICO;
+							collisione->tipoCollisione=RANA_NEMICO;
+							collisione->id=schermo->screenMatrix[row][col].id; 
 						case TANA_OPEN_OBJ:
-							return RANA_TANA_APERTA;
+							collisione->tipoCollisione=RANA_TANA_APERTA;
+							collisione->id=schermo->screenMatrix[row][col].id; 
 							break;
 						case TANA_CLOSE_OBJ:
-							return RANA_TANA_CHIUSA;
+							collisione->tipoCollisione=RANA_TANA_CHIUSA;
+							collisione->id=schermo->screenMatrix[row][col].id; 
 							break;
 						case PN_OBJ:
-							return RANA_PROIETTILE_NEMICO;
+							collisione->tipoCollisione=RANA_PROIETTILE_NEMICO;
+							collisione->id=schermo->screenMatrix[row][col].id; 
 							break;
 						default:
 							break;
@@ -38,7 +51,8 @@ TipoCollisione checkCollisioni(int startRow,int maxRows,int startCol,int maxCols
 				case 'T': // tronco
 					switch(schermo->screenMatrix[row][col].tipo){
 						case RANA_OBJ:
-							return TRONCO_RANA;
+							collisione->tipoCollisione=TRONCO_RANA;
+							collisione->id=pipeData->id; 
 						default:
 							break;
 					}		
@@ -46,7 +60,8 @@ TipoCollisione checkCollisioni(int startRow,int maxRows,int startCol,int maxCols
 				case 'A': // auto
 					switch(schermo->screenMatrix[row][col].tipo){
 						case RANA_OBJ:
-							return AUTO_RANA;
+							collisione->tipoCollisione=AUTO_RANA;
+							collisione->id=pipeData->id; 
 						default:
 							break;
 					}			
@@ -54,7 +69,8 @@ TipoCollisione checkCollisioni(int startRow,int maxRows,int startCol,int maxCols
 				case 'C': // camion
 					switch(schermo->screenMatrix[row][col].tipo){
 						case RANA_OBJ:
-							return CAMION_RANA;
+							collisione->tipoCollisione=CAMION_RANA;
+							collisione->id=pipeData->id; 
 						default:
 							break;
 					}			
@@ -65,7 +81,8 @@ TipoCollisione checkCollisioni(int startRow,int maxRows,int startCol,int maxCols
 				case 'p': // proiettile nemico
 					switch(schermo->screenMatrix[row][col].tipo){
 						case RANA_OBJ:
-							return PROIETTILE_NEMICO_RANA;
+							collisione->tipoCollisione=PROIETTILE_NEMICO_RANA;
+							collisione->id=pipeData->id; 
 						default:
 							break;
 					}			
@@ -75,14 +92,13 @@ TipoCollisione checkCollisioni(int startRow,int maxRows,int startCol,int maxCols
 			}
     }
   }
-  return NO_COLLISIONE;
-
+  return;
 }
 
-void gestisciCollisione(TipoCollisione collisione, GameData* gameData, int* pipe_fd){
-	printCollisione(collisione); // per debug
+void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd){
+	printCollisione(collisione->tipoCollisione); // per debug
 	// switch su collisione:
-	switch (collisione) {
+	switch (collisione->tipoCollisione) {
         case RANA_AUTO:
         case RANA_CAMION:
         case RANA_FIUME:
@@ -96,6 +112,8 @@ void gestisciCollisione(TipoCollisione collisione, GameData* gameData, int* pipe
         case RANA_PROIETTILE_NEMICO:
         case PROIETTILE_NEMICO_RANA:
         	// termina rana e termina proiettile nemico
+        	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
+        	uccidiProiettileNemico(gameData->pids.pidProiettiliNemici,collisione->id);
 					break;
         case RANA_TRONCO:
         case TRONCO_RANA:

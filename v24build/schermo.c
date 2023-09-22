@@ -114,12 +114,12 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
     // funizone che controlla se ci saranno collisioni restituisce il tipo di collisine, se non c'è collisione restituisce NO_COLLSIONE
     // se ci sono più collisioni allora serve una policy su quale restituire
     // gli si passa row iniziale e finale + col inziale e fiinale + schermo per matrice dinamica + pipeData
-    
-    TipoCollisione tipoCollisione = checkCollisioni(startRow,maxRows,startCol,maxCols,schermo,pipeData);
+    Collisione collisione;
+    checkCollisioni(&collisione,startRow,maxRows,startCol,maxCols,schermo,pipeData);
     
     // qui switch su tipo collisione
     //if(tipoCollisione!=NO_COLLISIONE){
-    	gestisciCollisione(tipoCollisione,gameData,pipe_fd);
+    	gestisciCollisione(&collisione,gameData,pipe_fd);
     //}
     //else{}
     	for (int i = 0; i < maxRows; i++) {

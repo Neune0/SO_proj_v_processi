@@ -88,3 +88,51 @@ void printDebug(pid_t pidRana,
     }
     return;
 }
+
+void printCollisione(TipoCollisione collisione){
+	if(collisione!=NO_COLLISIONE){
+		mvprintw(36,0,"                                           ");
+	}
+	
+	switch (collisione) {
+        case RANA_AUTO:
+            mvprintw(36, 0, "Collisione con una rana e un'auto");
+            break;
+        case RANA_CAMION:
+            mvprintw(36, 0, "Collisione con una rana e un camion");
+            break;
+        case RANA_FIUME:
+            mvprintw(36, 0, "Collisione con una rana e un fiume");
+            break;
+        case RANA_TRONCO:
+            mvprintw(36, 0, "Collisione con una rana e un tronco");
+            break;
+        case RANA_NEMICO:
+            mvprintw(36, 0, "Collisione con una rana e un nemico");
+            break;
+        case RANA_TANA_APERTA:
+            mvprintw(36, 0, "Collisione con una rana e una tana aperta");
+            break;
+        case RANA_TANA_CHIUSA:
+            mvprintw(36, 0, "Collisione con una rana e una tana chiusa");
+            break;
+        case RANA_PROIETTILE_NEMICO:
+            mvprintw(36, 0, "Collisione con una rana e un proiettile nemico");
+            break;
+        case AUTO_RANA:
+            mvprintw(36, 0, "Collisione con un'auto e una rana");
+            break;
+        case CAMION_RANA:
+            mvprintw(36, 0, "Collisione con un camion e una rana");
+            break;
+        case TRONCO_RANA:
+            mvprintw(36, 0, "Collisione con un tronco e una rana");
+            break;
+        case PROIETTILE_NEMICO_RANA:
+            mvprintw(36, 0, "Collisione con un proiettile nemico e una rana");
+            break;
+        default:
+            break;
+    }
+    refresh();
+}

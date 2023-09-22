@@ -111,19 +111,43 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
     int maxCols = sprite->max_col;
     
     int row=0, col=0;
+    // funizone che controlla se ci saranno collisioni restituisce il tipo di collisine, se non c'è collisione restituisce NO_COLLSIONE
+    // se ci sono più collisioni allora serve una policy su quale restituire
+    // gli si passa row iniziale e finale + col inziale e fiinale + schermo per matrice dinamica + pipeData
     
-    for (int i = 0; i < maxRows; i++) {
+    TipoCollisione tipoCollisione = checkCollisioni(startRow,maxRows,startCol,maxCols,schermo,pipeData);
+    
+    // qui switch su tipo collisione
+    //if(tipoCollisione!=NO_COLLISIONE){
+    	gestisciCollisione(tipoCollisione);
+    //}
+    //else{}
+    	for (int i = 0; i < maxRows; i++) {
         for (int j = 0; j < maxCols; j++) {
             row = startRow + i;
             col = startCol + j;
 						
+						
 						// devo fare lo switch sul tipo per assegnare il tipo
 						switch(pipeData->type){
-							case 'X':
+							case 'X': // rana
 								schermo->screenMatrix[row][col].tipo = RANA_OBJ;
 								break;
-							case 'T':
+							case 'T': // tronco
 								schermo->screenMatrix[row][col].tipo = TRONCO_OBJ;
+								break;
+							case 'A': // auto
+								schermo->screenMatrix[row][col].tipo = AUTO_OBJ;
+								break;
+							case 'C': // camion
+								schermo->screenMatrix[row][col].tipo = CAMION_OBJ;
+								break;
+							case 'P': // proiettile amico
+								schermo->screenMatrix[row][col].tipo = P_OBJ;
+								break;
+							case 'p': // proiettile nemico
+								schermo->screenMatrix[row][col].tipo = PN_OBJ;
+								break;
 							default:
 								break;
 						}
@@ -136,6 +160,12 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
             schermo->screenMatrix[row][col].id=pipeData->id;
         }
     }
+    
+    
+    
+    
+    
+    
 }
 void pulisciSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* schermo) { // ok
     int row=datiVecchi->y;

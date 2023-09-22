@@ -12,4 +12,7 @@ void printDebug(pid_t pidRana,
 								int contatore_proiettili_nemici_in_gioco,
 								PipeData pipeData,
 								PipeData* old_pos);
+								
+								
+void printCollisione(TipoCollisione collisione);
 #endif

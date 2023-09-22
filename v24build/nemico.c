@@ -18,7 +18,7 @@ pid_t avviaNemico(int* pipe_fd,PipeData* pipeData,int id){
 	return nemico_pid;
 }
 
-void nemico(int *pipe_fd,PipeData* pipeData,int id) {
+void nemico(int *pipe_fd,PipeData* pipeData,int id) { // l'id fa riferimento all'id del tronco su cui il processo nemico sta
 		
 		PipeData nemico;
 		nemico.x=pipeData->x;

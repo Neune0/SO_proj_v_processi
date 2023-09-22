@@ -293,15 +293,16 @@ int collisioneOggettoAOggettoB(PipeData *array_A, PipeData *array_B, Sprite *arr
 	for(int i=0; i< dim_arr_A; i++)
 	{
 		obj_A = &array_A[i];
-		if(obj_A->type != ' ')
+		if(obj_A->type != ' ')		// se l'oggetto A e' attivo
 		{
 			for(int j=0; j<dim_arr_B; j++)
 			{
 				obj_B = &array_B[i];
-				if(obj_B ->type != ' '){
+				if(obj_B ->type != ' '){	// se l'oggetto B e' attivo
 					collision = checkCollisione(obj_A, obj_B, &array_sprite[sprite_A], &array_sprite[sprite_B]);
 					if(collision){
 						indice_A = i;
+						beep();
 						return indice_A;
 					}
 				}
@@ -309,6 +310,7 @@ int collisioneOggettoAOggettoB(PipeData *array_A, PipeData *array_B, Sprite *arr
 			}
 		}
 	}
+	return -1;
 }
 //------------------------------------
 

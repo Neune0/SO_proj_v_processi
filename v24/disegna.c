@@ -201,13 +201,20 @@ void drawProcess(int* pipe_fd) {
 					/*	se ci sono nemici, disegna nemici sui tronchi */
 					int id_tronco = pipeData.id; // id_tronco == nemico.id +1; old_pos_nemici[0,1,2] ; tronchi == old_pos[1,2,3];  
 					int indice_nemico = id_tronco-1;  // 
-					//prende la pos del tronco, crea su tronco nuovo oggetto nemico,
-					PipeData new_pos_nemico = {old_pos[id_tronco].x +2, old_pos[id_tronco].y, 'n', id_tronco };
+
+					if(old_pos_nemici[indice_nemico].type != ' ')	//se esiste un nemico associato a QUESTO tronco 
+					{
+						//prende la pos del tronco, imposta nuove coordinate oggetto nemico,
+						PipeData new_pos_nemico = {old_pos[id_tronco].x +2, old_pos[id_tronco].y, 'n', id_tronco };
+						
+						// pulisce vecchia posizione del nemico, aggiorna la posizione nemico, stampa posizione nemico in matrice
+						//pulisciSpriteInMatrice(old_pos_nemici[indice_nemico].y, old_pos_nemici[indice_nemico].x, &nemicoSprite, screenMatrix, staticScreenMatrix);
+						aggiornaOldPos(&old_pos_nemici[indice_nemico], &new_pos_nemico);
+						stampaSpriteInMatrice(old_pos_nemici[indice_nemico].y, old_pos_nemici[indice_nemico].x, &nemicoSprite, screenMatrix);
+
+					}
+
 					
-					// pulisce vecchia posizione del nemico, aggiorna la posizione nemico, stampa posizione nemico in matrice
-					//pulisciSpriteInMatrice(old_pos_nemici[indice_nemico].y, old_pos_nemici[indice_nemico].x, &nemicoSprite, screenMatrix, staticScreenMatrix);
-					aggiornaOldPos(&old_pos_nemici[indice_nemico], &new_pos_nemico);
-					stampaSpriteInMatrice(old_pos_nemici[indice_nemico].y, old_pos_nemici[indice_nemico].x, &nemicoSprite, screenMatrix);
 				}
 				
 				#ifdef DEBUG
@@ -367,42 +374,6 @@ void drawProcess(int* pipe_fd) {
 				break;
 		}//end switch-case su type
 
-		
-		/*
-		for(int i=0; i<MAXNNEMICI; i++){
-			if(old_pos_nemici[i].type == 'N'){
-				pulisciSpriteInMatrice(old_pos_nemici[i].y, old_pos_nemici[i].x, &nemicoSprite, screenMatrix, staticScreenMatrix);
-				//stampaSpriteInMatrice(old_pos_nemici[i].y, old_pos_nemici[i].x, &nemicoSprite, screenMatrix);
-			}
-		}
-		for(int i=0; i<MAXNNEMICI; i++){
-			if(old_pos_nemici[i].type == 'N'){
-				;
-				old_pos_nemici[i].x = old_pos_nemici[i].x + arrayDirTronchi[i+1];
-				;
-				old_pos_nemici[i].y = old_pos_nemici[i].y;
-				stampaSpriteInMatrice(old_pos_nemici[i].y,old_pos_nemici[i].x, &nemicoSprite, screenMatrix);
-			}
-		}
-		/**/
-		//assert(troncoCollision==false);
-
-		//perror("Error on contatoreNemici");
-		/*
-		PipeData nemico;
-		for(int i=0; i<contatore_nemici_in_gioco; i++){
-			//assert (contatore_nemici_in_gioco <= MAXNNEMICI);
-			nemico = old_pos_nemici[i];
-			//aggiorna pos nemico in base alla direzione del tronco 
-			nemico.x = nemico.x + arrayDirTronchi[nemico.id] ; 
-			if(arrayDirTronchi[nemico.id]!=0){
-				// stampa sprite nemico
-				stampaSpriteInMatrice(nemico.y,nemico.x, &nemicoSprite, screenMatrix);
-			}
-			
-			old_pos_nemici[i] = nemico;	//aggiorna la posizione del nemico in array;
-		}
-		/**/
     	//-------------------------collisioni rana------
 		
 		bool autoCollision = false;
@@ -440,6 +411,7 @@ void drawProcess(int* pipe_fd) {
 			autoProiettileCollision = checkAutoProiettile(old_pos, old_pos_proiettili, spriteOggetto, PROIETTILE_SPRITE);
 			if(contatore_nemici_in_gioco > 0){
 				proiettileRanaCollision = checkNemicoProiettile(old_pos_nemici, old_pos_proiettili, spriteOggetto);
+				//beep();
 			}
 		}
 		if((contatore_proiettili_in_gioco > 0) && (contatore_proiettili_nemici_in_gioco > 0)) //se ci sono proiettili in gioco
@@ -482,21 +454,32 @@ void drawProcess(int* pipe_fd) {
 		}
 		
 		if(proiettileRanaCollision) 
-		{
+		{	
+			//beep();
 			nemico_id = collisioneOggettoAOggettoB(old_pos_nemici, old_pos_proiettili, spriteOggetto, NEMICO_SPRITE,PROIETTILE_SPRITE, MAXNNEMICI, MAXNPROIETTILI);
 			proiettileRana_id = collisioneOggettoAOggettoB(old_pos_proiettili, old_pos_nemici, spriteOggetto, PROIETTILE_SPRITE, NEMICO_SPRITE, MAXNPROIETTILI, MAXNNEMICI);
-			if(nemico_id != -1 && proiettileRana_id != -1){
-				// cancella e uccide il proiettile
-				cancellaOggetto(old_pos_proiettili, &proiettileSprite, screenMatrix, staticScreenMatrix, proiettileRana_id);
-				uccidiProiettile(array_pid_proiettili, proiettileRana_id);
-				// cancella e uccide il nemico
-				cancellaOggetto(old_pos_nemici, &nemicoSprite, screenMatrix, staticScreenMatrix, nemico_id);
-				uccidiProcesso(array_pid_nemici, nemico_id);
-				contatore_proiettili_in_gioco--;
-				contatore_nemici_in_gioco--;
-				
+			
+			if((proiettileRana_id != -1)){
+				beep();
+				if(old_pos_proiettili[proiettileRana_id].type != ' '){
+					// cancella e uccide il proiettile
+					uccidiProiettile(array_pid_proiettili, proiettileRana_id);
+					cancellaOggetto(old_pos_proiettili, &proiettileSprite, screenMatrix, staticScreenMatrix, proiettileRana_id);
+					contatore_proiettili_in_gioco--;
+				}
 			}
-			beep();
+
+			if(nemico_id != -1){
+				if(old_pos_nemici[nemico_id].type != ' '){
+					// cancella e uccide il nemico
+					uccidiProcesso(array_pid_nemici, nemico_id);
+					cancellaOggetto(old_pos_nemici, &nemicoSprite, screenMatrix, staticScreenMatrix, nemico_id);
+					contatore_nemici_in_gioco--;
+				}
+			}
+
+
+			//beep();
 		}
 		if(contatore_nemici_in_gioco < 0) contatore_nemici_in_gioco = 0;
 

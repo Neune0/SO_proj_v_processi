@@ -4,6 +4,6 @@
 #include "debug.h"
 #include "rana.h"
 #include "proiettileNemico.h"
-void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCol,int maxCols,Schermo* schermo,PipeData* pipeData);
+void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCol,int maxCols,Schermo* schermo,PipeData* pipeData,int* id_nemici);
 void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd);
 #endif

@@ -7,23 +7,23 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
 	refresh();
 	switch(gameData->pipeData.type){
     	case 'X': // rana
-    		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd);
+    		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici);
         break; 
 			case 'T': // tronco
 				if(gameData->pipeData.id == id_nemici[0] || gameData->pipeData.id == id_nemici[1] || gameData->pipeData.id == id_nemici[2]){
-					aggiornaOggetto(gameData, gameData->oldPos.general, NEMICO_SPRITE,pipe_fd);
+					aggiornaOggetto(gameData, gameData->oldPos.general, NEMICO_SPRITE,pipe_fd,id_nemici);
 				}
 				else{
-					aggiornaOggetto(gameData, gameData->oldPos.general, TRONCO_SPRITE,pipe_fd);
+					aggiornaOggetto(gameData, gameData->oldPos.general, TRONCO_SPRITE,pipe_fd,id_nemici);
 				}
         
         //aggiornaDirezioneTronchi( &pipeData, &old_pos[pipeData.id], arrayDirTronchi); // da controllare
         break;
       case 'A': // auto
-      	aggiornaOggetto(gameData, gameData->oldPos.general, AUTO_SPRITE,pipe_fd);
+      	aggiornaOggetto(gameData, gameData->oldPos.general, AUTO_SPRITE,pipe_fd,id_nemici);
         break;
      case 'C':  // camion
-      	aggiornaOggetto(gameData, gameData->oldPos.general, CAMION_SPRITE,pipe_fd);
+      	aggiornaOggetto(gameData, gameData->oldPos.general, CAMION_SPRITE,pipe_fd,id_nemici);
         break;
       case 'S':
       	//proiettile sparato da utente avvia il proiettile con posizione iniziale della rana (o dell oggetto che ha sparato)
@@ -82,7 +82,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
       		gameData->contatori.contP--;
       	}
       	else{
-      		aggiornaOggetto(gameData, gameData->oldPos.proiettili, PROIETTILE_SPRITE,pipe_fd);
+      		aggiornaOggetto(gameData, gameData->oldPos.proiettili, PROIETTILE_SPRITE,pipe_fd,id_nemici);
       	}
       	break;
       case 'p':
@@ -94,7 +94,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
       		gameData->contatori.contPN--;
       	}
       	else{
-      		aggiornaOggetto(gameData, gameData->oldPos.proiettiliNemici, PROIETTILE_NEMICO_SPRITE,pipe_fd);
+      		aggiornaOggetto(gameData, gameData->oldPos.proiettiliNemici, PROIETTILE_NEMICO_SPRITE,pipe_fd,id_nemici);
       	}
       	break;
       	case 'Z':
@@ -112,7 +112,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
 	return;
 }
 //--------------------------------------------AGGIORNAMENTO OGGETTI IN MATRICE--------------------------------
-void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprite, int* pipe_fd) { //ok
+void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprite, int* pipe_fd,int* id_nemici) { //ok
 		PipeData* datiNuovi = &(gameData->pipeData); // i dati nuovi passati in pipe
 		PipeData* datiVecchi = &(old_pos[gameData->pipeData.id]); // dati al passo precedentes
 		
@@ -121,12 +121,12 @@ void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprit
     		
         pulisciSpriteInMatrice(datiVecchi, &(gameData->sprites[tipoSprite]), &(gameData->schermo));
         
-        stampaSpriteInMatrice(datiNuovi, &(gameData->sprites[tipoSprite]), &(gameData->schermo), &(gameData->pipeData), gameData, pipe_fd);
+        stampaSpriteInMatrice(datiNuovi, &(gameData->sprites[tipoSprite]), &(gameData->schermo), &(gameData->pipeData), gameData, pipe_fd,id_nemici);
         
         aggiornaOldPos(datiVecchi, datiNuovi);
     }
 }
-void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* schermo, PipeData* pipeData,GameData* gameData,int *pipe_fd) { // ok
+void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* schermo, PipeData* pipeData,GameData* gameData,int *pipe_fd,int* id_nemici) { // ok
     int startRow=datiVecchi->y;
     int startCol=datiVecchi->x;
     int maxRows = sprite->max_row;
@@ -137,7 +137,7 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
     // se ci sono più collisioni allora serve una policy su quale restituire
     // gli si passa row iniziale e finale + col inziale e fiinale + schermo per matrice dinamica + pipeData
     Collisione collisione;
-    checkCollisioni(&collisione,startRow,maxRows,startCol,maxCols,schermo,pipeData);
+    checkCollisioni(&collisione,startRow,maxRows,startCol,maxCols,schermo,pipeData,id_nemici);
     
     // qui switch su tipo collisione
     //if(tipoCollisione!=NO_COLLISIONE){

@@ -1,6 +1,6 @@
 #include "collisioni.h"
 
-void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCol,int maxCols,Schermo* schermo,PipeData* pipeData){
+void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCol,int maxCols,Schermo* schermo,PipeData* pipeData,int* id_nemici){
 	
 	collisione->tipoCollisione=NO_COLLISIONE;
 	collisione->id=0;
@@ -52,10 +52,27 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 					}		
 					break;
 				case 'T': // tronco
+					// SE IL TRONCO È IN REALTA UN NEMICO OVVERO IL SUO ID STA IN ID_NEMICI
+					
 					switch(schermo->screenMatrix[row][col].tipo){
 						case RANA_OBJ:
-							collisione->tipoCollisione=TRONCO_RANA;
-							collisione->id=pipeData->id; 
+							if(pipeData->id == id_nemici[0] || pipeData->id == id_nemici[1] || pipeData->id == id_nemici[2]){
+								// il tronco è un nemico
+								collisione->tipoCollisione=NEMICO_RANA;
+								collisione->id=pipeData->id; 
+							}else{
+								collisione->tipoCollisione=TRONCO_RANA;
+								collisione->id=pipeData->id; 
+							}
+							break;
+						case P_OBJ:
+							if(pipeData->id == id_nemici[0] || pipeData->id == id_nemici[1] || pipeData->id == id_nemici[2]){
+								// il tronco è un nemico in realtà
+								collisione->tipoCollisione=NEMICO_PROIETTILE_AMICO;
+								collisione->id=pipeData->id; 
+							}
+							break;
+							
 						default:
 							break;
 					}		
@@ -79,7 +96,13 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 					}			
 					break;
 				case 'P': // proiettile amico
-								
+					switch(schermo->screenMatrix[row][col].tipo){
+						case N_OBJ:
+							collisione->tipoCollisione=PROIETTILE_AMICO_NEMICO;
+							collisione->id=pipeData->id; 
+						default:
+							break;
+					}			
 					break;
 				case 'p': // proiettile nemico
 					switch(schermo->screenMatrix[row][col].tipo){
@@ -109,6 +132,7 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
         case RANA_TANA_CHIUSA:
         case AUTO_RANA:
         case CAMION_RANA:
+        case NEMICO_RANA:
         	// termina rana
         	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
         	break;
@@ -125,6 +149,10 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
         case RANA_TANA_APERTA:
             // la rana vince la manche
             break;
+         case NEMICO_PROIETTILE_AMICO:
+         case PROIETTILE_AMICO_NEMICO:
+         	// termina nemico e rispristina sprite del tronco
+         	break;
         default:
             break;
     }

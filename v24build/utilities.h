@@ -67,7 +67,10 @@ typedef enum{
 	AUTO_RANA,
 	CAMION_RANA,
 	TRONCO_RANA,
-	PROIETTILE_NEMICO_RANA
+	PROIETTILE_NEMICO_RANA,
+	NEMICO_RANA,
+	NEMICO_PROIETTILE_AMICO,
+	PROIETTILE_AMICO_NEMICO
 }TipoCollisione;
 
 // Definizione della struttura dati per le coordinate (x, y) e per il tipo

@@ -73,10 +73,12 @@ typedef struct{
 	char ch;
 	int color;
 	bool is_changed;
+	int id;
+	char tipo;
 }ScreenCell;
 
 
-typedef enum{OPEN, CLOSED } TanaStatus;
+typedef enum{TANA_OPENED, TANA_CLOSED } TanaStatus;
 
 typedef struct {
 	PipeData info;
@@ -152,6 +154,23 @@ typedef struct{
 	int arrayDirTronchi[4]; // vettore per registrare la direzione di chiascun tronco
 	int pipeRana_fd [2];
 }GameData;
+
+typedef enum{
+	TANA_OPEN_OBJ, 
+	TANA_CLOSE_OBJ,
+	FIUME_OBJ,
+	PRATO_OBJ,
+	STRADA_OBJ,
+	MARCIAPIEDE_OBJ,
+	PN_OBJ,
+	AUTO_OBJ,
+	CAMION_OBJ,
+	TRONCO_OBJ,
+	N_OBJ,
+	P_OBJ,
+	RANA_OBJ,
+	SFONDO_OBJ
+}TipoObj;
 
 void inizializzaNcurses();
 void creaPipe(int pipe_fd[2]);

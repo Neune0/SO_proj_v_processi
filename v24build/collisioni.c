@@ -1,7 +1,4 @@
 #include "collisioni.h"
-
-
-
 //----------------------------------------COLLISIONI----------------------------
 /**	Prende due oggetti di gioco con rispettive sprite e verifica se gli oggetti si incontrano 
 		Ritorna TRUE se oggetto_1 entra nel perimetro di oggetto_2
@@ -89,11 +86,11 @@ bool checkRanaTanaAperta( PipeData *old_pos, Tana *array_tane, Sprite *array_spr
 	
 	for(int i=0; i<5; i++){
 		PipeData *tana = &array_tane[i].info; //punta alla struttura PipeData dentro la struct Tana
-		if(array_tane[i].status == OPEN){
+		if(array_tane[i].status == TANA_OPENED){
 			collision = checkCollisione(rana, tana, &array_sprite[RANA_SPRITE], &arr_tana_sprite[OPEN]);
 		}
 		if(collision) {
-			array_tane[i].status = CLOSED;
+			array_tane[i].status = TANA_CLOSED;
 			break;
 		}
 	}
@@ -107,11 +104,11 @@ bool checkRanaTanaChiusa( PipeData *old_pos, Tana *array_tane, Sprite *array_spr
 	
 	for(int i=0; i<5; i++){
 		PipeData *tana = &array_tane[i].info; //punta alla struttura PipeData dentro la struct Tana
-		if(array_tane[i].status == CLOSED){
-			collision = checkCollisione(rana, tana, &array_sprite[RANA_SPRITE], &arr_tana_sprite[CLOSED]);
+		if(array_tane[i].status == TANA_CLOSED){
+			collision = checkCollisione(rana, tana, &array_sprite[RANA_SPRITE], &arr_tana_sprite[CLOSE]);
 		}
 		if(collision) {
-			//array_tane[i].status = CLOSED;
+			//array_tane[i].status = TANA_CLOSED;
 			break;
 		}
 	}

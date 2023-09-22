@@ -11,8 +11,6 @@ int main() {
 		
     avviaDrawProcess(pipe_fd); // avvia il processo che gestisce la stampa a schermo
     
-    
-    
     // Chiudi le estremità della pipe nel processo padre
     close(pipe_fd[0]);
     close(pipe_fd[1]);
@@ -20,7 +18,6 @@ int main() {
     // Aspetta che i processi figlio terminino
     wait(NULL);
     
- 
     endwin(); // Termina ncurses
     
     printf("\n FROGGER: CLOSED \n\n");

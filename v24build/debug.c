@@ -81,6 +81,7 @@ void printDebug(pid_t pidRana,
       	if(pipeData.y>30){
       		mvprintw(25+pipeData.id,110,"                                    ");
     			mvprintw(25+pipeData.id,110,"id: %d uccisione proiettile con pid: %d",pipeData.id,array_pid_proiettili[pipeData.id]);
+    			}
       	break;
       default:
         break;

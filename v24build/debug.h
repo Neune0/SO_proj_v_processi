@@ -1,6 +1,6 @@
 #ifndef DEBUG_H
 #define DEBUG_H
-include "utilities.h"
+#include "utilities.h"
 void printDebug(pid_t pidRana,
 								pid_t* array_pid_proiettili,
 								pid_t* array_pid_proiettili_nemici,

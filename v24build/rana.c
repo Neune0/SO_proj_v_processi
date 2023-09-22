@@ -29,68 +29,54 @@ void moveProcess(int* pipe_fd, int* pipe_rana) {
 		
 		 // Invia le coordinate iniziali attraverso la pipe
     write(pipe_fd[1], &pipeData, sizeof(PipeData));
+    
 		noecho();
-		close(pipe_rana[1]);
+		int ch='D';
     while (1) {
-    			
-    		 // legge le coordinate della rana inviate da disegna, eventualmente modificate.
-        //read(pipe_rana[0], &pipeData, sizeof(PipeData)); 
-       
-        //pipeData.x = 0;
-  			//pipeData.y =  0;
     		pipeData.type='X'; // resetta il normale carattere della rana
        	
-        // Leggi il carattere dall'input
-        int ch = getch();
-        fflush(stdin);
-       
-        if (ch != ERR) {
-            
-            // Muovi il personaggio in base all'input dell'utente
-            switch (ch) {
-                case KEY_UP:
-                	if(pipeData.y>minAreaGiocoY){
-                		pipeData.y--;
-                		//pipeData.y = -1;
-              		}
-                  break;
-                case KEY_DOWN:
-                	if(pipeData.y<maxAreaGiocoY){
-                		pipeData.y++;
-                		//pipeData.y = +1;
-              		}
-                  break;
-                case KEY_LEFT:
-                	if(pipeData.x>0){
-                		pipeData.x--;
-                		//pipeData.x = -1;
-                	}  
-                  break;
-                case KEY_RIGHT:
-                	if(pipeData.x<maxAreaGiocoX){
-                		pipeData.x++;
-                		//pipeData.x = +1;
-                	}
-                  break;
-                case 32: // KEY_SPACE 
-                	pipeData.type='S'; //cambia carattere per dire a processoDisegna che  rana sta sparando
-                  break;
-                case 'p': // tasto p  PAUSA
-                case 'P':
-                	pipeData.type = 'Z'; 
-                	break;
+        ch = getch(); // Leggi il carattere dall'input
+        
+        // Muovi il personaggio in base all'input dell'utente
+        switch (ch) {
+        	case KEY_UP:
+          	if(pipeData.y>minAreaGiocoY){
+            	pipeData.y--;
             }
-
-            // Invia le coordinate attraverso la pipe
-            write(pipe_fd[1], &pipeData, sizeof(PipeData));
+            break;
+          case KEY_DOWN:
+          	if(pipeData.y<maxAreaGiocoY){
+            	pipeData.y++;
+            }
+            break;
+          case KEY_LEFT:
+          	if(pipeData.x>0){
+            	pipeData.x--;
+            	
+            }  
+            break;
+          case KEY_RIGHT:
+          	if(pipeData.x<maxAreaGiocoX){
+            	pipeData.x++;
+            }
+            break;
+          case 32: // KEY_SPACE 
+          	pipeData.type='S'; //cambia carattere per dire a processoDisegna che  rana sta sparando
+            break;
+          case 'p': // tasto p  PAUSA
+          case 'P':
+          	pipeData.type = 'Z'; 
+            break;
+          default:
+          	break;
         }
-        // vuota buffer input
-      	do{
-      		getch();
-      	}while(getch()!= ERR);
-
+				
+        // Invia le coordinate attraverso la pipe
+        write(pipe_fd[1], &pipeData, sizeof(PipeData));
+        
+			
         // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
-        usleep(100000);
+        usleep(1000);
          
     }//end while
     return;

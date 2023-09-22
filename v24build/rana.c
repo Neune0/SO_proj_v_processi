@@ -34,7 +34,7 @@ void moveProcess(int* pipe_fd, int* pipe_rana) {
 		int ch='D';
     while (1) {
     		pipeData.type='X'; // resetta il normale carattere della rana
-       	
+       	bool change=false;
         ch = getch(); // Leggi il carattere dall'input
         
         // Muovi il personaggio in base all'input dell'utente
@@ -42,37 +42,45 @@ void moveProcess(int* pipe_fd, int* pipe_rana) {
         	case KEY_UP:
           	if(pipeData.y>minAreaGiocoY+3){
             	pipeData.y-=3;
+            	change=true;
             }
             break;
           case KEY_DOWN:
           	if(pipeData.y<maxAreaGiocoY-3){
             	pipeData.y+=3;
+            	change=true;
             }
             break;
           case KEY_LEFT:
           	if(pipeData.x>0){
             	pipeData.x--;
+            	change=true;
             	
             }  
             break;
           case KEY_RIGHT:
           	if(pipeData.x<maxAreaGiocoX){
             	pipeData.x++;
+            	change=true;
             }
             break;
           case 32: // KEY_SPACE 
           	pipeData.type='S'; //cambia carattere per dire a processoDisegna che  rana sta sparando
+          	change=true;
             break;
           case 'p': // tasto p  PAUSA
           case 'P':
-          	pipeData.type = 'Z'; 
+          	pipeData.type = 'Z';
+          	change=true; 
             break;
           default:
           	break;
         }
-				
-        // Invia le coordinate attraverso la pipe
-        write(pipe_fd[1], &pipeData, sizeof(PipeData));
+				if(change){
+					// Invia le coordinate attraverso la pipe
+        	write(pipe_fd[1], &pipeData, sizeof(PipeData));
+				}
+        
         
 			
         // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito

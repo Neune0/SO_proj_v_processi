@@ -82,7 +82,8 @@ void tronco(int* pipe_fd, int y, int direzione_x, int id) {
     	
     	}
 
-			numero_spostamenti= (numero_spostamenti+1)%1000;
+			numero_spostamenti++;
+			if(numero_spostamenti==109){numero_spostamenti=0;}
       // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
       usleep(100000);
     }

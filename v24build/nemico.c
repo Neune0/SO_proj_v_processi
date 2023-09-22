@@ -30,7 +30,7 @@ void nemico(int *pipe_fd,int id) { // l'id fa riferimento all'id del tronco su c
     		if(contatore%100==0){
     			write(pipe_fd[1], &nemico, sizeof(PipeData));
     		}
-    		contatore=(contatore+1)%101;
+    		contatore=(contatore+1)%50;
         usleep(100000);// Aspetta un po' prima di generare nuove coordinate
     }
 }

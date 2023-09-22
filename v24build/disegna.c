@@ -22,8 +22,7 @@ void drawProcess(int* pipe_fd) {
     
     // debug zone
     /**/
-    mvprintw(37,0,"                                        ");
-    mvprintw(37,0,"disegna.c oldpos x Rana: %d",gameData->oldPos.general[0].x);
+    
     
     mvprintw(38,0,"                                                               ");
     mvprintw(38,0,"disegna.c pipeData| tipo: %c, x: %d, y: %d, id: %d",gameData->pipeData.type, gameData->pipeData.x, gameData->pipeData.y, gameData->pipeData.id);

@@ -156,7 +156,13 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
 								schermo->screenMatrix[row][col].tipo = RANA_OBJ;
 								break;
 							case 'T': // tronco
-								schermo->screenMatrix[row][col].tipo = TRONCO_OBJ;
+								if(sprite->sprite[0][4]=='^'){
+									schermo->screenMatrix[row][col].tipo = N_OBJ;
+								}
+								else{
+									schermo->screenMatrix[row][col].tipo = TRONCO_OBJ;
+								}
+								
 								break;
 							case 'A': // auto
 								schermo->screenMatrix[row][col].tipo = AUTO_OBJ;

@@ -40,13 +40,13 @@ void moveProcess(int* pipe_fd, int* pipe_rana) {
         // Muovi il personaggio in base all'input dell'utente
         switch (ch) {
         	case KEY_UP:
-          	if(pipeData.y>minAreaGiocoY){
-            	pipeData.y--;
+          	if(pipeData.y>minAreaGiocoY+3){
+            	pipeData.y-=3;
             }
             break;
           case KEY_DOWN:
-          	if(pipeData.y<maxAreaGiocoY){
-            	pipeData.y++;
+          	if(pipeData.y<maxAreaGiocoY-3){
+            	pipeData.y+=3;
             }
             break;
           case KEY_LEFT:

@@ -26,12 +26,15 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 						case FIUME_OBJ:
 							collisione->tipoCollisione=RANA_FIUME;
 							collisione->id=schermo->screenMatrix[row][col].id; 
+							break;
 						case TRONCO_OBJ:
 							collisione->tipoCollisione=RANA_TRONCO;
 							collisione->id=schermo->screenMatrix[row][col].id; 
+							break;
 						case N_OBJ:
 							collisione->tipoCollisione=RANA_NEMICO;
 							collisione->id=schermo->screenMatrix[row][col].id; 
+							break;
 						case TANA_OPEN_OBJ:
 							collisione->tipoCollisione=RANA_TANA_APERTA;
 							collisione->id=schermo->screenMatrix[row][col].id; 

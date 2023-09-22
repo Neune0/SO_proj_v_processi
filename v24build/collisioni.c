@@ -79,7 +79,7 @@ TipoCollisione checkCollisioni(int startRow,int maxRows,int startCol,int maxCols
 
 }
 
-void gestisciCollisione(TipoCollisione collisione){
+void gestisciCollisione(TipoCollisione collisione, GameData* gameData, int* pipe_fd){
 	printCollisione(collisione); // per debug
 	// switch su collisione:
 	switch (collisione) {
@@ -91,6 +91,7 @@ void gestisciCollisione(TipoCollisione collisione){
         case AUTO_RANA:
         case CAMION_RANA:
         	// termina rana
+        	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
         	break;
         case RANA_PROIETTILE_NEMICO:
         case PROIETTILE_NEMICO_RANA:

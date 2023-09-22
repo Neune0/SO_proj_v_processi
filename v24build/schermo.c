@@ -3,20 +3,20 @@ void aggiorna(GameData* gameData,int* pipe_fd){
 
 	switch(gameData->pipeData.type){
     	case 'X': // rana
-    		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE);
+    		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd);
         break; 
 			case 'T': // tronco
-        aggiornaOggetto(gameData, gameData->oldPos.general, TRONCO_SPRITE);
+        aggiornaOggetto(gameData, gameData->oldPos.general, TRONCO_SPRITE,pipe_fd);
         
         //aggiornaDirezioneTronchi( &pipeData, &old_pos[pipeData.id], arrayDirTronchi); // da controllare
         break;
         
       case 'A': // auto
-      	aggiornaOggetto(gameData, gameData->oldPos.general, AUTO_SPRITE);
+      	aggiornaOggetto(gameData, gameData->oldPos.general, AUTO_SPRITE,pipe_fd);
         break;
         
      case 'C':  // camion
-      	aggiornaOggetto(gameData, gameData->oldPos.general, CAMION_SPRITE);
+      	aggiornaOggetto(gameData, gameData->oldPos.general, CAMION_SPRITE,pipe_fd);
         break;
         
         
@@ -60,7 +60,7 @@ void aggiorna(GameData* gameData,int* pipe_fd){
       		gameData->contatori.contP--;
       	}
       	else{
-      		aggiornaOggetto(gameData, gameData->oldPos.proiettili, PROIETTILE_SPRITE);
+      		aggiornaOggetto(gameData, gameData->oldPos.proiettili, PROIETTILE_SPRITE,pipe_fd);
       	}
       	break;
       case 'p':
@@ -72,7 +72,7 @@ void aggiorna(GameData* gameData,int* pipe_fd){
       		gameData->contatori.contPN--;
       	}
       	else{
-      		aggiornaOggetto(gameData, gameData->oldPos.proiettiliNemici, PROIETTILE_NEMICO_SPRITE);
+      		aggiornaOggetto(gameData, gameData->oldPos.proiettiliNemici, PROIETTILE_NEMICO_SPRITE,pipe_fd);
       	}
       	break;
       	case 'Z':
@@ -90,7 +90,7 @@ void aggiorna(GameData* gameData,int* pipe_fd){
 	return;
 }
 //--------------------------------------------AGGIORNAMENTO OGGETTI IN MATRICE--------------------------------
-void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprite) { //ok
+void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprite, int* pipe_fd) { //ok
 		PipeData* datiNuovi = &(gameData->pipeData); // i dati nuovi passati in pipe
 		PipeData* datiVecchi = &(old_pos[gameData->pipeData.id]); // dati al passo precedentes
 		
@@ -99,12 +99,12 @@ void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprit
     		
         pulisciSpriteInMatrice(datiVecchi, &(gameData->sprites[tipoSprite]), &(gameData->schermo));
         
-        stampaSpriteInMatrice(datiNuovi, &(gameData->sprites[tipoSprite]), &(gameData->schermo), &(gameData->pipeData));
+        stampaSpriteInMatrice(datiNuovi, &(gameData->sprites[tipoSprite]), &(gameData->schermo), &(gameData->pipeData), gameData, pipe_fd);
         
         aggiornaOldPos(datiVecchi, datiNuovi);
     }
 }
-void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* schermo, PipeData* pipeData) { // ok
+void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* schermo, PipeData* pipeData,GameData* gameData,int *pipe_fd) { // ok
     int startRow=datiVecchi->y;
     int startCol=datiVecchi->x;
     int maxRows = sprite->max_row;
@@ -119,7 +119,7 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
     
     // qui switch su tipo collisione
     //if(tipoCollisione!=NO_COLLISIONE){
-    	gestisciCollisione(tipoCollisione);
+    	gestisciCollisione(tipoCollisione,gameData,pipe_fd);
     //}
     //else{}
     	for (int i = 0; i < maxRows; i++) {

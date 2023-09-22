@@ -55,7 +55,6 @@ void tronco(int* pipe_fd, int y, int direzione_x, int id) {
 		
 		int numero_spostamenti=0;
     while (1) {
-    	mvprintw(37+pipeData.id,2,"t%d numero spostamenti: %d",pipeData.id,numero_spostamenti);
     	if(numero_spostamenti==108 && pipeData.type=='T'){
     		// il tronco si trasforma in tronco nemico
     		pipeData.type='n';

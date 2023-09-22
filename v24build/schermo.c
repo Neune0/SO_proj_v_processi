@@ -1,25 +1,26 @@
 #include "schermo.h"
-void aggiorna(GameData* gameData,int* pipe_fd){
+void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
 
 	switch(gameData->pipeData.type){
     	case 'X': // rana
     		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd);
         break; 
 			case 'T': // tronco
-        aggiornaOggetto(gameData, gameData->oldPos.general, TRONCO_SPRITE,pipe_fd);
+				if(gameData->pipeData.id == id_nemici[0] || gameData->pipeData.id == id_nemici[1] || gameData->pipeData.id == id_nemici[2]){
+					aggiornaOggetto(gameData, gameData->oldPos.general, NEMICO_SPRITE,pipe_fd);
+				}
+				else{
+					aggiornaOggetto(gameData, gameData->oldPos.general, TRONCO_SPRITE,pipe_fd);
+				}
         
         //aggiornaDirezioneTronchi( &pipeData, &old_pos[pipeData.id], arrayDirTronchi); // da controllare
         break;
-        
       case 'A': // auto
       	aggiornaOggetto(gameData, gameData->oldPos.general, AUTO_SPRITE,pipe_fd);
         break;
-        
      case 'C':  // camion
       	aggiornaOggetto(gameData, gameData->oldPos.general, CAMION_SPRITE,pipe_fd);
         break;
-        
-        
       case 'S':
       	//proiettile sparato da utente avvia il proiettile con posizione iniziale della rana (o dell oggetto che ha sparato)
       	if(gameData->contatori.contP<MAXNPROIETTILI)	// se si hanno ancora munizioni
@@ -36,18 +37,28 @@ void aggiorna(GameData* gameData,int* pipe_fd){
       	if(gameData->contatori.contN<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
       	{ 
       		// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
-      		int id = id_disponibile(gameData->pids.pidNemici,MAXNNEMICI);
-	      	gameData->pids.pidNemici[id]=avviaNemico(pipe_fd,&(gameData->pipeData), id);
-  				gameData->contatori.contN++;
+      		//int id = id_disponibile(gameData->pids.pidNemici,MAXNNEMICI);
+	      	int id = gameData->pipeData.id; // questo sarà l'id del nemico che è uguale all'id del tronco che l'ha generato
+	      	gameData->pids.pidNemici[id]=avviaNemico(pipe_fd, id);
+  				// devo comunicare a disegna che la prossima volta che leggera T in pipe e l'id sarà uguale all'id che ho qui allora dovra disegnare il tronco in un modo diverso ed anche il tipo in matrice dovra essere diverso
+  				// uso un array tronchi nemici di id
+  				id_nemici[gameData->contatori.contN]=id;
+  				gameData->contatori.contN++;		
       	}
       	break;
       case 's':
+      	// LE COORDINATE DI LANCIO DEVONO ESSERE QUELLE CENTRALI DEL TRONCO HA ID = A ID IN PIPEDATA, PRENDERE DA OLD POS TRONCHI
       	// proiettile nemico sparato
       	if(gameData->contatori.contPN<MAXNPROIETTILINEMICI) // se non si è raggiunto il numero massimo di nemici
       	{ 
+      		
+      		// trova old pos tronco con id = pipeData.id
+      		PipeData* oldPosPipeData = &(gameData->oldPos.general[gameData->pipeData.id]); // questa è la old pos che devo passare
+      		oldPosPipeData->x+=4;
       		// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
       		int id = id_disponibile(gameData->pids.pidProiettiliNemici,MAXNPROIETTILINEMICI);
-      		gameData->pids.pidProiettiliNemici[id]= avviaProiettileNemico(pipe_fd, &(gameData->pipeData), id);
+      		
+      		gameData->pids.pidProiettiliNemici[id]= avviaProiettileNemico(pipe_fd, oldPosPipeData, id);
       		gameData->contatori.contPN++;
       	}
       	break;

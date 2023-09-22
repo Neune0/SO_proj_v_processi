@@ -2,7 +2,7 @@
 #define SCHERMO_H
 #include "utilities.h"
 #include "collisioni.h"
-void aggiorna(GameData* gameData,int* pipe_fd);
+void aggiorna(GameData* gameData,int* pipe_fd,int* id_nemici);
 void cancellaOggetto(GameData* gameData, PipeData *old_pos, TipoSprite tipoSprite);
 void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprite,int* pipe_fd);
 

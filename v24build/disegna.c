@@ -20,13 +20,6 @@ void drawProcess(int* pipe_fd) {
 		
     refresh(); // Aggiorna la finestra
     
-    // debug zone
-    /**/
-    
-    
-    mvprintw(38,0,"                                                               ");
-    mvprintw(38,0,"disegna.c pipeData| tipo: %c, x: %d, y: %d, id: %d",gameData->pipeData.type, gameData->pipeData.x, gameData->pipeData.y, gameData->pipeData.id);
-    /**/
 	}
 	
 	free(gameData);

@@ -192,7 +192,10 @@ typedef enum{
 
 typedef struct{
 	TipoCollisione tipoCollisione;
-	int id;
+	TipoObj oggetto_attivo; // oggetto che si muove e che provoca collisione
+	int id_oggetto_attivo;
+	TipoObj oggetto_passivo; // oggetto che sta fermo e subisce la collisione
+	int id_oggetto_passivo;
 }Collisione;
 
 void inizializzaNcurses();

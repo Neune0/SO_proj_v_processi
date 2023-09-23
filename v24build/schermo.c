@@ -1,10 +1,6 @@
 #include "schermo.h"
 void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
-	mvprintw(35,0,"                                                                          ");
-	mvprintw(35,0,"id primo tronco: %d, id secondo tronco: %d, id terzo tronco: %d",gameData->oldPos.general[1].id,gameData->oldPos.general[2].id,gameData->oldPos.general[3].id);
-	mvprintw(36,0,"                                                                          ");
-	mvprintw(36,0,"id primo nemico: %d, id secondo nemico: %d, id terzo nemico: %d",id_nemici[0],id_nemici[1],id_nemici[2]);
-	refresh();
+
 	switch(gameData->pipeData.type){
     	case 'X': // rana
     		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici);
@@ -38,9 +34,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
       	}
       	break;
       case 'n':
-      mvprintw(34,0,"                                              ");
-      	mvprintw(34,0,"%d != %d && %d != %d && %d != %d",gameData->pipeData.id,id_nemici[0], gameData->pipeData.id,id_nemici[1] ,gameData->pipeData.id,id_nemici[2]);
-      	refresh();
+      
       	if(gameData->pipeData.id!=id_nemici[0] && gameData->pipeData.id!=id_nemici[1] && gameData->pipeData.id!=id_nemici[2]){
 		    	if(gameData->contatori.contN<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
 		    	{ 
@@ -137,13 +131,11 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
     // se ci sono più collisioni allora serve una policy su quale restituire
     // gli si passa row iniziale e finale + col inziale e fiinale + schermo per matrice dinamica + pipeData
     Collisione collisione;
+    
     checkCollisioni(&collisione,startRow,maxRows,startCol,maxCols,schermo,pipeData,id_nemici);
     
-    // qui switch su tipo collisione
-    //if(tipoCollisione!=NO_COLLISIONE){
-    	gestisciCollisione(&collisione,gameData,pipe_fd);
-    //}
-    //else{}
+    gestisciCollisione(&collisione,gameData,pipe_fd,id_nemici);
+    
     	for (int i = 0; i < maxRows; i++) {
         for (int j = 0; j < maxCols; j++) {
             row = startRow + i;

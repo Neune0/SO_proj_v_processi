@@ -34,3 +34,10 @@ void nemico(int *pipe_fd,int id) { // l'id fa riferimento all'id del tronco su c
         usleep(100000);// Aspetta un po' prima di generare nuove coordinate
     }
 }
+
+
+void killNemico(pid_t pid_nemico){
+		kill(pid_nemico, SIGKILL);
+		waitpid(pid_nemico, NULL,0);
+		return;
+}

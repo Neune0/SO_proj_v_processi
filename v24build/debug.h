@@ -14,5 +14,5 @@ void printDebug(pid_t pidRana,
 								PipeData* old_pos);
 								
 								
-void printCollisione(TipoCollisione collisione);
+void printCollisione(Collisione* collisione);
 #endif

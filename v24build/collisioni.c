@@ -3,7 +3,6 @@
 void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCol,int maxCols,Schermo* schermo,PipeData* pipeData,int* id_nemici){
 	
 	collisione->tipoCollisione=NO_COLLISIONE;
-	collisione->id=0;
 	
 	int row=0;
 	int col=0;
@@ -16,36 +15,68 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 				case 'X': // rana
 					switch(schermo->screenMatrix[row][col].tipo){
 						case AUTO_OBJ:
-							collisione->tipoCollisione=RANA_AUTO;
-							collisione->id=schermo->screenMatrix[row][col].id; 
+							collisione->tipoCollisione=RANA_AUTO; // tipo di collisione
+							collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= AUTO_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito
+							return;
 							break;
 						case CAMION_OBJ:
-							collisione->tipoCollisione=RANA_CAMION;
-							collisione->id=schermo->screenMatrix[row][col].id; 
+							collisione->tipoCollisione=RANA_CAMION; // tipo di collisione
+							collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= CAMION_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+							return;
 							break;
 						case FIUME_OBJ:
-							collisione->tipoCollisione=RANA_FIUME;
-							collisione->id=schermo->screenMatrix[row][col].id; 
+							collisione->tipoCollisione=RANA_FIUME; // tipo di collisione
+							collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= FIUME_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+							return;
 							break;
 						case TRONCO_OBJ:
-							collisione->tipoCollisione=RANA_TRONCO;
-							collisione->id=schermo->screenMatrix[row][col].id; 
+							collisione->tipoCollisione=RANA_TRONCO; // tipo di collisione
+							collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= TRONCO_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+							return;
 							break;
 						case N_OBJ:
-							collisione->tipoCollisione=RANA_NEMICO;
-							collisione->id=schermo->screenMatrix[row][col].id; 
+							collisione->tipoCollisione=RANA_NEMICO; // tipo di collisione
+							collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= N_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito  
+							return;
 							break;
 						case TANA_OPEN_OBJ:
-							collisione->tipoCollisione=RANA_TANA_APERTA;
-							collisione->id=schermo->screenMatrix[row][col].id; 
+							collisione->tipoCollisione=RANA_TANA_APERTA; // tipo di collisione
+							collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= TANA_OPEN_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+							return;
 							break;
 						case TANA_CLOSE_OBJ:
-							collisione->tipoCollisione=RANA_TANA_CHIUSA;
-							collisione->id=schermo->screenMatrix[row][col].id; 
+							collisione->tipoCollisione=RANA_TANA_CHIUSA; // tipo di collisione
+							collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= TANA_CLOSE_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+							return;
 							break;
 						case PN_OBJ:
-							collisione->tipoCollisione=RANA_PROIETTILE_NEMICO;
-							collisione->id=schermo->screenMatrix[row][col].id; 
+							collisione->tipoCollisione=RANA_PROIETTILE_NEMICO; // tipo di collisione
+							collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= PN_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+							return;
 							break;
 						default:
 							break;
@@ -58,18 +89,31 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 						case RANA_OBJ:
 							if(pipeData->id == id_nemici[0] || pipeData->id == id_nemici[1] || pipeData->id == id_nemici[2]){
 								// il tronco è un nemico
-								collisione->tipoCollisione=NEMICO_RANA;
-								collisione->id=pipeData->id; 
+								
+								collisione->tipoCollisione=NEMICO_RANA; // tipo di collisione
+								collisione->oggetto_attivo=N_OBJ; // oggetto che colpisce
+								collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+								collisione->oggetto_passivo= RANA_OBJ; // oggetto che viene colpito
+								collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito
+								return; 
 							}else{
-								collisione->tipoCollisione=TRONCO_RANA;
-								collisione->id=pipeData->id; 
+								collisione->tipoCollisione=TRONCO_RANA; // tipo di collisione
+								collisione->oggetto_attivo=TRONCO_OBJ; // oggetto che colpisce
+								collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+								collisione->oggetto_passivo= RANA_OBJ; // oggetto che viene colpito
+								collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito  
+								return;
 							}
 							break;
 						case P_OBJ:
 							if(pipeData->id == id_nemici[0] || pipeData->id == id_nemici[1] || pipeData->id == id_nemici[2]){
 								// il tronco è un nemico in realtà
-								collisione->tipoCollisione=NEMICO_PROIETTILE_AMICO;
-								collisione->id=pipeData->id; 
+								collisione->tipoCollisione=NEMICO_PROIETTILE_AMICO; // tipo di collisione
+								collisione->oggetto_attivo=N_OBJ; // oggetto che colpisce
+								collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+								collisione->oggetto_passivo= P_OBJ; // oggetto che viene colpito
+								collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+								return;
 							}
 							break;
 							
@@ -80,8 +124,12 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 				case 'A': // auto
 					switch(schermo->screenMatrix[row][col].tipo){
 						case RANA_OBJ:
-							collisione->tipoCollisione=AUTO_RANA;
-							collisione->id=pipeData->id; 
+							collisione->tipoCollisione=AUTO_RANA; // tipo di collisione
+							collisione->oggetto_attivo=AUTO_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= RANA_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+							return;
 						default:
 							break;
 					}			
@@ -89,8 +137,12 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 				case 'C': // camion
 					switch(schermo->screenMatrix[row][col].tipo){
 						case RANA_OBJ:
-							collisione->tipoCollisione=CAMION_RANA;
-							collisione->id=pipeData->id; 
+							collisione->tipoCollisione=CAMION_RANA; // tipo di collisione
+							collisione->oggetto_attivo=CAMION_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= RANA_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+							return;
 						default:
 							break;
 					}			
@@ -98,8 +150,13 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 				case 'P': // proiettile amico
 					switch(schermo->screenMatrix[row][col].tipo){
 						case N_OBJ:
-							collisione->tipoCollisione=PROIETTILE_AMICO_NEMICO;
-							collisione->id=pipeData->id; 
+							collisione->tipoCollisione=PROIETTILE_AMICO_NEMICO; // tipo di collisione
+							collisione->oggetto_attivo=P_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= N_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+							return;
+							break;
 						default:
 							break;
 					}			
@@ -107,8 +164,12 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 				case 'p': // proiettile nemico
 					switch(schermo->screenMatrix[row][col].tipo){
 						case RANA_OBJ:
-							collisione->tipoCollisione=PROIETTILE_NEMICO_RANA;
-							collisione->id=pipeData->id; 
+							collisione->tipoCollisione=PROIETTILE_NEMICO_RANA; // tipo di collisione
+							collisione->oggetto_attivo=PN_OBJ; // oggetto che colpisce
+							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+							collisione->oggetto_passivo= RANA_OBJ; // oggetto che viene colpito
+							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
+							return;
 						default:
 							break;
 					}			
@@ -121,8 +182,11 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
   return;
 }
 
-void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd){
-	printCollisione(collisione->tipoCollisione); // per debug
+
+// da rifare
+void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd,int* id_nemici){
+	printCollisione(collisione); // per debug
+	/*
 	// switch su collisione:
 	switch (collisione->tipoCollisione) {
         case RANA_AUTO:
@@ -152,8 +216,14 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
          case NEMICO_PROIETTILE_AMICO:
          case PROIETTILE_AMICO_NEMICO:
          	// termina nemico e rispristina sprite del tronco
+         	// termina processo nemico con id = collisione.id
+         	killNemico(gameData->pids.pidNemici[collisione->id]);
+         	gameData->pids.pidNemici[collisione->id] = 0;
+         	// setta a -1 l'id del nemico nell'array id_nemici
+         	id_nemici[collisione->id]=-1;
+         	// termina proiettile amico
          	break;
         default:
             break;
-    }
+    }*/
 }

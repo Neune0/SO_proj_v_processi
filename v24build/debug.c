@@ -89,48 +89,58 @@ void printDebug(pid_t pidRana,
     return;
 }
 
-void printCollisione(TipoCollisione collisione){
-	if(collisione!=NO_COLLISIONE){
-		mvprintw(37,0,"                                           ");
+void printCollisione(Collisione* collisione){
+	// posso printare in riga 37
+	if(collisione->tipoCollisione!=NO_COLLISIONE){
+		mvprintw(37,0,"                                                         ");
 	}
-	
-	switch (collisione) {
+
+	switch (collisione->tipoCollisione) {
         case RANA_AUTO:
-            mvprintw(37, 0, "Collisione con una rana e un'auto");
+            mvprintw(37, 0, "Collisione tra rana id: %d e auto id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case RANA_CAMION:
-            mvprintw(37, 0, "Collisione con una rana e un camion");
+        		mvprintw(37, 0, "Collisione tra rana id: %d e camion id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case RANA_FIUME:
-            mvprintw(37, 0, "Collisione con una rana e un fiume");
+        		mvprintw(37, 0, "Collisione tra rana id: %d e fiume id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case RANA_TRONCO:
-            mvprintw(37, 0, "Collisione con una rana e un tronco");
+        		mvprintw(37, 0, "Collisione tra rana id: %d e tronco id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case RANA_NEMICO:
-            mvprintw(37, 0, "Collisione con una rana e un nemico");
+        		mvprintw(37, 0, "Collisione tra rana id: %d e nemico id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case RANA_TANA_APERTA:
-            mvprintw(37, 0, "Collisione con una rana e una tana aperta");
+        		mvprintw(37, 0, "Collisione tra rana id: %d e tana aperta id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case RANA_TANA_CHIUSA:
-            mvprintw(37, 0, "Collisione con una rana e una tana chiusa");
+        		mvprintw(37, 0, "Collisione tra rana id: %d e tana chiusa id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case RANA_PROIETTILE_NEMICO:
-            mvprintw(37, 0, "Collisione con una rana e un proiettile nemico");
+        		mvprintw(37, 0, "Collisione tra rana id: %d e proiettile nemico id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case AUTO_RANA:
-            mvprintw(37, 0, "Collisione con un'auto e una rana");
+        		mvprintw(37, 0, "Collisione tra auto id: %d e rana id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case CAMION_RANA:
-            mvprintw(37, 0, "Collisione con un camion e una rana");
+        		mvprintw(37, 0, "Collisione tra camion id: %d e rana id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case TRONCO_RANA:
-            mvprintw(37, 0, "Collisione con un tronco e una rana");
+        		mvprintw(37, 0, "Collisione tra tronco id: %d e rana id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
         case PROIETTILE_NEMICO_RANA:
-            mvprintw(37, 0, "Collisione con un proiettile nemico e una rana");
+        		mvprintw(37, 0, "Collisione tra proiettile nemico id: %d e rana id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
             break;
+        case NEMICO_RANA:
+        		mvprintw(37, 0, "Collisione tra nemico id: %d e rana id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
+        		break;
+        case NEMICO_PROIETTILE_AMICO:
+        		mvprintw(37, 0, "Collisione tra nemico nemico id: %d e proiettile amico id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
+        		break;
+        case PROIETTILE_AMICO_NEMICO:
+        		mvprintw(37, 0, "Collisione tra proiettile amico id: %d e nemico id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
+        		break;
         default:
             break;
     }

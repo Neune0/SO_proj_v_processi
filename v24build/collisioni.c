@@ -4,8 +4,43 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 	
 	collisione->tipoCollisione=NO_COLLISIONE;
 	
-	int row=0;
-	int col=0;
+	int row=0, col=0;
+	bool on_tronco = true;
+	
+	// controllo collisione rana tronco ovvero la rana sta tutta sul tronco
+	if(pipeData->type == 'X'){
+		// in pipe c'è la rana
+		// scorro matrice per controllare che sia tutta sopra un oggetto tronco
+		if(schermo->screenMatrix[startRow][startCol].tipo == TRONCO_OBJ){
+			for (int i = 0; i < maxRows; i++) {
+				for (int j = 0; j < maxCols; j++) {
+					row = startRow + i;
+		    	col = startCol + j;
+		    	if(schermo->screenMatrix[row][col].tipo != TRONCO_OBJ){
+		    		on_tronco = false;
+		    	}
+  			}
+  		}
+  		if(on_tronco){
+  			// se true allora la rana sta tutta sul tronco
+  			
+  			collisione->tipoCollisione=RANA_TRONCO; // tipo di collisione
+				collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
+				collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
+				collisione->oggetto_passivo= TRONCO_OBJ; // oggetto che viene colpito
+				collisione->id_oggetto_passivo= schermo->screenMatrix[startRow][startCol].id; // id oggetto che viene colpito 
+				return;
+  		}
+		}
+		
+	}
+	// fine parte controllo collisione intera con tronco
+	
+	
+	
+	
+	
+	
 	for (int i = 0; i < maxRows; i++) {
   	for (int j = 0; j < maxCols; j++) {
     	row = startRow + i;
@@ -35,14 +70,6 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 							collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
 							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
 							collisione->oggetto_passivo= FIUME_OBJ; // oggetto che viene colpito
-							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
-							return;
-							break;
-						case TRONCO_OBJ:
-							collisione->tipoCollisione=RANA_TRONCO; // tipo di collisione
-							collisione->oggetto_attivo=RANA_OBJ; // oggetto che colpisce
-							collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
-							collisione->oggetto_passivo= TRONCO_OBJ; // oggetto che viene colpito
 							collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito 
 							return;
 							break;
@@ -96,13 +123,6 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 								collisione->oggetto_passivo= RANA_OBJ; // oggetto che viene colpito
 								collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito
 								return; 
-							}else{
-								collisione->tipoCollisione=TRONCO_RANA; // tipo di collisione
-								collisione->oggetto_attivo=TRONCO_OBJ; // oggetto che colpisce
-								collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
-								collisione->oggetto_passivo= RANA_OBJ; // oggetto che viene colpito
-								collisione->id_oggetto_passivo= schermo->screenMatrix[row][col].id; // id oggetto che viene colpito  
-								return;
 							}
 							break;
 						case P_OBJ:

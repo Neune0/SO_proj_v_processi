@@ -50,15 +50,13 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
     					//usleep(3000000);
     					aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
     				}
-    				else{
-    					mvprintw(38,0,"                  ");
-    					refresh();
-    				}
+    				
     				
     			}
     		}
     		else{
-    			mvprintw(38,0,"                  ");
+    				
+    					mvprintw(38,0,"                                ");
     					refresh();
     			// normale aggiornamento la rana non è su un tronco
     			aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);

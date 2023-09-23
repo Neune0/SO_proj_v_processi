@@ -29,6 +29,7 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 				collisione->id_oggetto_attivo=pipeData->id; // id dell'oggetto che colpisce
 				collisione->oggetto_passivo= TRONCO_OBJ; // oggetto che viene colpito
 				collisione->id_oggetto_passivo= schermo->screenMatrix[startRow][startCol].id; // id oggetto che viene colpito 
+				// in id_oggetto_passivo conservo l'id del tronco sul quale la rana si è poggiata
 				return;
   		}
 		}
@@ -204,7 +205,7 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 
 
 // da rifare
-void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd,int* id_nemici){
+void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd,int* id_nemici, int* id_tronco_rana, int* pos_x_rel){
 	printCollisione(collisione); // per debug
 	
 	// switch su collisione:
@@ -235,6 +236,18 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
         case RANA_TRONCO:
         case TRONCO_RANA:
             // la rana si attacca al tronco
+            // salvo l'id del tronco sul quale la rana si è poggiata
+            *id_tronco_rana= collisione->id_oggetto_passivo;
+            // salvo posizione della rana relativa al tronco
+            // mi serve posizione assoluta della rana
+            int pos_x_rana = gameData->pipeData.x;
+            int pos_y_rana = gameData->pipeData.y;
+            // mi serve posizione assoluta del tronco su cui la rana è poggiata
+            int pos_x_tronco = gameData->oldPos.general[*id_tronco_rana].x;
+            int pos_y_tronco = gameData->oldPos.general[*id_tronco_rana].y;
+            // calcolo posizione relativa della rana sul tronco
+            *pos_x_rel = pos_x_rana - pos_x_tronco;
+            
             break;
         case RANA_TANA_APERTA:
             // la rana vince la manche

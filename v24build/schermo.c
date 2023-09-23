@@ -1,30 +1,84 @@
 #include "schermo.h"
-void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
-	mvprintw(34,2,"                                                                                                                           ");
-    mvprintw(34,2,"pid nemici: ");
-    for(int i=0;i<MAXNNEMICI;i++){
-    	mvprintw(34,15+(i*11),"pid%d: %d",i,gameData->pids.pidNemici[i]);
-    }
-    refresh();
+void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronco,int* pos_x_rel){
+	
 	switch(gameData->pipeData.type){
     	case 'X': // rana
-    		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici);
+    		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
         break; 
 			case 'T': // tronco
+			
 				if(gameData->pipeData.id == id_nemici[0] || gameData->pipeData.id == id_nemici[1] || gameData->pipeData.id == id_nemici[2]){
-					aggiornaOggetto(gameData, gameData->oldPos.general, NEMICO_SPRITE,pipe_fd,id_nemici);
+					// allora è un nemico
+					aggiornaOggetto(gameData, gameData->oldPos.general, NEMICO_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
 				}
 				else{
-					aggiornaOggetto(gameData, gameData->oldPos.general, TRONCO_SPRITE,pipe_fd,id_nemici);
+					if(gameData->pipeData.id==*id_rana_tronco){
+						mvprintw(34,0,"la rana è sul tronco con id: %d",*id_rana_tronco);
+						refresh();
+						// allora il tronco trasporta la rana
+						// stampo sprite tronco
+						aggiornaOggetto(gameData, gameData->oldPos.general, TRONCO_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+						
+						// per debug
+						//stampaMatrice(gameData->schermo.screenMatrix); 
+    				//refresh(); 
+						//usleep(3000000);
+						// fine debug
+						
+						// usando pos tronco e pos rana relativa a tronco scrivo in pipe verso la rana le coordinate aggiornate
+						PipeData aus_pipe;
+						aus_pipe.x= gameData->oldPos.general[*id_rana_tronco].x + *pos_x_rel; // posizione rana assoluta = postronco + posranarelativa
+						aus_pipe.y= gameData->oldPos.general[*id_rana_tronco].y; // pos rana assoluta = old pos del tronco
+						aus_pipe.type='X';
+						aus_pipe.id=0;
+						
+						
+						write(gameData->pipeRana_fd[1], &aus_pipe,sizeof(PipeData));
+						
+						// stampo lo sprite della rana
+						// salvo per ripristino pipedata
+						PipeData aus_pipe2;
+						aus_pipe2.x= gameData->pipeData.x;
+						aus_pipe2.y= gameData->pipeData.y;
+						aus_pipe2.type=gameData->pipeData.type;
+						aus_pipe2.id=gameData->pipeData.id;
+						// modifico gameData.pipeData
+						gameData->pipeData.x = aus_pipe.x;
+						gameData->pipeData.y = aus_pipe.y;
+						gameData->pipeData.type = aus_pipe.type;
+						gameData->pipeData.id = aus_pipe.id;
+						// chiamo l'aggiornamento normale a rana
+						//mvprintw(35,0,"dati per aggiornamento rana x: %d, y: %d",gameData->pipeData.x,gameData->pipeData.y);
+						//refresh();
+						//usleep(3000000);
+						aggiornaOggettoMod(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+						
+						// per debug
+						//stampaMatrice(gameData->schermo.screenMatrix); 
+    				//refresh(); 
+						//usleep(3000000);
+						// fine debug
+
+						// ripristino
+						gameData->pipeData.x = aus_pipe2.x;
+						gameData->pipeData.y = aus_pipe2.y;
+						gameData->pipeData.type = aus_pipe2.type;
+						gameData->pipeData.id = aus_pipe2.id;
+						
+					}
+					else{
+						// allora è un tronco normale
+						aggiornaOggetto(gameData, gameData->oldPos.general, TRONCO_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+					}
 				}
         
         //aggiornaDirezioneTronchi( &pipeData, &old_pos[pipeData.id], arrayDirTronchi); // da controllare
         break;
       case 'A': // auto
-      	aggiornaOggetto(gameData, gameData->oldPos.general, AUTO_SPRITE,pipe_fd,id_nemici);
+      	aggiornaOggetto(gameData, gameData->oldPos.general, AUTO_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
         break;
      case 'C':  // camion
-      	aggiornaOggetto(gameData, gameData->oldPos.general, CAMION_SPRITE,pipe_fd,id_nemici);
+      	aggiornaOggetto(gameData, gameData->oldPos.general, CAMION_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
         break;
       case 'S':
       	//proiettile sparato da utente avvia il proiettile con posizione iniziale della rana (o dell oggetto che ha sparato)
@@ -38,7 +92,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
       		gameData->contatori.contP++;
       	}
       	break;
-      case 'n':
+      case 'n':/*
       	if(gameData->pipeData.id!=id_nemici[0] && gameData->pipeData.id!=id_nemici[1] && gameData->pipeData.id!=id_nemici[2]){
 		    	if(gameData->contatori.contN<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
 		    	{ 
@@ -51,7 +105,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
 						id_nemici[gameData->contatori.contN]=id;
 						gameData->contatori.contN++;		
 		    	}
-      	}
+      	}*/
       	break;
       case 's':
       	// LE COORDINATE DI LANCIO DEVONO ESSERE QUELLE CENTRALI DEL TRONCO HA ID = A ID IN PIPEDATA, PRENDERE DA OLD POS TRONCHI
@@ -80,7 +134,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
       		gameData->contatori.contP--;
       	}
       	else{
-      		aggiornaOggetto(gameData, gameData->oldPos.proiettili, PROIETTILE_SPRITE,pipe_fd,id_nemici);
+      		aggiornaOggetto(gameData, gameData->oldPos.proiettili, PROIETTILE_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
       	}
       	break;
       case 'p':
@@ -92,7 +146,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
       		gameData->contatori.contPN--;
       	}
       	else{
-      		aggiornaOggetto(gameData, gameData->oldPos.proiettiliNemici, PROIETTILE_NEMICO_SPRITE,pipe_fd,id_nemici);
+      		aggiornaOggetto(gameData, gameData->oldPos.proiettiliNemici, PROIETTILE_NEMICO_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
       	}
       	break;
       	case 'Z':
@@ -110,7 +164,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
 	return;
 }
 //--------------------------------------------AGGIORNAMENTO OGGETTI IN MATRICE--------------------------------
-void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprite, int* pipe_fd,int* id_nemici) { //ok
+void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprite, int* pipe_fd,int* id_nemici,int* id_rana_tronco, int* pos_x_rel) { //ok
 		PipeData* datiNuovi = &(gameData->pipeData); // i dati nuovi passati in pipe
 		PipeData* datiVecchi = &(old_pos[gameData->pipeData.id]); // dati al passo precedentes
 		
@@ -119,12 +173,27 @@ void aggiornaOggetto(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprit
     		
         pulisciSpriteInMatrice(datiVecchi, &(gameData->sprites[tipoSprite]), &(gameData->schermo));
         
-        stampaSpriteInMatrice(datiNuovi, &(gameData->sprites[tipoSprite]), &(gameData->schermo), &(gameData->pipeData), gameData, pipe_fd,id_nemici);
+        stampaSpriteInMatrice(datiNuovi, &(gameData->sprites[tipoSprite]), &(gameData->schermo), &(gameData->pipeData), gameData, pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+        
         
         aggiornaOldPos(datiVecchi, datiNuovi);
     }
 }
-void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* schermo, PipeData* pipeData,GameData* gameData,int *pipe_fd,int* id_nemici) { // ok
+void aggiornaOggettoMod(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprite, int* pipe_fd,int* id_nemici,int* id_rana_tronco, int* pos_x_rel){
+	PipeData* datiNuovi = &(gameData->pipeData); // i dati nuovi passati in pipe
+	PipeData* datiVecchi = &(old_pos[gameData->pipeData.id]); // dati al passo precedentes
+	// se le coordinate sono cambiate, pulisci l'area vecchia e stampa il nuovo sprite
+    if (datiNuovi->x != datiVecchi->x || datiNuovi->y != datiVecchi->y) {
+    		
+        stampaSpriteInMatriceMod(datiNuovi, &(gameData->sprites[tipoSprite]), &(gameData->schermo), &(gameData->pipeData), gameData, pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+        
+        
+        aggiornaOldPos(datiVecchi, datiNuovi);
+    }
+
+
+}
+void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* schermo, PipeData* pipeData,GameData* gameData,int *pipe_fd,int* id_nemici, int* id_rana_tronco, int* pos_x_rel) { // ok
     int startRow=datiVecchi->y;
     int startCol=datiVecchi->x;
     int maxRows = sprite->max_row;
@@ -138,8 +207,9 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
     
     checkCollisioni(&collisione,startRow,maxRows,startCol,maxCols,schermo,pipeData,id_nemici);
     
-    gestisciCollisione(&collisione,gameData,pipe_fd,id_nemici);
-    
+    gestisciCollisione(&collisione,gameData,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+    // dopo questo se ho una collisione rana tronco
+    // ho salvato in pos_x_rel la posizione della rana relativa al tronco
     	for (int i = 0; i < maxRows; i++) {
         for (int j = 0; j < maxCols; j++) {
             row = startRow + i;
@@ -191,11 +261,75 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
     
     
 }
+void stampaSpriteInMatriceMod(PipeData* datiVecchi, Sprite* sprite, Schermo* schermo, PipeData* pipeData,GameData* gameData,int *pipe_fd,int* id_nemici, int* id_rana_tronco, int* pos_x_rel) { // ok
+    int startRow=datiVecchi->y;
+    int startCol=datiVecchi->x;
+    int maxRows = sprite->max_row;
+    int maxCols = sprite->max_col;
+    
+    int row=0, col=0;
+    // funizone che controlla se ci saranno collisioni restituisce il tipo di collisine, se non c'è collisione restituisce NO_COLLSIONE
+    // se ci sono più collisioni allora serve una policy su quale restituire
+    // gli si passa row iniziale e finale + col inziale e fiinale + schermo per matrice dinamica + pipeData
+    //Collisione collisione;
+    
+    //checkCollisioni(&collisione,startRow,maxRows,startCol,maxCols,schermo,pipeData,id_nemici);
+    
+    //gestisciCollisione(&collisione,gameData,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+    // dopo questo se ho una collisione rana tronco
+    // ho salvato in pos_x_rel la posizione della rana relativa al tronco
+    	for (int i = 0; i < maxRows; i++) {
+        for (int j = 0; j < maxCols; j++) {
+            row = startRow + i;
+            col = startCol + j;
+						
+						
+						// devo fare lo switch sul tipo per assegnare il tipo
+						switch(pipeData->type){
+							case 'X': // rana
+								schermo->screenMatrix[row][col].tipo = RANA_OBJ;
+								break;
+							case 'T': // tronco
+								if(sprite->sprite[0][4]=='^'){
+									schermo->screenMatrix[row][col].tipo = N_OBJ;
+								}
+								else{
+									schermo->screenMatrix[row][col].tipo = TRONCO_OBJ;
+								}
+								
+								break;
+							case 'A': // auto
+								schermo->screenMatrix[row][col].tipo = AUTO_OBJ;
+								break;
+							case 'C': // camion
+								schermo->screenMatrix[row][col].tipo = CAMION_OBJ;
+								break;
+							case 'P': // proiettile amico
+								schermo->screenMatrix[row][col].tipo = P_OBJ;
+								break;
+							case 'p': // proiettile nemico
+								schermo->screenMatrix[row][col].tipo = PN_OBJ;
+								break;
+							default:
+								break;
+						}
+						
+						// l'id da scrivere è quello in pipeData
+					
+            schermo->screenMatrix[row][col].ch = sprite->sprite[i][j];
+            schermo->screenMatrix[row][col].color = sprite->color;
+            schermo->screenMatrix[row][col].is_changed = true;
+            schermo->screenMatrix[row][col].id=pipeData->id;
+        }
+    }
+
+    
+}
 void pulisciSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* schermo) { // ok
     int row=datiVecchi->y;
     int col=datiVecchi->x;
-    int maxRows = sprite->max_row;
-    int maxCols = sprite->max_col;
+    int maxRows = sprite->max_row; // 2
+    int maxCols = sprite->max_col; // 3
     
     if (row != -1) {
         for (int i = row; i < row + maxRows; i++) {

@@ -11,10 +11,12 @@ void drawProcess(int* pipe_fd) {
 	
 	inizializza(gameData); // inizializza i dati del gioco, qui si può leggere file di salvataggio ecc...
 	int id_nemici[3]={-1,-1,-1};
+	int id_rana_tronco=-1;
+	int pos_x_rel=-1;
   while (1) {
   	read(pipe_fd[0], &(gameData->pipeData), sizeof(PipeData)); // Leggi le coordinate inviate dalla pipe
   	
-    aggiorna(gameData,pipe_fd,id_nemici); // aggiorna stato del gioco
+    aggiorna(gameData,pipe_fd,id_nemici,&id_rana_tronco,&pos_x_rel); // aggiorna stato del gioco
     
 		stampaMatrice(gameData->schermo.screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
 		

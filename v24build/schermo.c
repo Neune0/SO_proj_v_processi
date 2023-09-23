@@ -3,6 +3,9 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
 	
 	switch(gameData->pipeData.type){
     	case 'X': // rana
+    		mvprintw(35,0,"                                                        ");
+    		mvprintw(35,0,"rana x: %d y: %d",gameData->pipeData.x,gameData->pipeData.y);
+    		refresh();
     		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
         break; 
 			case 'T': // tronco
@@ -19,19 +22,12 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
 						// stampo sprite tronco
 						aggiornaOggetto(gameData, gameData->oldPos.general, TRONCO_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
 						
-						// per debug
-						//stampaMatrice(gameData->schermo.screenMatrix); 
-    				//refresh(); 
-						//usleep(3000000);
-						// fine debug
-						
 						// usando pos tronco e pos rana relativa a tronco scrivo in pipe verso la rana le coordinate aggiornate
 						PipeData aus_pipe;
 						aus_pipe.x= gameData->oldPos.general[*id_rana_tronco].x + *pos_x_rel; // posizione rana assoluta = postronco + posranarelativa
 						aus_pipe.y= gameData->oldPos.general[*id_rana_tronco].y; // pos rana assoluta = old pos del tronco
 						aus_pipe.type='X';
 						aus_pipe.id=0;
-						
 						
 						write(gameData->pipeRana_fd[1], &aus_pipe,sizeof(PipeData));
 						
@@ -47,17 +43,10 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
 						gameData->pipeData.y = aus_pipe.y;
 						gameData->pipeData.type = aus_pipe.type;
 						gameData->pipeData.id = aus_pipe.id;
-						// chiamo l'aggiornamento normale a rana
-						//mvprintw(35,0,"dati per aggiornamento rana x: %d, y: %d",gameData->pipeData.x,gameData->pipeData.y);
-						//refresh();
-						//usleep(3000000);
+						
 						aggiornaOggettoMod(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
 						
-						// per debug
-						//stampaMatrice(gameData->schermo.screenMatrix); 
-    				//refresh(); 
-						//usleep(3000000);
-						// fine debug
+						
 
 						// ripristino
 						gameData->pipeData.x = aus_pipe2.x;

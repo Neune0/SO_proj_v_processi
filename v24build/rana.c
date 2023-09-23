@@ -26,15 +26,26 @@ void moveProcess(int* pipe_fd, int* pipe_rana) {
 		pipeData.type='X';
 		pipeData.id=0;
 		
-		
+		PipeData aus;
 		 // Invia le coordinate iniziali attraverso la pipe
     write(pipe_fd[1], &pipeData, sizeof(PipeData));
     
 		noecho();
 		int ch='D';
     while (1) {
+    		bool change=false;
+    		ssize_t bytes_read = read(pipe_rana[0], &(aus), sizeof(PipeData));
+    		if(bytes_read!=-1){
+    			// pipeData = aus
+    			pipeData.x=aus.x; // coordinate iniziali
+					pipeData.y=aus.y;
+					pipeData.type=aus.type;
+					pipeData.id=aus.id;
+					change=true;
+    		} 
+    		
     		pipeData.type='X'; // resetta il normale carattere della rana
-       	bool change=false;
+       	
         ch = getch(); // Leggi il carattere dall'input
         
         // Muovi il personaggio in base all'input dell'utente

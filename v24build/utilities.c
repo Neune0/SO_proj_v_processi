@@ -33,6 +33,24 @@ void creaPipe(int pipe_fd[2]) {
     }
 }
 
+void creaPipeNonBloccante(int pipe_fd[2]) {
+    if (pipe(pipe_fd) == -1) {
+        perror("Pipe creation failed");
+        exit(1);
+    }
+    // Imposta la modalità non bloccante sulla pipe di lettura (pipe_fd[0])
+    if (fcntl(pipe_fd[0], F_SETFL, O_NONBLOCK) == -1) {
+        perror("Imposizione della modalità non bloccante sulla pipe di lettura fallita");
+        exit(EXIT_FAILURE);
+    }
+
+    // Imposta la modalità non bloccante sulla pipe di scrittura (pipe_fd[1])
+    if (fcntl(pipe_fd[1], F_SETFL, O_NONBLOCK) == -1) {
+        perror("Imposizione della modalità non bloccante sulla pipe di scrittura fallita");
+        exit(EXIT_FAILURE);
+    }
+}
+
 
 // uccide un dato processo  dell'array di pid_t
 void uccidiProcesso( pid_t *array_pid, int id_processo){

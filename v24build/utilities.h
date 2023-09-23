@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <signal.h>
+#include <fcntl.h>
 
 #define WIDTH 104
 #define HEIGHT 37
@@ -204,5 +205,6 @@ void inizializzaColorazione();
 void uccidiProcesso( pid_t *array_pid, int id_processo);
 int id_disponibile(pid_t *array_pid, int lunghezza);
 void aggiornaOldPos(PipeData *old_pos,PipeData *pipeData);
+void creaPipeNonBloccante(int pipe_fd[2]);
 #endif // UTILITIES_H
 

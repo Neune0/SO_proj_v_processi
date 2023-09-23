@@ -4,7 +4,7 @@ void drawProcess(int* pipe_fd) {
 	
 	GameData *gameData = (GameData *)malloc(sizeof(GameData));
 	// forse non serve, pipe in cui la rana legge e disegna scrive in teoria
-	creaPipe(gameData->pipeRana_fd);
+	creaPipeNonBloccante(gameData->pipeRana_fd);
 	
 	// avvia i processi rana, tronchi e veicoli
 	avviaProcessiBase(pipe_fd,&(gameData->pids),gameData->pipeRana_fd);

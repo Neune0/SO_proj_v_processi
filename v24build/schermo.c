@@ -1,6 +1,11 @@
 #include "schermo.h"
 void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
-
+	mvprintw(34,2,"                                                                                                                           ");
+    mvprintw(34,2,"pid nemici: ");
+    for(int i=0;i<MAXNNEMICI;i++){
+    	mvprintw(34,15+(i*11),"pid%d: %d",i,gameData->pids.pidNemici[i]);
+    }
+    refresh();
 	switch(gameData->pipeData.type){
     	case 'X': // rana
     		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici);
@@ -34,14 +39,13 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici){
       	}
       	break;
       case 'n':
-      
       	if(gameData->pipeData.id!=id_nemici[0] && gameData->pipeData.id!=id_nemici[1] && gameData->pipeData.id!=id_nemici[2]){
 		    	if(gameData->contatori.contN<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
 		    	{ 
 		    		// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
 		    		//int id = id_disponibile(gameData->pids.pidNemici,MAXNNEMICI);
 			    	int id = gameData->pipeData.id; // questo sarà l'id del nemico che è uguale all'id del tronco che l'ha generato
-			    	gameData->pids.pidNemici[id]=avviaNemico(pipe_fd, id);
+			    	gameData->pids.pidNemici[id - 1]=avviaNemico(pipe_fd, id);
 						// devo comunicare a disegna che la prossima volta che leggera T in pipe e l'id sarà uguale all'id che ho qui allora dovra disegnare il tronco in un modo diverso ed anche il tipo in matrice dovra essere diverso
 						// uso un array tronchi nemici di id
 						id_nemici[gameData->contatori.contN]=id;

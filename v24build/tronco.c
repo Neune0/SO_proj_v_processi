@@ -55,11 +55,13 @@ void tronco(int* pipe_fd, int y, int direzione_x, int id) {
 		
 		int numero_spostamenti=0;
     while (1) {
-    	if(numero_spostamenti==108 && pipeData.type=='T'){
+    	if(numero_spostamenti==100){
     		// il tronco si trasforma in tronco nemico
     		pipeData.type='n';
     		write(pipe_fd[1], &pipeData, sizeof(PipeData));
+    		// ripristino
     		pipeData.type='T';
+    		numero_spostamenti=0;
     	}else{
     		if(direzione==1){
     		if(pipeData.x + lunghezza_tronco + 1 < WIDTH){
@@ -83,7 +85,6 @@ void tronco(int* pipe_fd, int y, int direzione_x, int id) {
     	}
 
 			numero_spostamenti++;
-			if(numero_spostamenti==109){numero_spostamenti=0;}
       // Aspetta un po' prima di generare nuove coordinate forse andrebbe diminuito
       usleep(100000);
     }

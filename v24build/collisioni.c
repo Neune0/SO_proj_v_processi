@@ -186,7 +186,7 @@ void checkCollisioni(Collisione* collisione,int startRow,int maxRows,int startCo
 // da rifare
 void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd,int* id_nemici){
 	printCollisione(collisione); // per debug
-	/*
+	
 	// switch su collisione:
 	switch (collisione->tipoCollisione) {
         case RANA_AUTO:
@@ -201,11 +201,15 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
         	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
         	break;
         case RANA_PROIETTILE_NEMICO:
+        	// termina rana e termina proiettile nemico
+        	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
+        	uccidiProiettileNemico(gameData->pids.pidProiettiliNemici,collisione->id_oggetto_passivo);
+        	break;
         case PROIETTILE_NEMICO_RANA:
         	// termina rana e termina proiettile nemico
         	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
-        	uccidiProiettileNemico(gameData->pids.pidProiettiliNemici,collisione->id);
-					break;
+        	uccidiProiettileNemico(gameData->pids.pidProiettiliNemici,collisione->id_oggetto_attivo);
+        	break;
         case RANA_TRONCO:
         case TRONCO_RANA:
             // la rana si attacca al tronco
@@ -214,16 +218,29 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
             // la rana vince la manche
             break;
          case NEMICO_PROIETTILE_AMICO:
+         		// termina nemico
+         		killNemico(gameData->pids.pidNemici[collisione->id_oggetto_attivo - 1]); // -1 perchè gli id dei nemici 1-3 mentre l'indice 0-2
+         		gameData->pids.pidNemici[collisione->id_oggetto_attivo - 1] = 0;
+         		// setta a -1 l'id del nemico nell'array id_nemici
+         		id_nemici[collisione->id_oggetto_attivo - 1]=-1;
+         		gameData->contatori.contN--; // decremento nemici
+         		// termina proiettile amico
+         		// uccide il processo proiettile corrispondente all' id passato
+         		uccidiProiettile(gameData->pids.pidProiettili,collisione->id_oggetto_passivo);
+         		
+         		break;
          case PROIETTILE_AMICO_NEMICO:
-         	// termina nemico e rispristina sprite del tronco
-         	// termina processo nemico con id = collisione.id
-         	killNemico(gameData->pids.pidNemici[collisione->id]);
-         	gameData->pids.pidNemici[collisione->id] = 0;
-         	// setta a -1 l'id del nemico nell'array id_nemici
-         	id_nemici[collisione->id]=-1;
-         	// termina proiettile amico
+         		// termina nemico
+         		killNemico(gameData->pids.pidNemici[collisione->id_oggetto_passivo - 1]); // -1 perchè gli id dei nemici 1-3 mentre l'indice 0-2
+         		gameData->pids.pidNemici[collisione->id_oggetto_passivo - 1] = 0;
+         		// setta a -1 l'id del nemico nell'array id_nemici
+         		id_nemici[collisione->id_oggetto_passivo - 1]=-1;
+         		gameData->contatori.contN--; // decremento nemici
+         		// termina proiettile amico
+         		// uccide il processo proiettile corrispondente all' id passato
+         		uccidiProiettile(gameData->pids.pidProiettili,collisione->id_oggetto_attivo);
          	break;
         default:
             break;
-    }*/
+    }
 }

@@ -136,7 +136,7 @@ void printCollisione(Collisione* collisione){
         		mvprintw(37, 0, "Collisione tra nemico id: %d e rana id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
         		break;
         case NEMICO_PROIETTILE_AMICO:
-        		mvprintw(37, 0, "Collisione tra nemico nemico id: %d e proiettile amico id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
+        		mvprintw(37, 0, "Collisione tra nemico id: %d e proiettile amico id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);
         		break;
         case PROIETTILE_AMICO_NEMICO:
         		mvprintw(37, 0, "Collisione tra proiettile amico id: %d e nemico id: %d",collisione->id_oggetto_attivo, collisione->id_oggetto_passivo);

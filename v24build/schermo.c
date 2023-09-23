@@ -5,8 +5,68 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
     	case 'X': // rana
     		mvprintw(35,0,"                                                        ");
     		mvprintw(35,0,"rana x: %d y: %d",gameData->pipeData.x,gameData->pipeData.y);
+    		mvprintw(36,0,"                                                        ");
+    		mvprintw(36,0,"old rana x: %d y: %d",gameData->oldPos.general[0].x,gameData->oldPos.general[0].y);
     		refresh();
-    		aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+    		// se la rana è sul tronco ed il movimento è orizzontale e non sforo il tronco allora devo fare come sotto con caso tronco che si muove
+    		if(*id_rana_tronco!=-1){
+    			
+    			// se il movimento è orizzonatale
+    			if(gameData->oldPos.general[0].x != gameData->pipeData.x){
+    				
+    				// se non sforo il tronco
+    				// mi serve la posizione del tronco su cui è la rana
+    				int pos_x_tronco = gameData->oldPos.general[*id_rana_tronco].x;
+    				// se nuova posizione della rana quello scritto in pipe è minore di pos x del tronco sto sforando
+    				// se nuova posizione della rana è maggiore di pos x tronco + 8 sto sforando
+    				int diff = gameData->pipeData.x - pos_x_tronco;
+    				if( diff>=0 && diff <=7){
+    					// non sforo
+    					mvprintw(39,0,"                                   ");
+    					mvprintw(39,0,"spostamento orizzontale lecito");
+    					refresh();
+    					// come spostare la rana 
+    				}
+    				else{
+    					// sforo
+    					mvprintw(39,0,"                                    ");
+    					mvprintw(39,0,"spostamento orizzontale NON lecito");
+    					refresh();
+    					// scrivi in pipe alla rana la sua posizione vecchia
+    				}
+    				// movimento lungo y
+    				if(gameData->oldPos.general[0].y != gameData->pipeData.y){
+    					// 3 casi
+    					//1. se cade in acqua
+    					//2. se atterra su un altro tronco
+    					//3. se atterra su una tana chiusa
+    					//4. se atterra su una tana aperta
+    					// devo chiamare aggiornaOggetto normalmente
+    					mvprintw(38,0,"                  ");
+    					mvprintw(38,0,"spostamento su y");
+    					refresh();
+    					*id_rana_tronco=-1;
+    					*pos_x_rel=-1;
+    					//usleep(3000000);
+    					aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+    				}
+    				else{
+    					mvprintw(38,0,"                  ");
+    					refresh();
+    				}
+    				
+    			}
+    		}
+    		else{
+    			mvprintw(38,0,"                  ");
+    					refresh();
+    			// normale aggiornamento la rana non è su un tronco
+    			aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+    		}
+    		// se la rana è sul tronco ed il movimento è orizziontale e sforo allora non devo muovere la rana e devo scrivere in pipe alla rana la posizione prima del movimento
+    		// se la rana è sul tronco ed il movimento è verticale
+    		
+    		
         break; 
 			case 'T': // tronco
 			

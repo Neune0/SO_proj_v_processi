@@ -204,11 +204,13 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
         	// termina rana e termina proiettile nemico
         	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
         	uccidiProiettileNemico(gameData->pids.pidProiettiliNemici,collisione->id_oggetto_passivo);
+        	gameData->contatori.contPN--;
         	break;
         case PROIETTILE_NEMICO_RANA:
         	// termina rana e termina proiettile nemico
         	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
         	uccidiProiettileNemico(gameData->pids.pidProiettiliNemici,collisione->id_oggetto_attivo);
+        	gameData->contatori.contPN--;
         	break;
         case RANA_TRONCO:
         case TRONCO_RANA:
@@ -227,6 +229,7 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
          		// termina proiettile amico
          		// uccide il processo proiettile corrispondente all' id passato
          		uccidiProiettile(gameData->pids.pidProiettili,collisione->id_oggetto_passivo);
+         		gameData->contatori.contP--;
          		
          		break;
          case PROIETTILE_AMICO_NEMICO:
@@ -239,6 +242,7 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
          		// termina proiettile amico
          		// uccide il processo proiettile corrispondente all' id passato
          		uccidiProiettile(gameData->pids.pidProiettili,collisione->id_oggetto_attivo);
+         		gameData->contatori.contP--;
          	break;
         default:
             break;

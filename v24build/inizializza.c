@@ -9,7 +9,8 @@ void inizializza(GameData* gameData){
   
 	inizializzaSchermo(gameData); 
 	
-	gameData->contatori.contP=gameData->contatori.contPN=gameData->contatori.contN=0;
+	gameData->contatori.contP=gameData->contatori.contPN=gameData->contatori.contN=gameData->contatori.manche=0;
+	gameData->contatori.vite=3;
 
 	return;
 }

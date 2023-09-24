@@ -176,7 +176,8 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
       		gameData->contatori.contP++;
       	}
       	break;
-      case 'n':/*
+      case 'n':
+      	if(gameData->pipeData.id!=*id_rana_tronco){
       	if(gameData->pipeData.id!=id_nemici[0] && gameData->pipeData.id!=id_nemici[1] && gameData->pipeData.id!=id_nemici[2]){
 		    	if(gameData->contatori.contN<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
 		    	{ 
@@ -189,7 +190,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
 						id_nemici[gameData->contatori.contN]=id;
 						gameData->contatori.contN++;		
 		    	}
-      	}*/
+      	}}
       	break;
       case 's':
       	// LE COORDINATE DI LANCIO DEVONO ESSERE QUELLE CENTRALI DEL TRONCO HA ID = A ID IN PIPEDATA, PRENDERE DA OLD POS TRONCHI

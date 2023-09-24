@@ -26,6 +26,33 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
     					mvprintw(39,0,"spostamento orizzontale lecito");
     					refresh();
     					// come spostare la rana 
+    					// stampo sprite tronco
+    					PipeData aus;
+    					aus.x=gameData->pipeData.x;
+    					aus.y=gameData->pipeData.y;
+    					aus.type=gameData->pipeData.type;
+    					aus.id=gameData->pipeData.id;
+    					
+    					gameData->pipeData.x=gameData->oldPos.general[*id_rana_tronco].x;
+    					gameData->pipeData.y=gameData->oldPos.general[*id_rana_tronco].y;
+    					gameData->pipeData.type=gameData->oldPos.general[*id_rana_tronco].type;
+    					gameData->pipeData.id=gameData->oldPos.general[*id_rana_tronco].id;
+    					
+    					aggiornaOggettoMod(gameData, gameData->oldPos.general, TRONCO_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+    					
+    					gameData->pipeData.x=aus.x;
+    					gameData->pipeData.y=aus.y;
+    					gameData->pipeData.type=aus.type;
+    					gameData->pipeData.id=aus.id;
+    					
+    					// aggiorno la pos_x_rel
+    					*pos_x_rel=diff;
+    					
+    					
+    					// stampo sprite rana
+    					aggiornaOggettoMod(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+							
+    					
     				}
     				else{
     					// sforo
@@ -33,8 +60,20 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
     					mvprintw(39,0,"spostamento orizzontale NON lecito");
     					refresh();
     					// scrivi in pipe alla rana la sua posizione vecchia
+    					// usando pos tronco e pos rana relativa a tronco scrivo in pipe verso la rana le coordinate aggiornate
+							PipeData aus_pipe;
+							aus_pipe.x= gameData->oldPos.general[*id_rana_tronco].x + *pos_x_rel; // posizione rana assoluta = postronco + posranarelativa
+							aus_pipe.y= gameData->oldPos.general[*id_rana_tronco].y; // pos rana assoluta = old pos del tronco
+							aus_pipe.type='X';
+							aus_pipe.id=0;
+						
+							write(gameData->pipeRana_fd[1], &aus_pipe,sizeof(PipeData));
     				}
-    				// movimento lungo y
+    				
+    				
+    				
+    			}
+    			// movimento lungo y
     				if(gameData->oldPos.general[0].y != gameData->pipeData.y){
     					// 3 casi
     					//1. se cade in acqua
@@ -50,9 +89,6 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
     					//usleep(3000000);
     					aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
     				}
-    				
-    				
-    			}
     		}
     		else{
     				
@@ -96,6 +132,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
 						aus_pipe2.y= gameData->pipeData.y;
 						aus_pipe2.type=gameData->pipeData.type;
 						aus_pipe2.id=gameData->pipeData.id;
+						
 						// modifico gameData.pipeData
 						gameData->pipeData.x = aus_pipe.x;
 						gameData->pipeData.y = aus_pipe.y;

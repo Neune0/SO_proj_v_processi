@@ -4,30 +4,24 @@ void drawProcess(int* pipe_fd) {
 	
 	GameData *gameData = (GameData *)malloc(sizeof(GameData));
 	// forse non serve, pipe in cui la rana legge e disegna scrive in teoria
-	creaPipe(gameData->pipeRana_fd);
+	creaPipeNonBloccante(gameData->pipeRana_fd);
 	
 	// avvia i processi rana, tronchi e veicoli
 	avviaProcessiBase(pipe_fd,&(gameData->pids),gameData->pipeRana_fd);
 	
 	inizializza(gameData); // inizializza i dati del gioco, qui si può leggere file di salvataggio ecc...
-	
+	int id_nemici[3]={-1,-1,-1};
+	int id_rana_tronco=-1;
+	int pos_x_rel=-1;
   while (1) {
   	read(pipe_fd[0], &(gameData->pipeData), sizeof(PipeData)); // Leggi le coordinate inviate dalla pipe
   	
-    aggiorna(gameData,pipe_fd); // aggiorna stato del gioco
+    aggiorna(gameData,pipe_fd,id_nemici,&id_rana_tronco,&pos_x_rel); // aggiorna stato del gioco
     
 		stampaMatrice(gameData->schermo.screenMatrix); // stampa a video solo celle della matrice dinamica modificate rispetto al ciclo precedente
 		
     refresh(); // Aggiorna la finestra
     
-    // debug zone
-    /**/
-    mvprintw(37,0,"                                        ");
-    mvprintw(37,0,"disegna.c oldpos x Rana: %d",gameData->oldPos.general[0].x);
-    
-    mvprintw(38,0,"                                                               ");
-    mvprintw(38,0,"disegna.c pipeData| tipo: %c, x: %d, y: %d, id: %d",gameData->pipeData.type, gameData->pipeData.x, gameData->pipeData.y, gameData->pipeData.id);
-    /**/
 	}
 	
 	free(gameData);

@@ -65,7 +65,7 @@ debug.o: debug.c utilities.h
 hud.o: hud.c utilities.h
 	$(CC) $(CFLAGS) -c hud.c
 	
-schermo.o: schermo.c utilities.h
+schermo.o: schermo.c utilities.h collisioni.h debug.h
 	$(CC) $(CFLAGS) -c schermo.c
 
 utilities.o: utilities.c utilities.h

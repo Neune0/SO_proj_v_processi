@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <signal.h>
+#include <fcntl.h>
 
 #define WIDTH 104
 #define HEIGHT 37
@@ -54,6 +55,24 @@ typedef enum
 	RANA_SPRITE, TRONCO_SPRITE, AUTO_SPRITE, CAMION_SPRITE, PROIETTILE_SPRITE, PROIETTILE_NEMICO_SPRITE, NEMICO_SPRITE,OPEN,CLOSE
 }TipoSprite;
 
+typedef enum{
+	NO_COLLISIONE,
+	RANA_AUTO, 
+	RANA_CAMION,
+	RANA_FIUME,
+	RANA_TRONCO,
+	RANA_NEMICO,
+	RANA_TANA_APERTA,
+	RANA_TANA_CHIUSA,
+	RANA_PROIETTILE_NEMICO,
+	AUTO_RANA,
+	CAMION_RANA,
+	TRONCO_RANA,
+	PROIETTILE_NEMICO_RANA,
+	NEMICO_RANA,
+	NEMICO_PROIETTILE_AMICO,
+	PROIETTILE_AMICO_NEMICO
+}TipoCollisione;
 
 // Definizione della struttura dati per le coordinate (x, y) e per il tipo
 typedef struct{
@@ -172,11 +191,20 @@ typedef enum{
 	SFONDO_OBJ
 }TipoObj;
 
+typedef struct{
+	TipoCollisione tipoCollisione;
+	TipoObj oggetto_attivo; // oggetto che si muove e che provoca collisione
+	int id_oggetto_attivo;
+	TipoObj oggetto_passivo; // oggetto che sta fermo e subisce la collisione
+	int id_oggetto_passivo;
+}Collisione;
+
 void inizializzaNcurses();
 void creaPipe(int pipe_fd[2]);
 void inizializzaColorazione();
 void uccidiProcesso( pid_t *array_pid, int id_processo);
 int id_disponibile(pid_t *array_pid, int lunghezza);
 void aggiornaOldPos(PipeData *old_pos,PipeData *pipeData);
+void creaPipeNonBloccante(int pipe_fd[2]);
 #endif // UTILITIES_H
 

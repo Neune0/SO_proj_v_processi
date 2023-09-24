@@ -320,7 +320,9 @@ void inizializzaSprites(Sprite* sprites){
 	char *sprite_camion[CAMION_ROWS] = {"xxxxxxx", "ooooooo"};
 	char *sprite_proiettile[PROIETTILE_ROWS]={"^","|"};
 	char *sprite_proiettile_nemico[PROIETTILE_ROWS]={"|","v"};
-	char *sprite_nemico[2]={" ^ ","/ \\"};
+	char *sprite_nemico[TRONCO_ROWS] = {"~ ~ ^ ~ ~", " ~ / \\ ~ "};
+	//char *sprite_nemico[2]={" ^ ","/ \\"};
+	
 	char *sprite_tana_open[TANA_ROWS] = {"           ", "           ", "           "};
 	char *sprite_tana_closed[TANA_ROWS] = {"H         H", "H         H", "HHHHHHHHHHH"};
     
@@ -330,7 +332,7 @@ void inizializzaSprites(Sprite* sprites){
   sprites[CAMION_SPRITE] = inizializzaSprite(CAMION_ROWS, CAMION_COLS, sprite_camion, AUTO);
   sprites[PROIETTILE_SPRITE] = inizializzaSprite(PROIETTILE_ROWS, PROIETTILE_COLS, sprite_proiettile, PROIETTILE);
   sprites[PROIETTILE_NEMICO_SPRITE] = inizializzaSprite(PROIETTILE_ROWS,PROIETTILE_COLS,sprite_proiettile_nemico,PROIETTILE);
-  sprites[NEMICO_SPRITE] = inizializzaSprite(2,3,sprite_nemico,RANA);
+  sprites[NEMICO_SPRITE] = inizializzaSprite(TRONCO_ROWS, TRONCO_COLS, sprite_nemico, RANA);
 	sprites[OPEN] = inizializzaSprite(TANA_ROWS, TANA_COLS, sprite_tana_open, TANE);
 	sprites[CLOSE] = inizializzaSprite(TANA_ROWS, TANA_COLS, sprite_tana_closed, TANE);
 	

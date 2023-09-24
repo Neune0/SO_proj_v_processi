@@ -226,7 +226,21 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
         case RANA_PROIETTILE_NEMICO:
         	// termina rana e termina proiettile nemico
         	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
+        	
         	uccidiProiettileNemico(gameData->pids.pidProiettiliNemici,collisione->id_oggetto_passivo);
+        	
+        	// cancello l'ggetto proiettile nemico
+        	int aus_id=gameData->pipeData.id;
+        	
+        	// modifico pipeData.id cosi da passare l'id del proiettile nemico
+        	gameData->pipeData.id=collisione->id_oggetto_passivo;
+        	
+        	cancellaOggetto(gameData,gameData->oldPos.proiettiliNemici, PROIETTILE_NEMICO_SPRITE);
+        	
+        	// ripristino id
+        	gameData->pipeData.id=aus_id;
+        	
+        	// decremento contatore proiettili nemici
         	gameData->contatori.contPN--;
         	*pos_x_rel=-1;
         	*id_tronco_rana=-1;
@@ -234,7 +248,11 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
         case PROIETTILE_NEMICO_RANA:
         	// termina rana e termina proiettile nemico
         	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
+        	
         	uccidiProiettileNemico(gameData->pids.pidProiettiliNemici,collisione->id_oggetto_attivo);
+ 					// cancello oggetto proiettile nemico
+        	cancellaOggetto(gameData,gameData->oldPos.proiettiliNemici, PROIETTILE_NEMICO_SPRITE);
+    
         	gameData->contatori.contPN--;
         	*pos_x_rel=-1;
         	*id_tronco_rana=-1;
@@ -257,6 +275,7 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
             break;
         case RANA_TANA_APERTA:
             // la rana vince la manche
+            
             *pos_x_rel=-1;
         		*id_tronco_rana=-1;
             break;
@@ -265,7 +284,10 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
          		killNemico(gameData->pids.pidNemici[collisione->id_oggetto_attivo - 1]); // -1 perchè gli id dei nemici 1-3 mentre l'indice 0-2
          		gameData->pids.pidNemici[collisione->id_oggetto_attivo - 1] = 0;
          		// setta a -1 l'id del nemico nell'array id_nemici
-         		id_nemici[collisione->id_oggetto_attivo - 1]=-1;
+         		//id_nemici[(collisione->id_oggetto_attivo) - 1]=-1;
+         		if(id_nemici[0]==collisione->id_oggetto_attivo){id_nemici[0]=-1;}
+         		if(id_nemici[1]==collisione->id_oggetto_attivo){id_nemici[1]=-1;}
+         		if(id_nemici[2]==collisione->id_oggetto_attivo){id_nemici[2]=-1;}
          		gameData->contatori.contN--; // decremento nemici
          		// termina proiettile amico
          		// uccide il processo proiettile corrispondente all' id passato
@@ -278,7 +300,10 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
          		killNemico(gameData->pids.pidNemici[collisione->id_oggetto_passivo - 1]); // -1 perchè gli id dei nemici 1-3 mentre l'indice 0-2
          		gameData->pids.pidNemici[collisione->id_oggetto_passivo - 1] = 0;
          		// setta a -1 l'id del nemico nell'array id_nemici
-         		id_nemici[collisione->id_oggetto_passivo - 1]=-1;
+         		//id_nemici[collisione->id_oggetto_passivo - 1]=-1;
+         		if(id_nemici[0]==collisione->id_oggetto_passivo){id_nemici[0]=-1;}
+         		if(id_nemici[1]==collisione->id_oggetto_passivo){id_nemici[1]=-1;}
+         		if(id_nemici[2]==collisione->id_oggetto_passivo){id_nemici[2]=-1;}
          		gameData->contatori.contN--; // decremento nemici
          		// termina proiettile amico
          		// uccide il processo proiettile corrispondente all' id passato

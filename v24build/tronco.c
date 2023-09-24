@@ -55,7 +55,7 @@ void tronco(int* pipe_fd, int y, int direzione_x, int id) {
 		
 		int numero_spostamenti=0;
     while (1) {
-    	if(numero_spostamenti==100){
+    	if(numero_spostamenti==300){
     		// il tronco si trasforma in tronco nemico
     		pipeData.type='n';
     		write(pipe_fd[1], &pipeData, sizeof(PipeData));

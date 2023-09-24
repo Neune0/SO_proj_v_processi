@@ -41,7 +41,7 @@ void moveProcess(int* pipe_fd, int* pipe_rana) {
 					pipeData.y=aus.y;
 					pipeData.type=aus.type;
 					pipeData.id=aus.id;
-					//change=true;
+					change=true;
     		} 
     		
     		pipeData.type='X'; // resetta il normale carattere della rana

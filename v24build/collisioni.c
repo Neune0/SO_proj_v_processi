@@ -257,6 +257,7 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
             break;
         case RANA_TANA_APERTA:
             // la rana vince la manche
+            
             *pos_x_rel=-1;
         		*id_tronco_rana=-1;
             break;

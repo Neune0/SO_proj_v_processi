@@ -212,9 +212,10 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
       	break;
       case 'P':
       	// nuove coordinate proiettile se il proiettile ha sforato devo uccidere il processo e decrementare il contatore
-      	if(gameData->pipeData.y<0){
+      	if(gameData->pipeData.y<4){
       		uccidiProiettile( gameData->pids.pidProiettili, gameData->pipeData.id); // uccide il processo proiettile
-      		// da fare cancella oggetto
+      		// ucciso processo proiettile e impostato a zero il pid in array pid proiettili
+      		
       		cancellaOggetto(gameData,gameData->oldPos.proiettili, PROIETTILE_SPRITE);
       		gameData->contatori.contP--;
       	}
@@ -224,7 +225,7 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
       	break;
       case 'p':
       	// nuove coordinate proiettile nemico se il proiettile ha sforato devo uccidere il processo e decrementare il contatore
-      	if(gameData->pipeData.y>30){
+      	if(gameData->pipeData.y>31){
       		uccidiProiettileNemico( gameData->pids.pidProiettiliNemici, gameData->pipeData.id); // uccide il processo proiettile
       		// da fare cancella oggetto
       		cancellaOggetto(gameData,gameData->oldPos.proiettiliNemici, PROIETTILE_NEMICO_SPRITE);
@@ -428,6 +429,7 @@ void pulisciSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scher
         }
     }
 }
+
 //--------------------------------------------Stampa Puntuale----------------------------------------------------------------------
 void stampaMatrice( ScreenCell (*screenMatrix)[WIDTH]){//ok
 	for(int i=0;i<HEIGHT;i++){
@@ -468,3 +470,4 @@ void cancellaOggetto(GameData* gameData, PipeData *old_pos, TipoSprite tipoSprit
 	}
 	return;
 }
+

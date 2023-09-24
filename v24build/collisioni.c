@@ -220,12 +220,15 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
         case NEMICO_RANA:
         	// termina rana
         	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
+        	gameData->contatori.vite--;
         	*pos_x_rel=-1;
         	*id_tronco_rana=-1;
+        	
         	break;
         case RANA_PROIETTILE_NEMICO:
         	// termina rana e termina proiettile nemico
         	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
+        	gameData->contatori.vite--;
         	
         	uccidiProiettileNemico(gameData->pids.pidProiettiliNemici,collisione->id_oggetto_passivo);
         	
@@ -248,6 +251,7 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
         case PROIETTILE_NEMICO_RANA:
         	// termina rana e termina proiettile nemico
         	gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
+        	gameData->contatori.vite--;
         	
         	uccidiProiettileNemico(gameData->pids.pidProiettiliNemici,collisione->id_oggetto_attivo);
  					// cancello oggetto proiettile nemico
@@ -271,11 +275,13 @@ void gestisciCollisione(Collisione* collisione, GameData* gameData, int* pipe_fd
             int pos_y_tronco = gameData->oldPos.general[*id_tronco_rana].y;
             // calcolo posizione relativa della rana sul tronco
             *pos_x_rel = pos_x_rana - pos_x_tronco;
-            
+           
             break;
         case RANA_TANA_APERTA:
             // la rana vince la manche
-            
+            // la tana aperta viene chiusa
+            gameData->tane[collisione->id_oggetto_passivo].status=TANA_CLOSED;
+            gameData->pids.pidRana= resetRana(pipe_fd,gameData->pipeRana_fd, gameData->pids.pidRana);
             *pos_x_rel=-1;
         		*id_tronco_rana=-1;
             break;

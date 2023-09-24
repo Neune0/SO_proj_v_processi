@@ -20,7 +20,7 @@ void stampaMatrice( ScreenCell (*screenMatrix)[WIDTH]);
 void stampaRefreshMatrice( ScreenCell (*screenMatrix)[WIDTH]);
 
 void aggiornaOggettoMod(GameData* gameData, PipeData* old_pos, TipoSprite tipoSprite, int* pipe_fd,int* id_nemici,int* id_rana_tronco, int* pos_x_rel);
-
+void stampaTanaChiusa(Tana tana, GameData* gameData);
 
 
 #endif

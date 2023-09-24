@@ -15,5 +15,7 @@
 
 void avviaDrawProcess(int pipe_fd[2]);
 void drawProcess(int* pipe_fd);
+void stampaWin();
+void stampaGameOver();
 
 #endif

@@ -301,6 +301,13 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
     
     gestisciCollisione(&collisione,gameData,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
     
+    if(collisione.tipoCollisione==RANA_TANA_APERTA){
+    	
+    	// stampa tana in matrice e matrice statica
+    	stampaTanaChiusa(gameData->tane[collisione.id_oggetto_passivo],gameData);
+    	
+    	
+    }
     if(collisione.tipoCollisione==NO_COLLISIONE){
 		  // dopo questo se ho una collisione rana tronco
 		  // ho salvato in pos_x_rel la posizione della rana relativa al tronco
@@ -481,4 +488,39 @@ void cancellaOggetto(GameData* gameData, PipeData *old_pos, TipoSprite tipoSprit
 	}
 	return;
 }
+
+void stampaTanaChiusa(Tana tana, GameData* gameData){
+    		int y = tana.info.y;
+    		int x = tana.info.x;
+    		// sprite da disegnare
+    		gameData->sprites[8]; // questo è lo sprite della tana chiusa
+    		
+    		int startRow=y;
+    		int startCol=x;
+    		int maxRows = gameData->sprites[8].max_row;
+    		int maxCols = gameData->sprites[8].max_col;
+    		int row=0, col=0;
+    		
+    		for (int i = 0; i < maxRows; i++) {
+		      for (int j = 0; j < maxCols; j++) {
+		      	row = startRow + i;
+            col = startCol + j;
+            
+            gameData->schermo.screenMatrix[row][col].tipo = TANA_CLOSE_OBJ;
+            gameData->schermo.screenMatrix[row][col].ch = gameData->sprites[8].sprite[i][j];
+            gameData->schermo.screenMatrix[row][col].color = gameData->sprites[8].color;
+            gameData->schermo.screenMatrix[row][col].is_changed = true;
+            gameData->schermo.screenMatrix[row][col].id=tana.info.id;
+            
+            gameData->schermo.staticScreenMatrix[row][col].tipo = TANA_CLOSE_OBJ;
+            gameData->schermo.staticScreenMatrix[row][col].ch = gameData->sprites[8].sprite[i][j];
+            gameData->schermo.staticScreenMatrix[row][col].color = gameData->sprites[8].color;
+            
+            gameData->schermo.staticScreenMatrix[row][col].id=tana.info.id;
+            
+		      }
+        }
+        gameData->contatori.manche++;
+    		
+    	}
 

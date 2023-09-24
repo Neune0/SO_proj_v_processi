@@ -151,6 +151,8 @@ typedef struct{
 	int contP;
 	int contPN;
 	int contN;
+	int manche;
+	int vite;
 }Cont;
 
 typedef struct{

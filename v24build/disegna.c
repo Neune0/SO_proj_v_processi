@@ -13,7 +13,7 @@ void drawProcess(int* pipe_fd) {
 	int id_nemici[3]={-1,-1,-1};
 	int id_rana_tronco=-1;
 	int pos_x_rel=-1;
-  while (1) {
+  while (gameData->contatori.manche!=3 && gameData->contatori.vite>0) {
   	read(pipe_fd[0], &(gameData->pipeData), sizeof(PipeData)); // Leggi le coordinate inviate dalla pipe
   	
     aggiorna(gameData,pipe_fd,id_nemici,&id_rana_tronco,&pos_x_rel); // aggiorna stato del gioco
@@ -22,6 +22,13 @@ void drawProcess(int* pipe_fd) {
 		
     refresh(); // Aggiorna la finestra
     
+	}
+	if(gameData->contatori.vite==0){
+		// stampa game over
+		stampaGameOver();
+	}
+	else{
+		stampaWin();
 	}
 	
 	free(gameData);
@@ -39,3 +46,28 @@ void avviaDrawProcess(int pipe_fd[2]) {
         exit(0); // TODO: è davvero utile?
     }
 }
+
+void stampaWin(){
+	clear();
+	stampaBoxMenu();
+	stampaLogoMenu(STARTROWLOGOMENU,STARTCOLLOGOMENU);
+	mvprintw(15,80,"you win!!!!!!!!!!!!!");
+	refresh();
+	usleep(30000000);
+	return;
+
+
+}
+
+void stampaGameOver(){
+	clear();
+	stampaBoxMenu();
+	stampaLogoMenu(STARTROWLOGOMENU,STARTCOLLOGOMENU);
+	mvprintw(15,80,"Game Over!");
+	refresh();
+	usleep(30000000);
+	return;
+
+
+}
+

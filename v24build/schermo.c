@@ -1,13 +1,15 @@
 #include "schermo.h"
 void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronco,int* pos_x_rel){
-	
+				// debug zone
+				mvprintw(33,0,"                                   ");
+    		mvprintw(33,0,"id rana tronco: %d",*id_rana_tronco);
+    		mvprintw(38,0,"                                              ");
+    		mvprintw(38,0,"id_nemici: %d %d %d",id_nemici[0],id_nemici[1],id_nemici[2]);
+    		refresh();
+    		// end debug zone
 	switch(gameData->pipeData.type){
     	case 'X': // rana
-    		mvprintw(35,0,"                                                        ");
-    		mvprintw(35,0,"rana x: %d y: %d",gameData->pipeData.x,gameData->pipeData.y);
-    		mvprintw(36,0,"                                                        ");
-    		mvprintw(36,0,"old rana x: %d y: %d",gameData->oldPos.general[0].x,gameData->oldPos.general[0].y);
-    		refresh();
+    		
     		// se la rana è sul tronco ed il movimento è orizzontale e non sforo il tronco allora devo fare come sotto con caso tronco che si muove
     		if(*id_rana_tronco!=-1){
     			
@@ -86,16 +88,15 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
     					refresh();
     					*id_rana_tronco=-1;
     					*pos_x_rel=-1;
-    					//usleep(3000000);
+    					
     					aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
     				}
     		}
     		else{
     				
-    					mvprintw(38,0,"                                ");
-    					refresh();
-    			// normale aggiornamento la rana non è su un tronco
-    			aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+    					
+    				// normale aggiornamento la rana non è su un tronco
+    				aggiornaOggetto(gameData, gameData->oldPos.general, RANA_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
     		}
     		// se la rana è sul tronco ed il movimento è orizziontale e sforo allora non devo muovere la rana e devo scrivere in pipe alla rana la posizione prima del movimento
     		// se la rana è sul tronco ed il movimento è verticale
@@ -107,6 +108,8 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
 				if(gameData->pipeData.id == id_nemici[0] || gameData->pipeData.id == id_nemici[1] || gameData->pipeData.id == id_nemici[2]){
 					// allora è un nemico
 					aggiornaOggetto(gameData, gameData->oldPos.general, NEMICO_SPRITE,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
+					mvprintw(34,0,"                                ");
+					refresh();
 				}
 				else{
 					if(gameData->pipeData.id==*id_rana_tronco){
@@ -177,29 +180,32 @@ void aggiorna(GameData* gameData,int* pipe_fd, int* id_nemici,int* id_rana_tronc
       	}
       	break;
       case 'n':
-      	if(gameData->pipeData.id!=*id_rana_tronco){
-      	if(gameData->pipeData.id!=id_nemici[0] && gameData->pipeData.id!=id_nemici[1] && gameData->pipeData.id!=id_nemici[2]){
-		    	if(gameData->contatori.contN<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
-		    	{ 
-		    		// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
-		    		//int id = id_disponibile(gameData->pids.pidNemici,MAXNNEMICI);
-			    	int id = gameData->pipeData.id; // questo sarà l'id del nemico che è uguale all'id del tronco che l'ha generato
-			    	gameData->pids.pidNemici[id - 1]=avviaNemico(pipe_fd, id);
-						// devo comunicare a disegna che la prossima volta che leggera T in pipe e l'id sarà uguale all'id che ho qui allora dovra disegnare il tronco in un modo diverso ed anche il tipo in matrice dovra essere diverso
-						// uso un array tronchi nemici di id
-						id_nemici[gameData->contatori.contN]=id;
-						gameData->contatori.contN++;		
+      	if(gameData->pipeData.id!=*id_rana_tronco && (gameData->pipeData.id==1 || gameData->pipeData.id==3 || gameData->pipeData.id==2) ){
+		    	if(gameData->pipeData.id!=id_nemici[0] && gameData->pipeData.id!=id_nemici[1] && gameData->pipeData.id!=id_nemici[2]){
+				  	if(gameData->contatori.contN<MAXNNEMICI)  // se non si è raggiunto il numero massimo di nemici
+				  	{ 
+				  		// incremento contatore e faccio partire il processo nemico, salvo il pid del processo
+				  		//int id = id_disponibile(gameData->pids.pidNemici,MAXNNEMICI);
+					  	int id = gameData->pipeData.id; // questo sarà l'id del nemico che è uguale all'id del tronco che l'ha generato
+					  	gameData->pids.pidNemici[id - 1]=avviaNemico(pipe_fd, id);
+					  	
+							// devo comunicare a disegna che la prossima volta che leggera T in pipe e l'id sarà uguale all'id che ho qui allora dovra disegnare il tronco in un modo diverso ed anche il tipo in matrice dovra essere diverso
+							// uso un array tronchi nemici di id
+							id_nemici[gameData->contatori.contN]=id;
+							gameData->contatori.contN++;		
+				  	}
 		    	}
-      	}}
+      	}
       	break;
-      case 's':
+      case 's': // proiettile nemico sparato
       	// LE COORDINATE DI LANCIO DEVONO ESSERE QUELLE CENTRALI DEL TRONCO HA ID = A ID IN PIPEDATA, PRENDERE DA OLD POS TRONCHI
-      	// proiettile nemico sparato
+      	
       	if(gameData->contatori.contPN<MAXNPROIETTILINEMICI) // se non si è raggiunto il numero massimo di nemici
       	{ 
       		// pipeData.id = id del tronco che ha sparato
       		
       		// trova old pos tronco con id = pipeData.id
+      		
       		PipeData* oldPosPipeData = &(gameData->oldPos.general[gameData->pipeData.id]); // questa è la old pos che devo passare
       		oldPosPipeData->x+=4;
       		
@@ -294,8 +300,10 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
     checkCollisioni(&collisione,startRow,maxRows,startCol,maxCols,schermo,pipeData,id_nemici);
     
     gestisciCollisione(&collisione,gameData,pipe_fd,id_nemici,id_rana_tronco,pos_x_rel);
-    // dopo questo se ho una collisione rana tronco
-    // ho salvato in pos_x_rel la posizione della rana relativa al tronco
+    
+    if(collisione.tipoCollisione==NO_COLLISIONE){
+		  // dopo questo se ho una collisione rana tronco
+		  // ho salvato in pos_x_rel la posizione della rana relativa al tronco
     	for (int i = 0; i < maxRows; i++) {
         for (int j = 0; j < maxCols; j++) {
             row = startRow + i;
@@ -338,7 +346,8 @@ void stampaSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scherm
             schermo->screenMatrix[row][col].color = sprite->color;
             schermo->screenMatrix[row][col].is_changed = true;
             schermo->screenMatrix[row][col].id=pipeData->id;
-        }
+        	}
+    	}
     }
     
     
@@ -420,6 +429,8 @@ void pulisciSpriteInMatrice(PipeData* datiVecchi, Sprite* sprite, Schermo* scher
     if (row != -1) {
         for (int i = row; i < row + maxRows; i++) {
             for (int j = col; j < col + maxCols; j++) {
+            		
+            		
                 schermo->screenMatrix[i][j].ch = schermo->staticScreenMatrix[i][j].ch;
                 schermo->screenMatrix[i][j].color = schermo->staticScreenMatrix[i][j].color;
                 schermo->screenMatrix[i][j].is_changed = true;
